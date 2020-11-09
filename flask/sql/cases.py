@@ -1,0 +1,269 @@
+
+from stemmons import Stemmons_Dash_App
+import pandas as pd
+import plotly.express as px
+
+
+class CasesSQL:
+    ''' shoudl handle all sql calls involving cases, transformation and db call should be separate '''
+
+    def __init__(self):
+        self.db = Stemmons_Dash_App()
+    
+    def tuplefy(self, id):
+        if isinstance(id, list) and len(id) > 1:
+            #print(f'APP THING: {id}')
+            id = tuple(id)
+        else:
+            #print(f'APP NOT THING: {id}')
+            id = f'({id[0]})'
+            
+        return id
+
+    def cases_type_form(self, id):
+        query = f'''
+        SELECT [ASSOC_TYPE_ID]
+                ,[ASSOC_FIELD_TYPE] as [FIELD_TYPE]
+                ,[CASE_TYPE_ID]
+                ,[NAME] as [label]
+                ,[DESCRIPTION]
+                ,[EXTERNAL_DATASOURCE_ID]
+                ,[SYSTEM_CODE]
+                ,[SYSTEM_PRIORITY]
+                ,[SHOW_ON_LIST]
+                ,[UI_WIDTH]
+                ,[IS_REQUIRED]
+  
+            FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
+            where is_active = 'Y'
+            and CASE_TYPE_ID = {id}
+            order by SYSTEM_PRIORITY desc
+        '''
+        return self.db.execQuery(query)
+        
+    def exid(self, id):
+        ''' Takes in a application id(the entity that had the applicaiton data)
+        return the exid for that
+        '''
+        query = f''' 
+        SELECT
+[EXTERNAL_DATASOURCE_OBJECT_ID] as [EXID]
+FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] a
+join  (
+        SELECT [ENTITY_ASSOC_TYPE_ID],
+                [SYSTEM_CODE],
+                [NAME]
+        FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE]
+        where ENTITY_TYPE_ID = (
+                                SELECT top 1 [ENTITY_TYPE_ID]
+                                FROM [BOXER_ENTITIES].[dbo].[ENTITY_TYPE]
+                                where SYSTEM_CODE = 'USCSE')
+            and is_active = 'Y'
+            and SYSTEM_CODE in (
+			'ASSCT'
+            ) )b
+on a.ENTITY_ASSOC_TYPE_ID = b.ENTITY_ASSOC_TYPE_ID 
+left join [BOXER_ENTITIES].[dbo].ENTITY e
+on a.ENTITY_ID = e.ENTITY_ID
+left join [BOXER_ENTITIES].[dbo].[ENTITY_SYSTEM_CODE] esc
+ on  b.SYSTEM_CODE = esc.SYSTEM_CODE
+where a.IS_ACTIVE = 'Y'
+	and
+	e.IS_ACTIVE = 'Y'
+    and EXTERNAL_DATASOURCE_OBJECT_ID is not null
+	and a.ENTITY_ID = {id}
+        '''
+        return self.db.execQuery(query)
+
+    def ctids_from_exid(self, exid):
+        ''' Takes in an exid and returns all the case type id for that '''
+
+        query = f''' SELECT ENTITY_ID, [TEXT] as ID, b.SYSTEM_CODE 
+  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT] a
+	  left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type] b
+	on a.[ENTITY_ASSOC_TYPE_ID] = b.[ENTITY_ASSOC_TYPE_ID]
+
+  where entity_id in {exid}
+  and 
+  a.is_active = 'Y'
+  and
+  a.[ENTITY_ASSOC_TYPE_ID] in  (
+  SELECT ENTITY_ASSOC_TYPE_ID
+  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type]
+  where entity_type_id in (select top 1 
+							ENTITY_TYPE_ID 
+							from [BOXER_ENTITIES].[dbo].entity_list 
+							where entity_id in {exid} ) 
+							and 
+							(SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL'))
+							)''' 
+        return self.db.execQuery(query)
+
+    def ctids_from_application(self, app_id):
+        exid = self.exid(app_id)['EXID'].tolist()
+        exid = self.tuplefy(exid)
+        self.ctid = self.ctids_from_exid(exid)
+        return self.ctid['ID'].tolist()
+    
+    def open_case_type_data(self, app_id):
+        case_types = self.ctids_from_application(app_id)
+        
+        case_types = self.tuplefy(case_types)
+        query = f'''
+        SELECT
+		[Case_Type_ID]
+      ,[Case_Type_Name] as [Case Type]
+      ,[Case_ID]
+      ,[Case_ID] as [Count]
+      ,[Owned_by_Display_Name] as [Owned By]
+      ,[Created_by_Display_Name] as [Created By]
+      ,[Created_Datetime] as [Create Date]
+      ,[Modified_by_Display_Name] 
+      ,[Assigned_to_Display_Name] as [Assigned To]
+      ,[Assign_Datetime] as [Assigned Date]
+      ,[Is_Active]
+      ,[Category]
+      ,[Category_EXD_OBJECT_ID]
+      ,[Cost Field]
+      ,[Cost Field_EXD_OBJECT_ID]
+      ,[Due Date]
+      ,[Priority Type]        
+      ,[Status Type]
+      ,[Status Type_EXD_OBJECT_ID]
+      ,[Case Title]
+	  ,[Created_Datetime date] as [Created Date]
+      ,[Assign_Datetime date]    
+      ,[Due Date date]
+      ,[CASE_LIFE] 
+      ,[CaseDue_Status] as [Status]
+      ,[CASE_URL] as [Case Url]
+      ,[By_Assignee_Supervisor] as [By Assignee Supervisor]
+      ,[CaseClosed date] as [Case Closed Date]
+      ,[JOB_TITLE] as [Assignee Job Title]
+      ,[DEPARTMENT_NAME] as [Assigned Department Name]       
+  FROM [FACTS].[dbo].[CASE_LIST]
+  
+  where [CaseClosed date] is null
+  and is_active = 'Y'
+  and CASE_TYPE_ID in {case_types} 
+        '''
+        return self.db.execQuery(query)
+
+
+class AppSql:
+    #need a call that gives application entity 0ds, name and icon urls
+    def __init__(self):
+        self.db = app
+    
+    def application_layout(self):
+        pass
+
+    def applications(self):
+        query = '''
+        
+        select el.Entity_ID as [entity_id],
+                TITLE_METADATA_TEXT as [title],
+                cast(eat.ENTITY_FILE_ID as int) as [url]
+        from BOXER_ENTITIES.dbo.ENTITY_LIST el
+
+        left join(SELECT
+            [ENTITY_FILE_ID],
+            ENTITY_ID
+
+        FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT]
+        where ENTITY_ASSOC_TYPE_ID = (SELECT [ENTITY_ASSOC_TYPE_ID]
+        
+        FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE]
+        where SYSTEM_CODE='APICN'
+        and is_active='Y')
+            and  is_active = 'Y')eat
+        on eat.ENTITY_ID = el.ENTITY_ID
+
+        where ENTITY_TYPE_ID = (SELECT[ENTITY_TYPE_ID]
+                FROM [BOXER_ENTITIES].[dbo].[ENTITY_TYPE]
+                where system_code = 'USCSE'
+                and IS_ACTIVE='Y')
+                order by TITLE_METADATA_TEXT 
+        '''
+        return app.execQuery(query)
+
+
+class FieldHandler:
+    pass
+
+class AppHandler(AppSql):
+    '''transforms sql calls into json for the react from end'''
+
+    def __init__(self):
+        super().__init__()
+
+    def application_list(self):
+        df = self.applications()
+
+        resp = []
+        for idx, row in df.iterrows():
+            
+            id = row['url']
+            if pd.isna(id):
+                id = 0
+            else:
+                id = int(id)
+
+            resp.append({
+                'title':row['title'],
+                'id':row['entity_id'],
+                #TODO: after dev make dynamic
+                'url': f"http://entities.boxerproperty.com/Download.aspx?FileID={id}"
+            })  
+        return resp
+
+class CaseHandler(CasesSQL):
+
+    def __init__(self):
+        super().__init__()
+
+    def case_type_inputs(self, ctid=19 ):
+        df = self.cases_type_form(ctid)
+       
+
+        response = []
+        for idx, row in df.iterrows():
+            field_type = row['FIELD_TYPE']
+
+            if field_type == 'T':
+                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],field_type, [], row['label'], row['IS_REQUIRED']))
+
+            elif field_type == 'A':
+                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
+
+            elif field_type == 'N':
+                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
+
+            elif field_type == 'D':
+                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
+            
+            else:
+                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],[],[],[],[]))
+        else:
+            response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],'Froala',[],[],[]))
+        return response
+
+    def resp_model(self, idx, assoc, type, options, label, required):
+        '''
+        {idx:{'type':'A',
+            'options':[{'label':'blah,'value':'blah'}],
+            'label':row['label'],
+            'required':False }
+        }
+        '''
+        return {'type':type,
+                    'options':options,
+                    'label': label,
+                    'required':required,
+                    'assocID':assoc  }
+    
+    def case_graphs(self, id):
+        
+        df = self.open_case_type_data(id)
+        fig = px.line(df, x='Assigned To', y='Count')
+        return fig.to_json()
