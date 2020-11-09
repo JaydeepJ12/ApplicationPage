@@ -8,15 +8,14 @@ Js version of the application page
 
 ``` 
 
-cd {path to this file}
-pip install flask
-pip install plotly
+
+pip install "Z:\Application Development\PIPInstall\FN_dev_package"
 python app.py
 
 ```
 
 A CLI app should start running on localhost:5000
 
-localhost:5000/bar
-localhost:5000/sankey
-localhost:5000/line
+http://127.0.0.1:5000/cases/config?CaseTypeID=19 this returns the config for case type 19.
+
+use 
