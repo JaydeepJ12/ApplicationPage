@@ -40,6 +40,7 @@ class CasesSQL:
             order by SYSTEM_PRIORITY desc
         '''
         return self.db.execQuery(query)
+        
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
         return the exid for that
