@@ -17,7 +17,7 @@ import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PeopleIcon from '@material-ui/icons/People';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import ViewListIcon from '@material-ui/icons/ViewList';
-
+import { Link, BrowserRouter } from 'react-router-dom';
 
 const useStyles = makeStyles((theme)=>({
     avatar:{
@@ -81,6 +81,13 @@ export default function Dashboard(){
                 <ListItemText> Insights </ListItemText>
             </ListItem>
         <Divider/>
+        <BrowserRouter>
+            </BrowserRouter>
+            <ListItem button onClick={() => {setPage('CaseCreator')}}>
+                <ListItemIcon> <PeopleIcon/> </ListItemIcon>
+                <ListItemText> CaseCreator </ListItemText>
+            </ListItem>
+            <Divider/>
             <Button color='secondary'>
                 HELOO WROLD
             </Button>
