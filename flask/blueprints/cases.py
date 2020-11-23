@@ -2,7 +2,6 @@ from flask import Blueprint, request
 from sql.cases import CasesSQL
 from stemmons.api import Cases
 from operator import itemgetter
-from flask_cors import CORS, cross_origin
 import pandas as pd
 import json 
 
@@ -12,9 +11,12 @@ db = CasesSQL()
 cases = Cases('http://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
 
+@bp.after_request
+def after_request(r):
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
 
 @bp.route('/config')
-@cross_origin("*")
 def config():
     ctid = request.args.get('CaseTypeID')
 
@@ -25,16 +27,14 @@ def config():
     return  json.dumps(data)#
 
 @bp.route('/assocDecode')
-@cross_origin("*")
 def assocDecode():
+    #
     assoc_id = request.args.get('ASSOC_TYPE_ID')
-    # systemCode = request.args.get('SYSTEM_CODE')
-    print(assoc_id)
-    df = db.assoc_decode(assoc_id) # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
-    if(len(df) > 0): 
-        return df.to_json(orient='records') #
-    else :
-       return "[]"
+
+    r = cases.get(f'http://casesapi.boxerproperty.com/api/Cases/GetAssocDecode?assocTypeID={assoc_id}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
+    data = json.loads(r.text)
+    data = data.get('ResponseContent')
+    return  json.dumps(data)#
 
 @bp.route('/test')
 def create():

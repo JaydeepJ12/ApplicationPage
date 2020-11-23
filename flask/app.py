@@ -2,7 +2,6 @@ from flask import Flask, request
 from blueprints.cases import bp as cases
 import json
 import plotly.express as px
-from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 
@@ -15,9 +14,8 @@ def after_request(r):
         
 #####Test endpoint below#####
 @app.route('/test', methods=['GET'])
-@cross_origin("*")
 def test():
     return 'Hello World'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
