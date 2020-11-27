@@ -41,12 +41,29 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
+    def cases_types(self):
+        query = f'''
+        SELECT * FROM [BOXER_CME].[dbo].[CASE_TYPE] WHERE IS_ACTIVE = 'Y'
+        '''
+        return self.db.execQuery(query)
+
     def assoc_decode(self, id):
         query = f'''
         SELECT * FROM [BOXER_CME].[dbo].[ASSOC_DECODE]
             where is_active = 'Y'
             and ASSOC_TYPE_ID IN ({id})
             order by SYSTEM_PRIORITY desc
+        '''
+        return self.db.execQuery(query)
+
+    def caseassoctypecascade(self, caseTypeId):
+        query = f'''
+        SELECT CATS.CASE_ASSOC_TYPE_CASCADE_ID,CATS.CASE_ASSOC_TYPE_ID_PARENT,CATS.CASE_ASSOC_TYPE_ID_CHILD    
+            FROM [BOXER_CME].[dbo].[CASE_ASSOC_TYPE_CASCADE] CATS WITH (NOLOCK)      
+            INNER JOIN [BOXER_CME].[dbo].[ASSOC_TYPE] AT WITH (NOLOCK) ON AT.ASSOC_TYPE_ID = CATS.CASE_ASSOC_TYPE_ID_PARENT AND AT.IS_ACTIVE ='Y' AND CATS.IS_ACTIVE = 'Y'    
+            INNER JOIN [BOXER_CME].[dbo].[CASE_TYPE] CT WITH (NOLOCK) ON AT.CASE_TYPE_ID = CT.CASE_TYPE_ID AND CT.IS_ACTIVE= 'Y'    
+            WHERE CT.CASE_TYPE_ID = {caseTypeId}     
+            AND (AT.ASSOC_FIELD_TYPE = 'E' OR AT.ASSOC_FIELD_TYPE = 'O')  
         '''
         return self.db.execQuery(query)
 
