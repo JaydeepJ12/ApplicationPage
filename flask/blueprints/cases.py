@@ -1,12 +1,15 @@
 from flask import Blueprint, request
 from sql.cases import CasesSQL
 from stemmons.api import Cases
+from api.mobile import Mobile
 from operator import itemgetter
 import pandas as pd
 import json 
 
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
+
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2020')
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
@@ -55,3 +58,8 @@ def caseassoctypecascade():
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
     return r.text
+
+@bp.route('/GetExternalDataValues',methods=['POST'])
+def external_data_values():
+    print(request.json)
+    return mobile.external_data_values(request.json).json()
