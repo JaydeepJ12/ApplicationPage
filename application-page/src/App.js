@@ -5,6 +5,8 @@ import { ThemeProvider, makeStyles } from "@material-ui/core";
 import theme from "./components/theme.js";
 import CaseCreator from "./components/case_creator.js";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
+import CaseTypeForm from "./components/case_type_form/index";
+import CaseTypeFieldForm from "./components/case_type_form/calculated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +25,11 @@ function App() {
         <BrowserRouter>
           <Switch>
             <Route exact path="/case-create" component={CaseCreator}></Route>
+            <Route path="/case-type-form" component={CaseTypeForm}></Route>
+            <Route
+              path="/case-type-form-field"
+              component={CaseTypeFieldForm}
+            ></Route>
           </Switch>
         </BrowserRouter>
       </div>
