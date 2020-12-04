@@ -17,110 +17,260 @@ import Loading from "./Loader.js";
 //case inpus component
 
 export default function CaseCreator(props) {
-  //url is hard coded, will need to adjust after dev
-
   const [data, setData] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [state, setState] = useState({});
-  const [caseType, setCaseType] = useState({});
-  const [caseTypeState, setCaseTypeState] = useState({});
+  const [caseType, setCaseType] = useState(0);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [parentChildData, setParentChildData] = useState([]);
-
-  const options = [
-    { DecodeId: 1, DecodeValue: "Dallas" },
-    { DecodeId: 2, DecodeValue: "Houston" },
-    { DecodeId: 3, DecodeValue: "Outer Markets" },
-  ];
-
-  const markets = [
-    { DecodeId: 1, DecodeValue: "Dallas Market" },
-    { DecodeId: 2, DecodeValue: "Fort Worth" },
-  ];
-
-  const fields = (caseTypeId) => {
-    console.log(caseTypeId);
-    caseTypeId = caseTypeId ? caseTypeId : caseType;
-    axios
-      .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
-      .then((resp) => {
-        resp.data[5].assoc_decode = options;
-        setData(resp.data);
-        console.log(JSON.stringify(resp.data));
-      })
-      .then(setLoaded(true));
-
-    axios
-      .get(
-        "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
-          caseTypeId
-        )
-      )
-      .then((resp) => {
-        setParentChildData(resp.data);
-        console.log(JSON.stringify(resp.data));
-      })
-      .then(setLoaded(true));
-
-    //wait until after axios req is done
-  };
+  const [froalaValue, setFroala] = useState({});
+  const [formDataValue, setFormDataValue] = useState([]);
+  const [maxCount, setMaxCount] = useState(50);
+  const [parentValue, setParentValue] = useState(0);
+  const [loadMoreText, setLoadMoreText] = useState(false);
 
   const caseTypes = () => {
     setLoaded(false);
-    console.log(caseType);
-
     axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
-      setCaseTypeData(resp.data);
       setLoaded(true);
+      setCaseTypeData(resp.data);
     });
+  };
+
+  const handleCaseTypeChange = (event) => {
+    const caseTypeId = event.target.value;
+    if (caseTypeId > 0) {
+      setLoaded(false);
+      setData(null);
+      setCaseType(caseTypeId);
+      fields(caseTypeId);
+    }
+  };
+
+  const fields = async (caseTypeId) => {
+    var fieldData = [];
+    caseTypeId = caseTypeId ? caseTypeId : caseType;
+    await axios
+      .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
+      .then((resp) => {
+        setData(resp.data);
+        fieldData = resp.data;
+        if (fieldData.length > 0) {
+          axios
+            .get(
+              "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
+                caseTypeId
+              )
+            )
+            .then((resp) => {
+              setParentChildData(resp.data);
+              setLoaded(true);
+              loadParentDropDown(resp.data, fieldData, caseTypeId);
+            });
+        }
+      });
   };
 
   useEffect(caseTypes, fields, []);
 
-  const handleCaseTypeChange = (event) => {
-    setData(null);
-    const caseTypeId = event.target.value;
-    setCaseType(caseTypeId);
-    fields(caseTypeId);
+  const loadParentDropDown = async (responseData, fieldData, caseTypeId) => {
+    let superParentAssocTypeIds = [];
+    var externalData = fieldData.filter((x) => x.ExternalDataSourceId > 0);
 
-    // var jsonData = JSON.stringify({"Application":0,"TypeID":19,"FieldID":1829,"Username":"BhavikS","ParentValues":{"3415":["2"]}});
+    // Use map to get a simple array of "CASE_ASSOC_TYPE_ID_CHILD" values. Ex: [1,2,3]
+    let childAssocTypeIds = responseData.map((x) => {
+      return x.CASE_ASSOC_TYPE_ID_CHILD;
+    });
 
-    // var config = {
-    //   method: 'post',
-    //   url: 'http://localhost:54504/api/ExternalData/GetExternalDataValues',
-    //   headers: {
-    //     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJGdWxsTmFtZSI6IkJoYXZpayBTYXZhbGl5YSIsIlVzZXJuYW1lIjoiQmhhdmlrUyIsIkZpcnN0TmFtZSI6IkJoYXZpayIsIk1pZGRsZU5hbWUiOiIiLCJMYXN0TmFtZSI6IlNhdmFsaXlhIiwiRGlzcGxheU5hbWUiOiJCaGF2aWsgU2F2YWxpeWEiLCJFbWFpbCI6IkJoYXZpay5TYXZhbGl5YUBTdGVtbW9ucy5jb20iLCJEZXBhcnRtZW50TmFtZSI6IkFwcGxpY2F0aW9uIERldmVsb3BtZW50IiwiT2ZmaWNlUGhvbmUiOiIiLCJDZWxsUGhvbmUiOiIiLCJDaXR5IjoiVmFkb2RhcmEiLCJTdGF0ZSI6Ikd1amFyYXQiLCJTdXBlcnZpc29yIjoiUHJhZ25lc2ggUmF2YWwiLCJTdXBlcnZpc29yVXNlcm5hbWUiOiJQcmFnbmVzaFIiLCJJc0V4dGVybmFsVXNlciI6IkZhbHNlIiwiSm9iVGl0bGUiOiJTZW5pb3IgRnVsbHN0YWNrIERldmVsb3BlciIsIkhhc1RlYW0iOiJUcnVlIiwiUHJvZmlsZVBpY3R1cmUiOiIiLCJuYmYiOjE2MDY0NzE2OTMsImV4cCI6MTYwNzA3NjQ5MywiaWF0IjoxNjA2NDcxNjkzfQ.i2y79lYFgUdnj-azB_kfIG-VRJGDtXHkIk1uMCGt9UY',
-    //     'Content-Type': 'application/json',
-    //     'Access-Control-Allow-Origin': true
-    //   },
-    //   data : jsonData
-    // };
+    if (externalData.length > 0 && childAssocTypeIds.length > 0) {
+      var filteredExternalData = externalData.filter(function (item) {
+        return childAssocTypeIds.indexOf(item.AssocTypeId) === -1;
+      });
+      superParentAssocTypeIds = filteredExternalData.map((x) => {
+        return x.AssocTypeId;
+      });
+    } else {
+      superParentAssocTypeIds = externalData.map((x) => {
+        return x.AssocTypeId;
+      });
+    }
 
-    // axios(config)
-    // .then(function (response) {
-    //   console.log(JSON.stringify(response.data));
-    // })
-    // .catch(function (error) {
-    //   console.log(error);
-    // });
+    for (var i = 0; i < superParentAssocTypeIds.length; i++) {
+      const currentData = [...fieldData];
+      var commentIndex = fieldData.findIndex(function (c) {
+        return c.AssocTypeId == superParentAssocTypeIds[i];
+      });
+      if (currentData[commentIndex]) {
+        var jsonData = {
+          searchText: "",
+          maxCount: maxCount,
+          skipCount: 0,
+          application: 0,
+          typeID: caseTypeId,
+          fieldID: superParentAssocTypeIds[i],
+          username: "",
+          parentValues: { ["0"]: ["0"] },
+        };
+
+        var config = {
+          method: "post",
+          url: "http://localhost:5000/cases/GetExternalDataValues",
+          data: jsonData,
+        };
+
+        await axios(config)
+          .then(function (response) {
+            const externalData = response.data.responseContent;
+            currentData[commentIndex].assoc_decode = externalData;
+            setData(currentData);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+    }
+  };
+
+  const onScroll = (fieldData, event) => {
+    const bottom =
+      event.target.scrollHeight - event.target.scrollTop ===
+      event.target.clientHeight;
+    if (bottom) {
+      loadMoreData(
+        fieldData.AssocTypeId,
+        "",
+        maxCount,
+        fieldData?.assoc_decode?.length,
+        event
+      );
+    }
+  };
+
+  const loadMoreData = async (
+    assocTypeId,
+    searchText,
+    maxCount,
+    skipCount,
+    event
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // setLoaded(false);
+    setLoadMoreText(true);
+    if (searchText !== "") {
+      skipCount = 0;
+    }
+
+    var parentData = parentChildData.find(
+      (x) => x.CASE_ASSOC_TYPE_ID_CHILD == assocTypeId
+    );
+
+    var parentId = parentData?.CASE_ASSOC_TYPE_ID_PARENT;
+    if (!parentId || parentId <= 0) {
+      parentId = 0;
+    }
+
+    var commentIndex = data.findIndex(function (c) {
+      return c.AssocTypeId == assocTypeId;
+    });
+
+    const currentData = [...data];
+
+    if (currentData[commentIndex]) {
+      var jsonData = {
+        searchText: searchText,
+        maxCount: maxCount,
+        skipCount: skipCount,
+        application: 0,
+        typeID: caseType,
+        fieldID: assocTypeId,
+        username: "",
+        parentValues: {
+          [String(parentId)]: [String(parentId > 0 ? parentValue : 0)],
+        },
+      };
+
+      var config = {
+        method: "post",
+        url: "http://localhost:5000/cases/GetExternalDataValues",
+        data: jsonData,
+      };
+
+      await axios(config)
+        .then(function (response) {
+          const externalData = response.data.responseContent;
+          currentData[commentIndex].assoc_decode = currentData[
+            commentIndex
+          ].assoc_decode.concat(externalData);
+          setData(currentData);
+          setLoadMoreText(false);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   };
 
   const handleChange = (assocTypeId, event) => {
     if (event) {
       const value = event.target.value;
-
+      setParentValue(value);
       var parentData = parentChildData.find(
         (x) => x.CASE_ASSOC_TYPE_ID_PARENT == assocTypeId
       );
 
-      if (value && value != "0") {
+      if (value && value != "0" && parentData) {
         var commentIndex = data.findIndex(function (c) {
-          return c.AssocTypeId == 1829;
+          return c.AssocTypeId == parentData.CASE_ASSOC_TYPE_ID_CHILD;
         });
         const currentData = [...data];
         if (currentData[commentIndex]) {
-          currentData[commentIndex].assoc_decode = markets;
-          setData(currentData);
+          parentChildData.forEach(function (item, index) {
+            currentData[commentIndex].assoc_decode = [];
+            var childData = parentChildData.find(
+              (x) =>
+                x.CASE_ASSOC_TYPE_ID_PARENT ==
+                currentData[commentIndex].AssocTypeId
+            );
+            if (childData) {
+              if (childData.CASE_ASSOC_TYPE_ID_CHILD > 0) {
+                var childIndex = data.findIndex(function (c) {
+                  return c.AssocTypeId == childData.CASE_ASSOC_TYPE_ID_CHILD;
+                });
+                if (currentData[childIndex]) {
+                  currentData[childIndex].assoc_decode = [];
+                }
+              }
+            }
+          });
+          var parentId = parentData?.CASE_ASSOC_TYPE_ID_PARENT;
+
+          var jsonData = {
+            searchText: "",
+            maxCount: maxCount,
+            skipCount: 0,
+            application: 0,
+            typeID: caseType,
+            fieldID: parentData?.CASE_ASSOC_TYPE_ID_CHILD,
+            username: "",
+            parentValues: { [String(parentId)]: [String(value)] },
+          };
+
+          var config = {
+            method: "post",
+            url: "http://localhost:5000/cases/GetExternalDataValues",
+            data: jsonData,
+          };
+
+          axios(config)
+            .then(function (response) {
+              const externalData = response.data.responseContent;
+              currentData[commentIndex].assoc_decode = externalData;
+              setData(currentData);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
         }
       }
     }
@@ -138,6 +288,13 @@ export default function CaseCreator(props) {
         }
       }
     });
+
+    if (froalaValue) {
+      fields["Froala"] = froalaValue;
+    }
+    if (formDataValue) {
+      fields["fileData"] = formDataValue;
+    }
     if (submitted == true) {
       //{ timer: 3000 }
       swal(
@@ -152,7 +309,7 @@ export default function CaseCreator(props) {
   const convertRequired = (data) => {
     if (data.IsRequired == "Y") {
       //backend use Y and N for True and False
-      return false;
+      return true;
     } else {
       return false;
     }
@@ -175,12 +332,16 @@ export default function CaseCreator(props) {
     );
   };
 
+  const handleModelChange = (event) => {
+    setFroala(event);
+  };
+
   const createFroalaField = () => {
     return (
       <div className="">
         <br></br>
         <br></br>
-        <Froala fullWidth={true} />
+        <Froala onModelChange={(e) => handleModelChange(e)} fullWidth={true} />
       </div>
     );
   };
@@ -203,6 +364,71 @@ export default function CaseCreator(props) {
     );
   };
 
+  const createLoader = () => {
+    return <Loading />;
+  };
+
+  const createDropDownField = (data) => {
+    var required = convertRequired(data);
+
+    return (
+      <div
+        className="card-page-wrap"
+        id="card-page-wrap"
+        onScroll={(event) => onScroll(data, event)}
+      >
+        {" "}
+        <TextField
+          id={String(data.AssocTypeId)}
+          select
+          name={String(data.AssocTypeId)}
+          label={data.Name}
+          value={state.value}
+          onChange={(event) => handleChange(data.AssocTypeId, event)}
+          fullWidth={true}
+          required={required}
+        >
+          {data.assoc_decode
+            ? data.assoc_decode.map((option) => (
+                <MenuItem key={option.DecodeId} value={option.DecodeId}>
+                  {option.DecodeValue}
+                </MenuItem>
+              ))
+            : []}
+
+          {data?.assoc_decode.length >= maxCount &&
+          data?.assoc_decode.length % maxCount == 0 ? (
+            <span>Loading Please Wait...</span>
+          ) : (
+            <span></span>
+          )}
+        </TextField>
+      </div>
+    );
+  };
+
+  const onFileChange = (event) => {
+    var file = event.target.files[0];
+
+    const formData = new FormData();
+    if (file) {
+      formData.append("myFile" + caseType, file, file.name);
+      const fileData = [...formData];
+      //Set details of the uploaded file
+      setFormDataValue(fileData);
+      console.log(file);
+    }
+  };
+
+  const createFileField = () => {
+    return (
+      <div>
+        <br></br>
+        <input type="file" onChange={onFileChange} />
+      </div>
+    );
+  };
+
   const fieldHandler = (data) => {
     //TODO: implment id structure
     var required = convertRequired(data);
@@ -212,50 +438,25 @@ export default function CaseCreator(props) {
     } else if (data.AssocFieldType === "A") {
       return createDateField(data);
     } else if (
-      data.AssocFieldType === "D" ||
-      data.AssocFieldType === "E" ||
-      data.AssocFieldType === "O"
+      (data.AssocFieldType === "D" ||
+        data.AssocFieldType === "E" ||
+        data.AssocFieldType === "O") &&
+      data.ExternalDataSourceId !== 121
     ) {
-      return (
-        <div className="">
-          {" "}
-          <TextField
-            id={String(data.AssocTypeId)}
-            select
-            name={String(data.AssocTypeId)}
-            label={data.Name}
-            value={state.value}
-            onChange={(event) => handleChange(data.AssocTypeId, event)}
-            fullWidth={true}
-            required={required}
-          >
-            <MenuItem key="0" value="0">
-              {"Please Select " + data.Name}
-            </MenuItem>
-            {data.assoc_decode
-              ? data.assoc_decode.map((option) => (
-                  <MenuItem key={option.DecodeId} value={option.DecodeId}>
-                    {option.DecodeValue}
-                  </MenuItem>
-                ))
-              : []}
-          </TextField>
-        </div>
-      );
-    } else if (data.AssocFieldType === "Froala") {
-      return <Froala />;
+      return createDropDownField(data);
     }
   };
+
   const loadFields = () => {
     return (
       <div>
-        {loaded && data ? (
-          data.map((item, idx) => <div key={idx}>{fieldHandler(item)}</div>)
-        ) : (
-          <Loading />
-        )}
+        {data
+          ? data.map((item, idx) => <div key={idx}>{fieldHandler(item)}</div>)
+          : []}
 
-        {loaded && data?.length > 0 ? createFroalaField() : ""}
+        {data?.length > 0 ? createFileField() : ""}
+        {data?.length > 0 ? createFroalaField() : ""}
+        {!loaded ? createLoader() : []}
       </div>
     );
   };
@@ -291,9 +492,7 @@ export default function CaseCreator(props) {
                 : []}
             </TextField>
           </div>
-          {props.casetypeName}
-          <Fab color="primary" aria-label="add">
-            {/* <button type="submit">Create Case</button> */}
+          <Fab className="create-case-button" color="primary" aria-label="add">
             <Button type="submit">+</Button>
           </Fab>
           {loadFields()}

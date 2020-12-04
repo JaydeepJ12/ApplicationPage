@@ -15,10 +15,50 @@ code {
   padding: 9px;
 }
 
-.MuiDrawer-paper{
+.MuiDrawer-paper {
   z-index: 0 !important;
 }
 
-.MuiPaper-elevation1{
+.MuiPaper-elevation1 {
   box-shadow: none !important;
+}
+
+.create-case-button {
+  float: right;
+  margin-right: -13% !important;
+  margin-top: -8% !important;
+  margin-bottom: 2% !important;
+  background-color: rgb(242,140,26) !important;
+}
+
+
+.create-button {
+  font-size: 20px;
+  border: darkorange;
+  z-index: 99999;
+  position: fixed;
+  float: left;
+  left: 30% !important;
+  top: 8% !important;
+}
+
+.create-button::before {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 25px;
+  background: #4da6ff;
+  content: '';
+}
+
+.create-button::after {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  bottom: -2px;
+  left: -2px;
+  border: 2px solid black;
+  content: '';
 }

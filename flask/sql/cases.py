@@ -22,22 +22,23 @@ class CasesSQL:
 
     def cases_type_form(self, id):
         query = f'''
-        SELECT [ASSOC_TYPE_ID]
-                ,[ASSOC_FIELD_TYPE] as [FIELD_TYPE]
-                ,[CASE_TYPE_ID]
-                ,[NAME] as [label]
-                ,[DESCRIPTION]
-                ,[EXTERNAL_DATASOURCE_ID]
-                ,[SYSTEM_CODE]
-                ,[SYSTEM_PRIORITY]
-                ,[SHOW_ON_LIST]
-                ,[UI_WIDTH]
-                ,[IS_REQUIRED]
+        SELECT [ASSOC_TYPE_ID] as AssocTypeId
+                ,[ASSOC_FIELD_TYPE] as AssocFieldType
+                ,[CASE_TYPE_ID] as CaseTypeId
+                ,[NAME] as [Name]
+                ,[DESCRIPTION] as Description
+                ,[EXTERNAL_DATASOURCE_ID] as ExternalDataSourceId
+                ,[SYSTEM_CODE] as SystemCode
+                ,[SYSTEM_PRIORITY] as SystemPriority
+                ,[SHOW_ON_LIST] as ShowOnList
+                ,[UI_WIDTH] as UiWidth
+                ,[IS_REQUIRED] as IsRequired
+                ,[IS_ACTIVE] as IsActive
   
             FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
             where is_active = 'Y'
             and CASE_TYPE_ID = {id}
-            order by SYSTEM_PRIORITY desc
+            order by SYSTEM_PRIORITY asc
         '''
         return self.db.execQuery(query)
 
@@ -49,9 +50,9 @@ class CasesSQL:
 
     def assoc_decode(self, id):
         query = f'''
-        SELECT * FROM [BOXER_CME].[dbo].[ASSOC_DECODE]
+        SELECT ASSOC_DECODE_ID as DecodeId, NAME as DecodeValue FROM [BOXER_CME].[dbo].[ASSOC_DECODE]
             where is_active = 'Y'
-            and ASSOC_TYPE_ID IN ({id})
+            and ASSOC_TYPE_ID = {id}
             order by SYSTEM_PRIORITY desc
         '''
         return self.db.execQuery(query)

@@ -43,7 +43,7 @@ class Mobile:
                                         ]
                                     }
                                     } '''
-        return self.post(self.url +'/api/ExternalData/GetExternalDataValues', json=data)
+        return self.post(self.url +'/api/ExternalData/GetExternalDataValuesByFilter', json=data)
 
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')

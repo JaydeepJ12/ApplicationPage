@@ -6,7 +6,7 @@ class Loading extends Component {
     return (
       <div>
         <div className="loader-overlay"></div>
-        <div class="sk-cube-grid cm-spinner"></div>
+        <div className="sk-cube-grid cm-spinner"></div>
       </div>
     );
   }

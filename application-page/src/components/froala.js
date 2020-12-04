@@ -14,9 +14,11 @@ import 'froala-editor/css/froala_editor.pkgd.min.css';
 
 import FroalaEditor from 'react-froala-wysiwyg';
 
-export default function Froala(){
+export default function Froala(props){
 
-    return ( <FroalaEditor config={{apiKey:'AVB8B-21A3B3E3D2F2D1ua2BD1IMNBUMRWAd1AYMSTRBUZYA-9H3E2J2C5C6B3B2B5B1D1=='}}/> )
+    return ( <FroalaEditor 
+        {...props}
+        config={{apiKey:'AVB8B-21A3B3E3D2F2D1ua2BD1IMNBUMRWAd1AYMSTRBUZYA-9H3E2J2C5C6B3B2B5B1D1=='}}/> )
 };
 
 function ViewFroala(){

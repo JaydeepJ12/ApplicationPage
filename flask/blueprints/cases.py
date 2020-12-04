@@ -5,6 +5,8 @@ from api.mobile import Mobile
 from operator import itemgetter
 import pandas as pd
 import json 
+import time
+import numpy as np
 
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
@@ -13,7 +15,8 @@ mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@20
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
-
+def t():
+    return time.time()
 @bp.after_request
 def after_request(r):
     r.headers['Access-Control-Allow-Origin'] = '*'
@@ -22,23 +25,30 @@ def after_request(r):
 @bp.route('/config')
 def config():
     ctid = request.args.get('CaseTypeID')
-    r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={{user}}&caseType={ctid}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
-    
-    data = json.loads(r.text)
-    data = data.get('ResponseContent')
+    t0 = t()
+    # r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={{user}}&caseType={ctid}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
+    df = db.cases_type_form(int(ctid))
+    # df = df.sort_values(by='NAME')
+    t1 = t()
+    print(f'Get Types by Type Id: {t1-t0}')
 
-    for value in data:
-        data1 = assocDecode(value["AssocTypeId"])
-        value.update({"assoc_decode": data1})
+    df['assoc_decode']=[[] for i in df.index]
+    for i, row in df.iterrows():
+        t0 = t()
+        data1 = assocDecode(f"{row['AssocTypeId']}")
+        t1 = t()
+        print(f"{row['AssocTypeId']} took: {t1-t0}")
+        df['assoc_decode'][i] = json.loads(data1)
 
-    return  json.dumps(data)#
+    return df.to_json(orient='records') #
 
 @bp.route('/assocDecode')
 def assocDecode(assoc_id):
-    r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetAssocDecode?assocTypeID={assoc_id}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
-    data1 = json.loads(r.text)
-    data1 = data1.get('ResponseContent')
-    return  data1#
+    df = db.assoc_decode(assoc_id)
+    # r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetAssocDecode?assocTypeID={assoc_id}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
+    # data1 = json.loads(r.text)
+    # data1 = data1.get('ResponseContent')
+    return  df.to_json(orient='records') #
 
 @bp.route('/caseTypes')
 def caseTypes():
@@ -49,9 +59,7 @@ def caseTypes():
 @bp.route('/caseassoctypecascade')
 def caseassoctypecascade():
    caseTypeId = request.args.get('CaseTypeID')
-   print(caseTypeId, type(caseTypeId))
    df = db.caseassoctypecascade(int(caseTypeId))
-   print(df)
    return df.to_json(orient='records') #
 
 @bp.route('/test')
@@ -61,5 +69,8 @@ def create():
 
 @bp.route('/GetExternalDataValues',methods=['POST'])
 def external_data_values():
-    print(request.json)
-    return mobile.external_data_values(request.json).json()
+    data = mobile.external_data_values(request.json).json()
+    for x in data['responseContent']:
+        x['DecodeId'] = x.pop("id")
+        x["DecodeValue"] =  x.pop("name")
+    return data

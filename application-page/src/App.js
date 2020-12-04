@@ -1,11 +1,11 @@
+import { makeStyles, ThemeProvider } from "@material-ui/core";
+import { Router } from "@reach/router";
 import React from "react";
 import "./App.css";
-import Dashboard from "./components/dashboard.js";
-import { ThemeProvider, makeStyles } from "@material-ui/core";
-import theme from "./components/theme.js";
 import CaseCreator from "./components/case_creator.js";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
-
+import Dashboard from "./components/dashboard.js";
+import OverView from "./components/overview";
+import theme from "./components/theme.js";
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "100vh",
@@ -20,11 +20,10 @@ function App() {
       <div classes={classes.root}></div>
       <Dashboard></Dashboard>
       <div>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path="/case-create" component={CaseCreator}></Route>
-          </Switch>
-        </BrowserRouter>
+        <Router>
+          <CaseCreator path="case-create" />
+          <OverView path="overview" />
+        </Router>
       </div>
     </ThemeProvider>
   );
