@@ -28,9 +28,8 @@ code {
   margin-right: -13% !important;
   margin-top: -8% !important;
   margin-bottom: 2% !important;
-  background-color: rgb(242,140,26) !important;
+  background-color: rgb(242, 140, 26) !important;
 }
-
 
 .create-button {
   font-size: 20px;
@@ -50,7 +49,7 @@ code {
   height: 40px;
   border-radius: 25px;
   background: #4da6ff;
-  content: '';
+  content: "";
 }
 
 .create-button::after {
@@ -60,5 +59,75 @@ code {
   bottom: -2px;
   left: -2px;
   border: 2px solid black;
-  content: '';
+  content: "";
+}
+
+.froala-editor {
+  width: 800px;
+}
+
+.case-create-form {
+  float: left !important;
+  width: 100% !important;
+  margin-left: 12% !important;
+}
+
+.case-create-form-div {
+  float: left !important;
+}
+/* autocomplete option image css */
+.s-option-auto-image {
+  /* height: 40px !important;
+  width: 40px !important;
+  margin-right: 5px !important;
+  text-align: center !important; */
+  width: 50px !important;
+  height: 50px !important;
+  margin-right: 5px !important;
+  display: flex !important;
+  overflow: hidden !important;
+  position: relative !important;
+  font-size: 1.25rem !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+  line-height: 1 !important;
+  user-select: none !important;
+  border-radius: 50% !important;
+  justify-content: center !important;
+}
+
+.assign-to-div {
+  display: block;
+  font-size: 20px;
+  margin: 7px 10px 3px 3px;
+}
+
+.file-input {
+  margin-right: 5px !important;
+  font-size: 1.25rem !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+  line-height: 1 !important;
+  user-select: none !important;
+  border-radius: 50% !important;
+  justify-content: center !important;
+  border: 2px solid black;
+  border-radius: 20% !important;
+  padding: 6px;
+  text-align: center;
+}
+
+.cm-file-input label {
+  margin-right: -1rem;
+}
+.cm-file-input .MuiButton-root:hover {
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.fr-box.fr-basic .fr-wrapper {
+  height: 19rem;
+  overflow: auto;
 }

@@ -45,6 +45,19 @@ class Mobile:
                                     } '''
         return self.post(self.url +'/api/ExternalData/GetExternalDataValuesByFilter', json=data)
 
+    def get_employees_by_search(self, data):
+        ''' should take in response directly from react in form {
+                                    "searchText": "test",
+                                    "systemId": 0,
+                                    "typeId": 0,
+                                    "fieldId": 0,
+                                    "itemInfoFieldId": 0,
+                                    "fromPageIndex": 0,
+                                    "toPageIndex": 0,
+                                    "userName": "string"
+                                    } '''
+        return self.post(self.url +'/api/Home/GetEmployeesBySearch', json=data)
+
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
 

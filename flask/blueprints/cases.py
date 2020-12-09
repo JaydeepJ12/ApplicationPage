@@ -74,3 +74,8 @@ def external_data_values():
         x['DecodeId'] = x.pop("id")
         x["DecodeValue"] =  x.pop("name")
     return data
+
+@bp.route('/GetEmployeesBySearch', methods=['POST'])
+def get_employees_by_search():
+    data = mobile.get_employees_by_search(request.json).json()
+    return data
