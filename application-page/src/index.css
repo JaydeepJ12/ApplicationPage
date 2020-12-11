@@ -62,9 +62,9 @@ code {
   content: "";
 }
 
-.froala-editor {
+/* .froala-editor {
   width: 800px;
-}
+} */
 
 .case-create-form {
   float: left !important;
@@ -74,6 +74,7 @@ code {
 
 .case-create-form-div {
   float: left !important;
+  min-height: 4rem !important;
 }
 /* autocomplete option image css */
 .s-option-auto-image {

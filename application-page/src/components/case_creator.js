@@ -1,20 +1,18 @@
 import {
   Box,
-  Button,
   Card,
   Container,
   Fab,
-  Icon,
+  Grid,
   MenuItem,
-  TextField,
+  TextField
 } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
+import UserAutocomplete from "./autocomplete.js";
+import FileUpload from "./file-upload.js";
 import Froala from "./froala.js";
 import Loading from "./Loader.js";
 
@@ -36,17 +34,9 @@ export default function CaseCreator(props) {
   const [loadMoreText, setLoadMoreText] = useState(false);
   const [disableCaseType, setCaseTypeDisable] = useState(false);
   const [defaultHopper, setDefaultHopper] = useState("");
-  const [defaultHopperId, setDefaultHopperId] = useState("");
-  const [users, setUsersData] = useState([]);
+  const [defaultHopperId, setDefaultHopperId] = useState(0);
   const [assignTo, setAssignTo] = useState(0);
   const [isFirstField, setIsFirstField] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef(null);
-  const [selectedUser, setSelectedUser] = useState("");
-
-  let timer,
-    timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
 
   const caseTypes = async () => {
     setLoaded(false);
@@ -56,9 +46,13 @@ export default function CaseCreator(props) {
     });
   };
 
+  useEffect(() => {
+    caseTypes();
+  }, []);
+
   const handleCaseTypeChange = (event) => {
     const caseTypeId = event.target.value;
-    setData(null);
+    setData([]);
     setCaseType(caseTypeId);
     if (caseTypeId > 0) {
       setLoaded(false);
@@ -138,10 +132,6 @@ export default function CaseCreator(props) {
         }
       });
   };
-
-  useEffect(() => {
-    caseTypes();
-  }, []);
 
   // useEffect(caseTypes, fields, []);
 
@@ -463,7 +453,7 @@ export default function CaseCreator(props) {
           select
           name={String(data?.AssocTypeId)}
           label={data.Name}
-          value={state.value}
+          // value={state.value}
           onChange={(event) => handleChange(data?.AssocTypeId, event)}
           fullWidth={true}
           required={required}
@@ -487,226 +477,34 @@ export default function CaseCreator(props) {
     );
   };
 
-  const onFileChange = (event) => {
-    var file = event.target.files[0];
-
-    const formData = new FormData();
-    if (file) {
-      formData.append("myFile" + caseType, file, file.name);
-      const fileData = [...formData];
+  const handleOnFileChange = (fileData) => {
+    if (fileData) {
       //Set details of the uploaded file
       setFormDataValue(fileData);
-      console.log(file);
+      console.log(fileData);
     }
   };
 
   const createFileField = () => {
     return (
-      <div className="cm-file-input">
-        <br></br>
-        <Button style={{ paddingLeft: 0 }} component="label">
-          <Box className="file-input">
-            <AttachFileIcon></AttachFileIcon>
-          </Box>
-          <input type="file" hidden id="fileUpload" onChange={onFileChange} />
-        </Button>
-        <label>{formDataValue[0] ? formDataValue[0][1]?.name : ""}</label>
-      </div>
+      <FileUpload
+        caseType={caseType}
+        handleOnFileChange={handleOnFileChange}
+      ></FileUpload>
     );
   };
 
-  const handleAutocompleteKeyPress = () => {
-    clearTimeout(timeoutRef.current);
-  };
-
-  const handleAutocompleteKeyUp = (searchText) => {
-    if (searchText == "") {
-      setAssignTo(defaultHopperId);
-      setSelectedUser("");
-      setUsersData([]);
-    }
-  };
-
-  const handleAutocompleteChange = (event, userId, displayName) => {
-    if (userId) {
-      setAssignTo(userId);
-      setSelectedUser(displayName);
-      let userData = users.filter((x) => x.id === userId);
-      if (userData) {
-        setUsersData(userData);
-      }
-    } else {
-      setAssignTo(defaultHopperId);
-      setSelectedUser("");
-      setUsersData([]);
-    }
-  };
-
-  const searchUsers = (searchText, event) => {
-    if (timeoutRef.current !== null) {
-      // IF THERE'S A RUNNING TIMEOUT
-      clearTimeout(timeoutRef.current); // THEN, CANCEL IT
-    }
-    if (assignTo === defaultHopperId && searchText != "") {
-      setLoading(true);
-    }
-    // clearTimeout(timer);
-
-    timeoutRef.current = setTimeout(() => {
-      // SET A TIMEOUT
-      timeoutRef.current = null; // RESET REF TO NULL WHEN IT RUNS
-      if (searchText) {
-        getUsers(searchText, event);
-      } else {
-        setUsersData([]);
-        setLoading(false);
-      }
-    }, timeoutVal);
-  };
-
-  const getUsers = async (searchText, event) => {
-    var jsonData = {
-      searchText: searchText,
-      systemId: 0,
-      typeId: 0,
-      fieldId: 0,
-      itemInfoFieldId: 0,
-      fromPageIndex: 0,
-      toPageIndex: 0,
-      userName: "",
-    };
-
-    var config = {
-      method: "post",
-      url: "http://localhost:5000/cases/GetEmployeesBySearch",
-      data: jsonData,
-    };
-
-    await axios(config)
-      .then(function (response) {
-        if (response?.data?.responseContent) {
-          response.data.responseContent = response.data.responseContent.sort(
-            (a, b) => a.displayName.localeCompare(b.displayName)
-          );
-        }
-        const usersData = response.data.responseContent;
-
-        setUsersData(usersData);
-        setLoading(false);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setLoading(false);
-      });
-  };
-
-  const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../assets/images/default-userimage.png");
-    if (userDefaultImage) {
-      event.target.src = userDefaultImage;
-    }
-  };
-
-  const renderUserImage = (userName) => {
-    if (userName) {
-      return (
-        <img
-          onError={(event) => addDefaultSrc(event)}
-          src={
-            "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=" +
-            userName
-          }
-          height={50}
-          width={50}
-        />
-      );
-    } else {
-      return (
-        <img
-          src="../assets/images/default-userimage.png"
-          height={50}
-          width={50}
-        />
-      );
-    }
+  const handleAutocompleteChange = (userId) => {
+    setAssignTo(userId);
   };
 
   const createAssignTo = () => {
     return (
-      <div className="assign-to-div">
-        <label>Assign To :</label>
-        <div style={{ width: "auto", marginTop: "1rem" }}>
-          {" "}
-          {
-            <Autocomplete
-              className=""
-              id="users"
-              options={users}
-              getOptionLabel={(option) => option.displayName}
-              renderOption={(option) => {
-                return (
-                  <Fragment>
-                    <Icon className="s-option-auto-image">
-                      {renderUserImage(option?.username)}
-                    </Icon>
-                    {option?.displayName +
-                      (option.primaryJobTitle
-                        ? " (" + option.primaryJobTitle + ")"
-                        : "")}
-                  </Fragment>
-                );
-              }}
-              // getOptionValue={(option) => option.id}
-              style={{ width: "auto" }}
-              onChange={(event, user) =>
-                handleAutocompleteChange(event, user?.id, user?.displayName)
-              }
-              onInput={(event) => searchUsers(event.target.value, event)}
-              onKeyUp={(event) => handleAutocompleteKeyUp(event.target.value)}
-              open={open}
-              loading={loading}
-              onOpen={(event) => {
-                setOpen(true);
-                if (assignTo === defaultHopperId) {
-                  setUsersData([]);
-                }
-              }}
-              onClose={(event) => {
-                setOpen(false);
-              }}
-              renderInput={(params) => (
-                <Fragment>
-                  <TextField
-                    {...params}
-                    label={
-                      selectedUser
-                        ? selectedUser
-                        : "Default Hopper- " + defaultHopper
-                    }
-                    placeholder="Search User"
-                    variant="outlined"
-                    fullWidth={true}
-                    InputLabelProps={{
-                      style: { fontWeight: "bold", color: "black" },
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <React.Fragment>
-                          {loading ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </React.Fragment>
-                      ),
-                    }}
-                  />
-                </Fragment>
-              )}
-            />
-          }
-        </div>
-      </div>
+      <UserAutocomplete
+        defaultHopper={defaultHopper}
+        defaultHopperId={defaultHopperId}
+        handleAutocompleteChange={handleAutocompleteChange}
+      ></UserAutocomplete>
     );
   };
 
@@ -731,67 +529,80 @@ export default function CaseCreator(props) {
   const loadFields = () => {
     return (
       <Box>
-        <div style={{ width: "1250px" }}>
-          <div style={{ width: "600px", float: "left" }}>
-            {data
-              ? data.map((item, idx) => (
-                  <div key={idx}>{fieldHandler(item)}</div>
-                ))
-              : []}
-            <Box>
-              <Box>{data?.length > 0 ? createFileField() : ""}</Box>
-              <Box>{data?.length > 0 ? createAssignTo() : ""}</Box>
-            </Box>
-          </div>
-          <div style={{ float: "right", top: 0, width: "600px" }}>
-            {data?.length > 0 ? createFroalaField() : ""}
-          </div>
+        <div>
+          <Grid container spacing={3}>
+            <Grid item xs={6}>
+              <div>
+                {data
+                  ? data.map((item, idx) => (
+                      <div key={idx}>{fieldHandler(item)}</div>
+                    ))
+                  : []}
+                <Box>
+                  <Box>{data?.length > 0 ? createFileField() : ""}</Box>
+                  <Box>{data?.length > 0 ? createAssignTo() : ""}</Box>
+                </Box>
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div>{data?.length > 0 ? createFroalaField() : ""}</div>
+            </Grid>
+          </Grid>
         </div>
+
         {!loaded ? createLoader() : []}
       </Box>
     );
   };
 
   return (
-    <Box>
-      <form onSubmit={handleSubmit} className="case-create-form">
-        <Card>
-          <Container maxWidth="sm" className="case-create-form-div">
-            <div className="">
-              {" "}
-              <TextField
-                id={"CaseType" + caseType}
-                name="CaseType"
-                select
-                label="Case Type"
-                value={caseType}
-                onChange={(e) => handleCaseTypeChange(e)}
-                fullWidth={true}
-                required
-                disabled={disableCaseType}
-              >
-                <MenuItem key="0" value="0">
-                  {"Please Select Case Type"}
-                </MenuItem>
-                {caseTypeData
-                  ? caseTypeData.map((option) => (
-                      <MenuItem
-                        key={option.CASE_TYPE_ID}
-                        value={option.CASE_TYPE_ID}
-                      >
-                        {option.NAME}
-                      </MenuItem>
-                    ))
-                  : []}
-              </TextField>
-            </div>
-            <Fab className="create-case-button" aria-label="add" type="submit">
-              +{/* <Button >+</Button> */}
-            </Fab>
-            {loadFields()}
-          </Container>
-        </Card>
-      </form>
-    </Box>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <form onSubmit={handleSubmit} className="case-create-form">
+          <Card>
+            <Container className="case-create-form-div">
+              <div style={{ width: "50%" }} className="">
+                {" "}
+                <TextField
+                  id={"CaseType" + caseType}
+                  name="CaseType"
+                  select
+                  label="Case Type"
+                  value={caseType}
+                  onChange={(e) => handleCaseTypeChange(e)}
+                  fullWidth={true}
+                  required
+                  disabled={disableCaseType}
+                >
+                  <MenuItem key="0" value="0">
+                    {"Please Select Case Type"}
+                  </MenuItem>
+                  {caseTypeData
+                    ? caseTypeData.map((option) => (
+                        <MenuItem
+                          key={option.CASE_TYPE_ID}
+                          value={option.CASE_TYPE_ID}
+                        >
+                          {option.NAME}
+                        </MenuItem>
+                      ))
+                    : []}
+                </TextField>
+                <Fab
+                  style={{ top: 49 }}
+                  className="create-case-button"
+                  aria-label="add"
+                  type="submit"
+                >
+                  +
+                </Fab>
+              </div>
+
+              {loadFields()}
+            </Container>
+          </Card>
+        </form>
+      </Grid>
+    </Grid>
   );
 }
