@@ -15,8 +15,8 @@ const useStyles = makeStyles((props) => createStyles({
 
 export default function GlassBox(props){
     const classes = useStyles(props)
-    
-    const bg = {'background-image': 'url("https://source.unsplash.com/random")',
+    //'url("https://source.unsplash.com/random")'
+    const bg = {'background-image':'white',
                 'height':'100vh',
                 'width':'100wh'}
     
@@ -25,7 +25,7 @@ export default function GlassBox(props){
             <Box className={classes.glass}
                  style = {{width:500, height:500, margin:'auto'}}>
                 {props.children}
-                <div>HELLO WORLD</div>
+                <div style={{background:'transparent'}}>HELLO WORLD</div>
             </Box>
         </div>
     )
