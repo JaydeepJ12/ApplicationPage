@@ -17,6 +17,14 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   return (
+    <div>Hello World!</div>
+  );
+}
+
+export default App;
+
+
+/*
     <ThemeProvider theme={theme}>
         <Router basepath='/react'>
           <CaseCreator path="/case-create" />
@@ -25,7 +33,4 @@ function App() {
         </Router>
 
     </ThemeProvider>
-  );
-}
-
-export default App;
+*/
