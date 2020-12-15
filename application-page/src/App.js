@@ -21,10 +21,10 @@ function App() {
       <div classes={classes.root}></div>
       
       <div>
-        <Router>
-          <CaseCreator path="case-create" />
-          <OverView path="overview" />
-          <GlassBox path="glass"></GlassBox>
+        <Router basepath='/react'>
+          <CaseCreator path="/case-create" />
+          <OverView path="/overview" />
+          <GlassBox path="/glass"></GlassBox>
         </Router>
       </div>
     </ThemeProvider>
