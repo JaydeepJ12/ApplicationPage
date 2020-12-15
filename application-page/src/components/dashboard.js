@@ -86,6 +86,11 @@ export default function Dashboard(){
                 <ListItemText><Link to="case-create">CaseCreator</Link></ListItemText>   
             </ListItem>
             <Divider/>
+            <ListItem button>
+                <ListItemIcon> <PeopleIcon/> </ListItemIcon>
+                <ListItemText><Link to="case-type-form">CaseTypeForm</Link></ListItemText>
+            </ListItem>
+            <Divider/>
             <Button color='secondary'>
                 HELOO WROLD
             </Button>

@@ -3,12 +3,14 @@ import { Router } from "@reach/router";
 import React from "react";
 import "./App.css";
 import CaseSelect from "./components/case_select.js";
+import CaseTypeFieldForm from "./components/case_type_form/calculated";
+import CaseTypeForm from "./components/case_type_form/index";
 import CaseViewer from "./components/case_viewer";
 import Dashboard from "./components/dashboard.js";
 import OverView from "./components/overview";
-import SideBar from "./components/sidebar";
 import Test from "./components/test";
 import theme from "./components/theme.js";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "100vh",
@@ -21,13 +23,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div classes={classes.root}></div>
-      <SideBar></SideBar>
+      <Dashboard></Dashboard>
       <div>
         <Router>
           <Dashboard path="/" />
           <CaseSelect path="case-select" />
           <OverView path="overview" />
           <Test path="test"></Test>
+          <CaseTypeForm path="case-type-form"></CaseTypeForm>
           <CaseViewer path="viewcase"></CaseViewer>
         </Router>
       </div>

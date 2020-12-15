@@ -30,9 +30,9 @@ export default function ExternalLookup(props) {
   };
 
   const filterData = (id) => {
-    if (data) {
+    if (data.length > 0) {
       let fieldData = data.filter((x) => x.id === id);
-      if (fieldData) {
+      if (fieldData.length > 0) {
         setData(fieldData);
       }
     }
@@ -102,7 +102,8 @@ export default function ExternalLookup(props) {
         }
 
         const externalData = response?.data?.responseContent;
-        setData(externalData);
+        if(externalData){
+        setData(externalData);}
         setLoading(false);
       })
       .catch(function (error) {
