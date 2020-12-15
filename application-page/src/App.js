@@ -18,15 +18,12 @@ function App() {
   const classes = useStyles();
   return (
     <ThemeProvider theme={theme}>
-      <div classes={classes.root}></div>
-      
-      <div>
         <Router basepath='/react'>
           <CaseCreator path="/case-create" />
           <OverView path="/overview" />
           <GlassBox path="/glass"></GlassBox>
         </Router>
-      </div>
+
     </ThemeProvider>
   );
 }
