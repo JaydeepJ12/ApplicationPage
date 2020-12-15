@@ -17,14 +17,9 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   return (
-    <ThemeProvider theme={theme}>
-        <Router basepath='/react'>
-          <CaseCreator path="/case-create" />
-          <OverView path="/overview" />
-          <GlassBox path="/glass"></GlassBox>
-        </Router>
-
-    </ThemeProvider>
+    <div>
+      Hello Auto Deployment!
+    </div>
   );
 }
 
