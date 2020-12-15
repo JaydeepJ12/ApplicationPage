@@ -2,9 +2,11 @@ import { makeStyles, ThemeProvider } from "@material-ui/core";
 import { Router } from "@reach/router";
 import React from "react";
 import "./App.css";
-import CaseCreator from "./components/case_creator.js";
+import CaseSelect from "./components/case_select.js";
 import Dashboard from "./components/dashboard.js";
 import OverView from "./components/overview";
+import SideBar from "./components/sidebar";
+import Test from "./components/test";
 import theme from "./components/theme.js";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,11 +20,13 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div classes={classes.root}></div>
-      <Dashboard></Dashboard>
+      <SideBar></SideBar>
       <div>
         <Router>
-          <CaseCreator path="case-create" />
+          <Dashboard path="/" />
+          <CaseSelect path="case-select" />
           <OverView path="overview" />
+          <Test path="test"></Test>
         </Router>
       </div>
     </ThemeProvider>

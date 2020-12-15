@@ -58,6 +58,20 @@ class Mobile:
                                     } '''
         return self.post(self.url +'/api/Home/GetEmployeesBySearch', json=data)
 
+    def external_data_values_entity(self, data):
+        ''' should take in response directly from react in form {
+                                    "Application": 1,
+                                    "TypeID": 1121,
+                                    "FieldID": 1950,
+                                    "Username": "BhavikS",
+                                    "ParentValues": {
+                                        "0": [
+                                        "0"
+                                        ]
+                                    }
+                                    } '''
+        return self.post(self.url +'/api/ExternalData/GetExternalDataValuesByFilter', json=data)
+
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
 

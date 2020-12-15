@@ -8,6 +8,7 @@ import json
 import time
 import numpy as np
 
+
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
@@ -73,6 +74,11 @@ def external_data_values():
     for x in data['responseContent']:
         x['DecodeId'] = x.pop("id")
         x["DecodeValue"] =  x.pop("name")
+    return data
+
+@bp.route('/GetEntityExternalDataValues',methods=['POST'])
+def external_data_values_entity():
+    data = mobile.external_data_values_entity(request.json).json()
     return data
 
 @bp.route('/GetEmployeesBySearch', methods=['POST'])

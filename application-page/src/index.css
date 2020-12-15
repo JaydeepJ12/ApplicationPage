@@ -24,10 +24,11 @@ code {
 }
 
 .create-case-button {
-  float: right;
+  /* float: right;
   margin-right: -13% !important;
   margin-top: -8% !important;
-  margin-bottom: 2% !important;
+  margin-bottom: 2% !important; */
+  margin-bottom: 1rem !important;
   background-color: rgb(242, 140, 26) !important;
 }
 
@@ -66,7 +67,13 @@ code {
   width: 800px;
 } */
 
-.case-create-form {
+.case-select-form {
+  float: left !important;
+  /* width: 50% !important; */
+  margin-left: 2% !important;
+}
+
+/* .case-create-form {
   float: left !important;
   width: 100% !important;
   margin-left: 12% !important;
@@ -75,7 +82,37 @@ code {
 .case-create-form-div {
   float: left !important;
   min-height: 4rem !important;
+} */
+
+@media only screen and (max-width: 1366px) {
+  .case-create-form {
+    float: left !important;
+    width: 100% !important;
+    margin-left: 12% !important;
+  }
+
+  .case-create-form-div {
+    float: left !important;
+    min-height: 4rem !important;
+  }
+
+  .froala-editor {
+    width: 400px;
+  }
+
+  .case-select-form {
+    float: left !important;
+    width: 50% !important;
+    margin-left: 14% !important;
+  }
+
+  .create-case-button {
+    top: -3rem !important;
+    float: right !important;
+    left: -32rem !important;
+  }
 }
+
 /* autocomplete option image css */
 .s-option-auto-image {
   /* height: 40px !important;
