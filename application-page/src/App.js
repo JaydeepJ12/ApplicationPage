@@ -1,7 +1,11 @@
+import { makeStyles, ThemeProvider } from "@material-ui/core";
+import { Router } from "@reach/router";
 import React from "react";
 import "./App.css";
+import CaseSelect from "./components/case_select.js";
 import Dashboard from "./components/dashboard.js";
-import { ThemeProvider, makeStyles } from "@material-ui/core";
+import OverView from "./components/overview";
+import Test from "./components/test";
 import theme from "./components/theme.js";
 import CaseCreator from "./components/case_creator.js";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
@@ -18,20 +22,19 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   return (
+
     <ThemeProvider theme={theme}>
       <div classes={classes.root}></div>
       <Dashboard></Dashboard>
       <div>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path="/case-create" component={CaseCreator}></Route>
-            <Route path="/case-type-form" component={CaseTypeForm}></Route>
-            <Route
-              path="/case-type-form-field"
-              component={CaseTypeFieldForm}
-            ></Route>
-          </Switch>
-        </BrowserRouter>
+        <Router>
+          <Dashboard path="/" />
+          <CaseSelect path="case-select" />
+          <OverView path="overview" />
+          <Test path="test"></Test>
+          <CaseTypeForm path="case-type-form"></CaseTypeForm>
+          <CaseTypeFieldForm path="case-type-form-field"></CaseTypeFieldForm>
+        </Router>
       </div>
     </ThemeProvider>
   );
