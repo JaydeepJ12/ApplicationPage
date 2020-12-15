@@ -12,7 +12,7 @@ import numpy as np
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
-mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2020')
+mobile = Mobile('https://home.stemmons.com/MobileAPI','michaelaf','Boxer@@2020')
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
@@ -84,4 +84,9 @@ def external_data_values_entity():
 @bp.route('/GetEmployeesBySearch', methods=['POST'])
 def get_employees_by_search():
     data = mobile.get_employees_by_search(request.json).json()
+    return data
+
+@bp.route('/GetCaseNotes', methods=['POST'])
+def get_case_notes():
+    data = mobile.get_case_notes(request.json).json()
     return data

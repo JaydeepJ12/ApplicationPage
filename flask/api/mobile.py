@@ -72,6 +72,13 @@ class Mobile:
                                     } '''
         return self.post(self.url +'/api/ExternalData/GetExternalDataValuesByFilter', json=data)
 
+    def get_case_notes(self, data):
+        ''' should take in response directly from react in form {
+                                    "applicationId": ,
+                                    "sinceDate": null
+                                    } '''
+        return self.post(self.url +'/api/Case/GetCaseNotes', json=data)
+
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
 

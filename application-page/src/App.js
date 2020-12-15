@@ -3,6 +3,7 @@ import { Router } from "@reach/router";
 import React from "react";
 import "./App.css";
 import CaseSelect from "./components/case_select.js";
+import CaseViewer from "./components/case_viewer";
 import Dashboard from "./components/dashboard.js";
 import OverView from "./components/overview";
 import SideBar from "./components/sidebar";
@@ -27,6 +28,7 @@ function App() {
           <CaseSelect path="case-select" />
           <OverView path="overview" />
           <Test path="test"></Test>
+          <CaseViewer path="viewcase"></CaseViewer>
         </Router>
       </div>
     </ThemeProvider>
