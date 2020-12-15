@@ -5,6 +5,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Checkbox from "@material-ui/core/Checkbox";
 import Select from "@material-ui/core/Select";
 import Typography from "@material-ui/core/Typography";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,8 +30,11 @@ export default function CaseTypeFieldForm(props) {
   const [checked, setChecked] = React.useState(false);
   const [checkedactive, setCheckedActive] = React.useState(false);
   const [checkedlist, setCheckedList] = React.useState(false);
+  const [checkedlistExpen, setCheckedListExpandable] = React.useState(false);
   const [cvalue, calculateValue] = React.useState("");
   const [dvalue, descriptValue] = React.useState("");
+  const [age, setAge] = React.useState("");
+  const [open, setOpen] = React.useState(false);
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -41,8 +47,24 @@ export default function CaseTypeFieldForm(props) {
     setCheckedList(event.target.checked);
   };
 
+  const handleExpandable = (event) => {
+    setCheckedListExpandable(event.target.checked);
+  };
+
+  const handleChange1 = (event) => {
+    setAge(event.target.value);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
   return (
-    <div style={{ height: "500px", marginLeft: "150px" }}>
+    <div style={{ height: "480px", marginLeft: "20px", width: "350px" }}>
       <form className={classes.root} noValidate autoComplete="off">
         {props.props == "calculated" ? (
           <div>
@@ -64,14 +86,28 @@ export default function CaseTypeFieldForm(props) {
             <br></br>
             <label>User to control output</label>
           </div>
+        ) : props.props == "datefield" ? (
+          <div>
+            <Typography
+              variant="h4"
+              style={{ marginBottom: "50px", marginLeft: "70px" }}
+              gutterBottom
+            >
+              Date Field
+            </Typography>
+          </div>
+        ) : props.props == "textfield" ? (
+          <div>
+            <Typography
+              variant="h4"
+              style={{ marginBottom: "50px", marginLeft: "70px" }}
+              gutterBottom
+            >
+              Text Field
+            </Typography>
+          </div>
         ) : (
-          <Typography
-            variant="h4"
-            style={{ marginLeft: "40px", marginBottom: "60px" }}
-            gutterBottom
-          >
-            Date Field
-          </Typography>
+          "test"
         )}
         <br></br>
         <TextField
@@ -81,10 +117,36 @@ export default function CaseTypeFieldForm(props) {
           variant="outlined"
           onChange={(e) => descriptValue(e.target.value)}
         />
-        <br></br>
         <label>User to control output</label>
+        <br></br>
+        <br></br>
         <div>
+          <FormControl
+            style={{ float: "right", marginRight: "100px", marginTop: "-14px" }}
+          >
+            <InputLabel id="demo-controlled-open-select-label">
+              System Code
+            </InputLabel>
+            <Select
+              labelId="demo-controlled-open-select-label"
+              id="demo-controlled-open-select"
+              open={open}
+              onClose={handleClose}
+              onOpen={handleOpen}
+              value={age}
+              onChange={handleChange1}
+              style={{ width: "150px" }}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>ASSOC</MenuItem>
+              <MenuItem value={20}>ENTITY</MenuItem>
+              <MenuItem value={30}>CASES</MenuItem>
+            </Select>
+          </FormControl>
           <Checkbox
+            style={{ float: "left" }}
             checked={checked}
             onChange={handleChange}
             inputProps={{ "aria-label": "primary checkbox" }}
@@ -110,6 +172,19 @@ export default function CaseTypeFieldForm(props) {
           />
           <label>Show on List</label>
         </div>
+        {props.props == "textfield" ? (
+          <div>
+            <Checkbox
+              checked={checkedlistExpen}
+              onChange={handleExpandable}
+              inputProps={{ "aria-label": "primary checkbox" }}
+              style={{ color: "orange" }}
+            />
+            <label>Expandable</label>
+          </div>
+        ) : (
+          ""
+        )}
       </form>
     </div>
   );

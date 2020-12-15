@@ -9,6 +9,7 @@ import { orange } from "@material-ui/core/colors";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Dialog from "@material-ui/core/Dialog";
+import Popover from "@material-ui/core/Popover";
 import CaseTypeFieldForm from "./calculated";
 
 const useStyles = makeStyles((theme) => ({
@@ -44,8 +45,9 @@ export default function CaseTypeForm(props) {
   const classes = useStyles();
   const [inputFields, setInputFields] = useState([{ name: "", fieldtype: "" }]);
   const [fieldType, setFieldType] = useState("");
-  const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = React.useState(false);
   const [events, setEvents] = useState("");
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleAddFields = () => {
     setInputFields([...inputFields, { name: "" }]);
@@ -61,13 +63,16 @@ export default function CaseTypeForm(props) {
     setFieldType(event.target.value);
   };
 
-  const handleClickOpen = (event) => {
-    setOpen(true);
-    setEvents(event);
+  const handleClickOpen = (value, event) => {
+    setAnchorEl(event.target);
+    setEvents(value);
   };
   const handleClose = () => {
-    setOpen(false);
+    setAnchorEl(null);
   };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   const handleChangeInput = (index, event) => {
     const values = [...inputFields];
@@ -104,28 +109,37 @@ export default function CaseTypeForm(props) {
                 name="fieldtype"
                 onChange={(event) => handleChangeInput(index, event)}
               >
-                <MenuItem>
+                <MenuItem disabled>
                   <em>Field Type</em>
                 </MenuItem>
                 <MenuItem
                   value="calculated"
-                  onClick={(event) => handleClickOpen("calculated")}
+                  aria-describedby={id}
+                  onClick={(event) => handleClickOpen("calculated", event)}
                   value="calculated"
                 >
                   Calculated
                 </MenuItem>
                 <MenuItem
-                  onClick={(event) => handleClickOpen("datefield")}
+                  aria-describedby={id}
+                  onClick={(event) => handleClickOpen("datefield", event)}
                   value="datefield"
                 >
                   Date Field
+                </MenuItem>
+                <MenuItem
+                  aria-describedby={id}
+                  onClick={(event) => handleClickOpen("textfield", event)}
+                  value="textfield"
+                >
+                  Text Field
                 </MenuItem>
                 <MenuItem value="dropdown">Drop Down</MenuItem>
                 <MenuItem value="externalsource">External Source</MenuItem>
                 <MenuItem value="hyperlink">Hyper Link</MenuItem>
                 <MenuItem value="number">Number</MenuItem>
                 <MenuItem value="lockup">Lock Up</MenuItem>
-                <MenuItem value="text">Text</MenuItem>
+
                 <MenuItem value="expendabletext">Expandable Text</MenuItem>
               </Select>
             </FormControl>
@@ -159,13 +173,24 @@ export default function CaseTypeForm(props) {
         />
       </form>
 
-      <Dialog
+      <Popover
+        id={id}
         open={open}
+        anchorEl={anchorEl}
         onClose={handleClose}
-        aria-labelledby="form-dialog-title"
+        anchorReference="anchorPosition"
+        anchorPosition={{ top: 15, left: 900 }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
       >
         <CaseTypeFieldForm props={events} />
-      </Dialog>
+      </Popover>
     </div>
   );
 }
