@@ -15,7 +15,6 @@ import {
   import FileUpload from "./file-upload.js";
   import Froala from "./froala.js";
   import Loading from "./Loader.js";
-  import moment from "moment";
 
   //Ideally this componet takes in a case-type-id,
   //make call to backend for data, then generates
@@ -576,12 +575,6 @@ import {
       );
     };
     
-    const formatDate = (dateString) => {
-        return moment.utc(dateString, 'mmm dd, yyyy h:MM TT')
-        .tz("America/Chicago")
-        .format('l');
-    }
-    
     const createNotes = (notes, index) => {
         var element = document.createElement('div'); 
         element.innerHTML = notes.note; 
@@ -592,8 +585,7 @@ import {
             imgSrcUrls[i].setAttribute("src", "https://cases.stemmons.com/"+ urlValue);
             }
         }
-        const moment = require('moment-timezone');
-        console.log(moment().tz("America/Los_Angeles").format('mmm dd, yyyy h:MM TT'));
+
         var dateFormat = require("dateformat"); 
   
         return (
