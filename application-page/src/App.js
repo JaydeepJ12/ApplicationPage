@@ -18,7 +18,7 @@ function App() {
   const classes = useStyles();
   return (
     <div>
-      Hello Auto Deployment!This is SO COOL!
+      Continuous deployment test.
     </div>
   );
 }
