@@ -4,7 +4,8 @@ from stemmons.api import Cases
 from operator import itemgetter
 from flask_cors import CORS, cross_origin
 import pandas as pd
-import json 
+import json
+from handlers.cases import CaseHandler
 
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
@@ -21,6 +22,7 @@ def config():
     r = cases.get(f'http://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={{user}}&caseType={ctid}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
 
     data = json.loads(r.text)
+    print(data)
     data = data.get('ResponseContent')
     return  json.dumps(data)#
 
@@ -36,8 +38,15 @@ def assocDecode():
     else :
        return "[]"
 
+
 @bp.route('/test')
 def create():
     r = cases.get('http://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
     print(r.text)
     return r.text
+    
+
+@bp.route('/assoc_type', methods=['GET'])
+def assoc_type_data():
+    if request.method == 'GET':
+        return CaseHandler().assoc_type_data()
