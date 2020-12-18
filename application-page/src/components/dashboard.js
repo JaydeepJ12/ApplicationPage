@@ -83,7 +83,7 @@ export default function Dashboard(){
         <Divider/>
             <ListItem button>
                 <ListItemIcon> <PeopleIcon/> </ListItemIcon>
-                <ListItemText><Link to="case-create">CaseCreator</Link></ListItemText>   
+                <ListItemText><Link to="case-select">CaseCreator</Link></ListItemText>   
             </ListItem>
             <Divider/>
             <ListItem button>

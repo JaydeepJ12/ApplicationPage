@@ -58,6 +58,19 @@ class Mobile:
                                     } '''
         return self.post(self.url +'/api/Home/GetEmployeesBySearch', json=data)
 
+    def get_employees_by_username(self, data):
+        ''' should take in response directly from react in form {
+                                    "searchText": "bhaviks",
+                                    "systemId": 0,
+                                    "typeId": 0,
+                                    "fieldId": 0,
+                                    "itemInfoFieldId": 0,
+                                    "fromPageIndex": 0,
+                                    "toPageIndex": 0,
+                                    "userName": "bhaviks"
+                                    } '''
+        return self.post(self.url +'/api/Home/GetEmployeeByUsername', json=data)
+
     def external_data_values_entity(self, data):
         ''' should take in response directly from react in form {
                                     "Application": 1,
@@ -74,10 +87,26 @@ class Mobile:
 
     def get_case_notes(self, data):
         ''' should take in response directly from react in form {
-                                    "applicationId": ,
+                                    "applicationId": 1234,
                                     "sinceDate": null
                                     } '''
         return self.post(self.url +'/api/Case/GetCaseNotes', json=data)
+
+    def get_case_headers(self, data):
+        ''' should take in response directly from react in form {
+                                    "Username": "BhavikS",
+                                    "TypeId": 19,
+                                    "PageSize": 50,
+                                    "MaxCount": 50,
+                                    "SkipCount": 0,
+                                    "CurrentPage": 1,
+                                    "Ascending": false,
+                                    "SortColumn": null,
+                                    "Filter": 1,
+                                    "Filters": null,
+                                    "TypeIdsForGrouping": null
+                                    } '''
+        return self.post(self.url +'/api/Case/GetCaseHeaders', json=data)
 
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')

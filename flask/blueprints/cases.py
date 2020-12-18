@@ -86,7 +86,22 @@ def get_employees_by_search():
     data = mobile.get_employees_by_search(request.json).json()
     return data
 
+def getUserFullName(name_list):
+    df = db.get_user_fullname(name_list)#always returns dataframe
+    return df.to_json(orient='records')
+
 @bp.route('/GetCaseNotes', methods=['POST'])
 def get_case_notes():
     data = mobile.get_case_notes(request.json).json()
+    for x in data['responseContent']: #can throw error with resp is empty
+        userShortName = x.get('createdBy')
+        userFullName = json.loads(getUserFullName(str(userShortName)))
+        x['fullName'] = userFullName[0]['FULL_NAME']
+        # x.update({'createdBy':userFullName[0]['FULL_NAME']}) 
+    return data
+
+@bp.route('/GetCaseHeaders', methods=['POST'])
+def get_case_headers():
+    data = mobile.get_case_headers(request.json).json()
+    print(data)
     return data

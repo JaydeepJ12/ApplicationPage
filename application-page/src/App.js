@@ -10,6 +10,7 @@ import Dashboard from "./components/dashboard.js";
 import OverView from "./components/overview";
 import Test from "./components/test";
 import theme from "./components/theme.js";
+import ViewCase from "./components/view-case";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,7 +32,7 @@ function App() {
           <OverView path="overview" />
           <Test path="test"></Test>
           <CaseTypeForm path="case-type-form"></CaseTypeForm>
-          <CaseViewer path="viewcase"></CaseViewer>
+          <ViewCase path="viewcase"></ViewCase>
         </Router>
       </div>
     </ThemeProvider>

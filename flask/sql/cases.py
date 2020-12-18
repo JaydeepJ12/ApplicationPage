@@ -70,6 +70,12 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
+    def get_user_fullname(self, userShortName):
+        query = f'''
+        SELECT FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ('{userShortName}') ORDER BY 1 DESC
+        '''
+        return self.db.execQuery(query)
+
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
         return the exid for that
