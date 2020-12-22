@@ -10,7 +10,7 @@ export default function UserAutocomplete(props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const timeoutRef = useRef(null);
-  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUser, setSelectedUser] = useState(props.selectedUser);
   const [defaultHopper, setDefaultHopper] = useState(props.defaultHopper);
   const [defaultHopperId, setDefaultHopperId] = useState(props.defaultHopperId);
 
@@ -23,7 +23,7 @@ export default function UserAutocomplete(props) {
   const handleAutocompleteKeyUp = (searchText) => {
     if (searchText == "") {
       setAssignTo(defaultHopperId);
-      setSelectedUser("");
+      setSelectedUser(props.selectedUser);
       setUsersData([]);
     }
   };
@@ -44,7 +44,7 @@ export default function UserAutocomplete(props) {
     } else {
       props.handleAutocompleteChange(defaultHopperId);
       setAssignTo(defaultHopperId);
-      setSelectedUser("");
+      setSelectedUser(props.selectedUser);
       setUsersData([]);
     }
   };

@@ -219,5 +219,8 @@ code {
 }
 
 .view-case-main {
-  margin-left: 10% !important;
+  float: right;
+  margin-left: 12rem;
+  width: max-content;
+  /* margin-left: 10% !important; */
 }

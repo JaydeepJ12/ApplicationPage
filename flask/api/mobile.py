@@ -108,6 +108,23 @@ class Mobile:
                                     } '''
         return self.post(self.url +'/api/Case/GetCaseHeaders', json=data)
 
+    def get_full_case_by_caseId(self, data):
+        ''' should take in response directly from react in form {
+                                    "caseId": 123456,
+                                    "caseTypeId": 1,
+                                    "assignedToMe": true,
+                                    "isActive": "Y",
+                                    "systemCode": "string",
+                                    "username": "string",
+                                    "pageNumber": 0,
+                                    "pageSize": 0,
+                                    "userOwner": "string",
+                                    "userAssignTo": "string",
+                                    "userCreatedBy": "string",
+                                    "userTeam": "string",
+                                    "userClosedby": "string"
+                                    } '''
+        return self.post(self.url +'/api/Case/GetFullCaseByCaseId', json=data)
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
 

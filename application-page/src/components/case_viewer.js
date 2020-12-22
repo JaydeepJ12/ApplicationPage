@@ -1,7 +1,6 @@
 import {
     Avatar,
     Box,
-    Button,
     Container,
     Divider,
     Grid,
@@ -36,6 +35,24 @@ const useStyles = makeStyles((theme) => ({
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
+  },
+  bullet: {
+    display: "inline-block",
+    margin: "0 2px",
+    transform: "scale(0.8)",
+  },
+  title: {
+    fontSize: 16,
+  },
+  pos: {
+    marginBottom: 12,
+  },
+  dividersty: {
+    marginBottom: "1rem",
+  },
+  fixedHeight: {
+    height: "60vh",
+    overflow: "auto",
   },
 }));
 
@@ -154,7 +171,6 @@ export default function CaseViewer(props) {
           ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
           fieldData = resp.data;
         }
-
         if (fieldData.length > 0) {
           axios
             .get(
@@ -450,10 +466,9 @@ export default function CaseViewer(props) {
 
   const createFroalaField = () => {
     return (
-      <div className="froala-editor">
+      <div>
         <br></br>
-        <br></br>
-        <Froala onModelChange={(e) => handleModelChange(e)} fullWidth={true} />
+        <Froala onModelChange={(e) => handleModelChange(e)} />
       </div>
     );
   };
@@ -496,7 +511,7 @@ export default function CaseViewer(props) {
           select
           name={String(data?.AssocTypeId + caseType)}
           label={data.Name}
-          // value={state.value}
+          value={state.value}
           onChange={(event) => handleChange(data?.AssocTypeId, event)}
           fullWidth={true}
           required={required}
@@ -545,8 +560,13 @@ export default function CaseViewer(props) {
   const createAssignTo = () => {
     return (
       <UserAutocomplete
-        defaultHopper={defaultHopper}
+        defaultHopper={defaultHopperId}
         defaultHopperId={defaultHopperId}
+        selectedUser={
+          caseData?.assignedToFullName
+            ? caseData?.assignedToFullName
+            : caseData?.assignedTo
+        }
         handleAutocompleteChange={handleAutocompleteChange}
       ></UserAutocomplete>
     );
@@ -636,7 +656,7 @@ export default function CaseViewer(props) {
           "src",
           "https://cases.boxerproperty.com/" + urlValue
         );
-        imgSrcUrls[i].setAttribute("style", "width:100%");
+        imgSrcUrls[i].setAttribute("style", "width:auto");
       }
     }
 
@@ -705,194 +725,162 @@ export default function CaseViewer(props) {
   };
 
   const handlePriority = (priority) => {
-    let imageSource =
-      "https://bhaviks123.atlassian.net/images/icons/priorities/medium.svg";
+    priority = "Normal";
     if (priority && priority.includes("High")) {
-      imageSource =
-        "https://bhaviks123.atlassian.net/images/icons/priorities/highest.svg";
       priority = "High";
     } else if (priority && priority.includes("Critical")) {
-      imageSource =
-        "https://bhaviks123.atlassian.net/images/icons/priorities/highest.svg";
       priority = "Critical";
     } else if (priority && priority.includes("Low")) {
-      imageSource =
-        "https://bhaviks123.atlassian.net/images/icons/priorities/low.svg";
       priority = "Low";
-    } else {
-      priority = "Medium";
     }
 
     return (
       <div className="sc-eOnLuU kbLHgv">
         <div className="sc-igaqVs kvdIbC">
-          <img
+          {/* <img
             className="sc-ccXozh hymfyn"
             src={imageSource}
             width="16px"
             height="16px"
-          />
+          /> */}
         </div>
         {priority ? (
           <span className="sc-gcpVEs czZyXP">{priority}</span>
         ) : (
-          "Medium"
+          "Normal"
         )}
       </div>
     );
   };
   return (
-    <form onSubmit={handleSubmit}>
-      <Box
-        display="flex"
-        alignItems="flex-start"
-        p={1}
-        m={1}
-        bgcolor="background.paper"
-      >
-        <Grid item xs={12}>
-          <Box p={1} style={{ height: "700px", overflow: "auto" }}>
-            <div>{caseData.typeName}</div>
-            <h1>{caseData.title}</h1>
-            <Box>{createFileField()}</Box>
-            <div>
-              <span>Description</span>
-              {createFroalaField()}
-            </div>
-            <br></br>
-            <Button variant="contained" color="primary">
-              Save
-            </Button>
-            <Button variant="contained">Cancel</Button>
-            <br></br>
+    <>
+      <Grid container spacing={1}>
+        {/* Chart */}
+        <Grid item xs={12} sm={6} md={4} lg={9}>
+          <Typography
+            className={classes.title}
+            color="textSecondary"
+            gutterBottom
+          >
+            {caseData.typeName}
+          </Typography>
+          <Typography variant="h4" component="h3">
+            {caseData.title}
+          </Typography>
+          <Divider className={classes.dividersty} />
+
+          <Box>{createFileField()}</Box>
+          <br />
+          <span>Description</span>
+          {createFroalaField()}
+          <br />
+          <div className={classes.fixedHeight}>
+            {/* <CaseComments comments={notes}/> */}
             {loaded ? (
               <Container className="">{loadNotes()}</Container>
             ) : (
               <p>Please wait...!! Comments Loading</p>
             )}
-          </Box>
+          </div>
         </Grid>
-        <Box className="field-div">
-          <div data-test-id="issue.views.issue-base.context.context-items">
-            <div
-              className="sc-hBfwTO jTBcel"
-              data-test-id="issue.views.issue-base.context.context-items.primary-items"
-            >
-              <div
-                className="sc-jyQkQA iBOQoh"
-                data-test-id="issue.views.issue-base.context.context-items.pinned-fields-box.pinned-items"
-              ></div>
-              <div>
-                <div className="sc-lXiCt dICbGu">
-                  <div
-                    className="sc-dcOKER iUrewv"
-                    data-test-id="issue.views.field.user.assignee"
-                  >
+        <Grid item xs={12} sm={6} md={8} lg={3}>
+          {/* <CaseDetailBasicInfo /> */}
+          <Box>
+            <div data-test-id="">
+              <div className="" data-test-id="">
+                <div className="" data-test-id=""></div>
+                <div>
+                  <div className="">
+                    <div className="" data-test-id="">
+                      <div>
+                        <div className="">
+                          <div>
+                            <label className="">
+                              <div className="">
+                                <span style={{ fontWeight: "bold" }}>
+                                  Assignee
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                          <div className="">
+                            {caseData?.assignedToFullName
+                              ? caseData?.assignedToFullName
+                              : caseData?.assignedTo}
+                          </div>
+                          <Box>{createAssignTo()}</Box>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br />
+                <div className="">
+                  <div className="" data-test-id="">
                     <div>
-                      <div className="RootWrapper-sc-1va80k6-0 fsVJT">
+                      <div className="">
                         <div>
-                          <label className="Label__LabelWrapper-sc-17towfw-0 keOXhT">
-                            <div className="Label__LabelInner-sc-17towfw-1 jbyPaz">
+                          <label className="">
+                            <div className="">
                               <span style={{ fontWeight: "bold" }}>
-                                Assignee
+                                Reporter
                               </span>
                             </div>
                           </label>
                         </div>
-                        <div className="SingleLineTextInput__ReadView-sc-4hfvq0-0 epXzqq">
-                          {caseData?.assignedToFullName
-                            ? caseData?.assignedToFullName
-                            : caseData?.assignedTo}
-                        </div>
-                        <Box>{data?.length > 0 ? createAssignTo() : ""}</Box>
+                        <div className="">{caseData?.createdByFullName}</div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <br />
-              <div className="sc-lXiCt dICbGu">
-                <div
-                  className="sc-dcOKER iUrewv"
-                  data-test-id="issue.views.field.user.reporter"
-                >
-                  <div>
-                    <div className="RootWrapper-sc-1va80k6-0 fsVJT">
-                      <div>
-                        <label className="Label__LabelWrapper-sc-17towfw-0 keOXhT">
-                          <div className="Label__LabelInner-sc-17towfw-1 jbyPaz">
-                            <span>Reporter</span>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="SingleLineTextInput__ReadView-sc-4hfvq0-0 epXzqq">
-                        {caseData?.createdByFullName}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <br />
-              <div className="sc-lXiCt dICbGu">
-                <div className="sc-dcOKER dIawmf">
-                  <div>
-                    <div className="RootWrapper-sc-1va80k6-0 fsVJT">
-                      <div>
-                        <label className="Label__LabelWrapper-sc-17towfw-0 keOXhT">
-                          <div className="Label__LabelInner-sc-17towfw-1 jbyPaz">
-                            <span>Priority</span>
-                          </div>
-                        </label>
-                      </div>
-                      {handlePriority(caseData.priority)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <br />
-            <div>
-              <div>
-                <div className="sc-efEzrW iJYPpJ">
-                  <div>
-                    {data?.length > 0 ? (
-                      <Accordion
-                        expanded={fieldExpanded}
-                        onChange={handleFieldAccordionChange(fieldExpanded)}
-                      >
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls="panel1a-content"
-                          id="panel1a-header"
-                        >
-                          <Typography className={classes.heading}>
-                            {!fieldExpanded
-                              ? "Show " + data.length + " more fields"
-                              : "Show less"}
-                          </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Typography>
-                            <div>
-                              <Box p={1}>
-                                <Container className="">
-                                  {loadFields()}
-                                </Container>
-                              </Box>
+                <br />
+                <div className="">
+                  <div className="">
+                    <div>
+                      <div className="">
+                        <div>
+                          <label className="">
+                            <div className="">
+                              <span style={{ fontWeight: "bold" }}>
+                                Priority
+                              </span>
                             </div>
-                          </Typography>
-                        </AccordionDetails>
-                      </Accordion>
-                    ) : (
-                      ""
-                    )}
+                          </label>
+                        </div>
+                        {handlePriority(caseData.priority)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <br />
+              {data?.length > 0 ? (
+                <Accordion
+                  expanded={fieldExpanded}
+                  onChange={handleFieldAccordionChange(fieldExpanded)}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography>
+                      {!fieldExpanded
+                        ? "Show " + data.length + " more fields"
+                        : "Show less"}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>{loadFields()}</Typography>
+                  </AccordionDetails>
+                </Accordion>
+              ) : (
+                ""
+              )}
             </div>
-          </div>
-        </Box>
-      </Box>
-    </form>
+          </Box>
+        </Grid>
+      </Grid>
+    </>
   );
 }

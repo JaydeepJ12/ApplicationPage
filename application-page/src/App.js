@@ -1,11 +1,9 @@
-import { makeStyles, ThemeProvider } from "@material-ui/core";
+import { Divider, makeStyles, ThemeProvider } from "@material-ui/core";
 import { Router } from "@reach/router";
 import React from "react";
 import "./App.css";
 import CaseSelect from "./components/case_select.js";
-import CaseTypeFieldForm from "./components/case_type_form/calculated";
 import CaseTypeForm from "./components/case_type_form/index";
-import CaseViewer from "./components/case_viewer";
 import Dashboard from "./components/dashboard.js";
 import OverView from "./components/overview";
 import Test from "./components/test";
@@ -17,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "100vh",
     backgroundImage: `url(https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png)`,
   },
+  dividerDiv: {
+    marginTop: "1rem",
+  },
 }));
 
 function App() {
@@ -25,6 +26,9 @@ function App() {
     <ThemeProvider theme={theme}>
       <div classes={classes.root}></div>
       <Dashboard></Dashboard>
+      <div className={classes.dividerDiv}>
+        <Divider />
+      </div>
       <div>
         <Router>
           <Dashboard path="/" />

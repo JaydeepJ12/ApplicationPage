@@ -103,5 +103,17 @@ def get_case_notes():
 @bp.route('/GetCaseHeaders', methods=['POST'])
 def get_case_headers():
     data = mobile.get_case_headers(request.json).json()
-    print(data)
+    return data
+
+@bp.route('/GetFullCaseByCaseId', methods=['POST'])
+def get_full_case_by_caseId():
+    data = mobile.get_full_case_by_caseId(request.json).json()
+    for x in data['responseContent']['notes']: #can throw error with resp is empty
+        userShortName = x['createdBy']
+        userFullName = json.loads(getUserFullName(str(userShortName)))
+        x['fullName'] = userFullName[0]['FULL_NAME']
+    for y in data['responseContent']['details']: #can throw error with resp is empty
+        print(y['controlId'])
+        assocDecodeData = assocDecode(y['controlId'])
+        y['assoc_decode'] = json.loads(assocDecodeData)
     return data

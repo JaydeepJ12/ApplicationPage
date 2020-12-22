@@ -1,21 +1,48 @@
 import { Icon } from "@material-ui/core";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
 import { default as Typography } from "@material-ui/core/Typography";
 import React, { useEffect, useState } from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
     minWidth: 275,
     marginBottom: 5,
+    backgroundColor: "#ede7f6",
+  },
+  bullet: {
+    display: "inline-block",
+    margin: "0 2px",
+    transform: "scale(0.8)",
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  pos: {
+    marginBottom: 12,
   },
   avatar: {
     marginLeft: "auto",
-    marginRight: 25
+    // border: "2px solid #eee",
+    // marginLeft: 10,
+    // padding: 1,
   },
-}));
+  dropSelect: {
+    width: "fit-content",
+  },
+  card: {
+    margin: 10,
+  },
+  listItem: {
+    textAlign: "right",
+  },
+});
 
 export default function CasePreview(props) {
   const classes = useStyles();
@@ -27,6 +54,11 @@ export default function CasePreview(props) {
     // setExpanded(isExpanded ? "panel" : false);
     props.handleCasePreviewClick(caseId, caseData);
   };
+
+  useEffect(() => {
+    setCaseData(props.caseData);
+    setCaseId(props.caseId);
+  }, [props.caseId, props.caseData]);
 
   useEffect(() => {}, [props.caseId, props.caseData]);
 
@@ -62,21 +94,33 @@ export default function CasePreview(props) {
   };
 
   return (
-    <Accordion
-      expanded={true}
-      onChange={handleCasePreviewClick(caseId, caseData)}
+    <Card
+      className={classes.card}
+      key={caseData.caseID}
+      onClick={handleCasePreviewClick(caseId, caseData)}
     >
-      <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
-        <Typography>{caseData.title}</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Typography>
-          <div style={{ lineHeight: "45px" }}>{caseData.typeName}</div>
+      <CardContent>
+        <Typography style={{ cursor: "pointer" }}>{caseData.title}</Typography>
+      </CardContent>
+      <CardActions disableSpacing>
+        <Typography className={classes.title} color="textSecondary">
+          {caseData.typeName}
         </Typography>
-        <Icon style={{ marginLeft: "auto" }} className="s-option-auto-image">
-          {renderUserImage(caseData.assignedTo)}
-        </Icon>
-      </AccordionDetails>
-    </Accordion>
+        <ListItem className={classes.list}>
+          <ListItemAvatar></ListItemAvatar>
+          <ListItemText
+            className={classes.listItem}
+            primary={
+              caseData.assignedToFullName
+                ? caseData.assignedToFullName
+                : caseData.assignedTo
+            }
+          />
+          <Icon style={{ marginLeft: "auto" }} className="s-option-auto-image">
+            {renderUserImage(caseData.assignedTo)}
+          </Icon>
+        </ListItem>
+      </CardActions>
+    </Card>
   );
 }
