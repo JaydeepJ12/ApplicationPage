@@ -2,7 +2,7 @@ import { Icon, TextField } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useRef, useState, useEffect } from "react";
 
 export default function UserAutocomplete(props) {
   const [users, setUsersData] = useState([]);
@@ -15,6 +15,10 @@ export default function UserAutocomplete(props) {
   const [defaultHopperId, setDefaultHopperId] = useState(props.defaultHopperId);
 
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
+
+  useEffect(() => {
+    setSelectedUser(props.selectedUser);
+  }, [props.selectedUser]);
 
   const handleAutocompleteKeyPress = () => {
     clearTimeout(timeoutRef.current);
