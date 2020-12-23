@@ -50,3 +50,29 @@ def create():
 def assoc_type_data():
     if request.method == 'GET':
         return CaseHandler().assoc_type_data()
+
+
+@bp.route('/case_type', methods=['GET'])
+def case_type_data():
+    if request.method == 'GET':
+        return CaseHandler().case_type_data()
+
+
+@bp.route('/case_type_insert', methods=['POST'])
+def insert_case_type_data():
+    data = json.loads(request.data)
+    if request.method == 'POST':
+        try:
+            return CaseHandler().case_type_insert(data)
+        except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})
+
+
+@bp.route('/assoc_type_insert', methods=['POST'])
+def insert_assoc_type_data():
+    data = json.loads(request.data)
+    if request.method == 'POST':
+        try:
+            return CaseHandler().assoc_type_insert(data)
+        except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})

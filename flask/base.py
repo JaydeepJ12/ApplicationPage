@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
+import os
 Base = declarative_base()
 
 
@@ -11,7 +11,7 @@ class Engine:
     def __init__(self,
                  user='spreader',
                  passw='Red_Sky',
-                 server='bpm-stems102',
+                 server='BPM-PGMT-2-2-1',
                  db='BOXER_CME',
                  driver='SQL+Server',
                  debug=False):
