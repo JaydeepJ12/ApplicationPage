@@ -76,12 +76,13 @@ class CaseHandler(Response):
             "customData": [],
             "values": values})
 
-    def case_type_insert(self):
-        insert = CaseType.__table__.insert(None, isInline).values(NAME="test", INSTANCE_NAME="sat_test", IS_ACTIVE="N",
-                                                                  CREATED_BY="satishp",
-                                                                  CREATED_DATETIME="2020-12-21 05:43:43.000",
-                                                                  MODIFIED_DATETIME="2020-12-22 06:43:43.000",
-                                                                  MODIFIED_BY="satishp")
+    def case_type_insert(self, data):
+        insert = CaseType.__table__.insert(None, isInline).values(NAME=data.get("name"), INSTANCE_NAME=data.get("intance_name"),
+                                                                  IS_ACTIVE=data.get("is_active"),
+                                                                  CREATED_BY=data.get("created_by"),
+                                                                  CREATED_DATETIME=data.get("created_datetime"),
+                                                                  MODIFIED_DATETIME=data.get('modified_datetime'),
+                                                                  MODIFIED_BY=data.get("modified_by"))
         self.session.execute(insert)
         self.session.commit()
         return json.dumps({
@@ -93,17 +94,27 @@ class CaseHandler(Response):
             "customData": [],
             "values": case_type.compile().params})
 
-    def assoc_type_insert(self):
-        insert = AssocType.__table__.insert(None, isInline).values(NAME="test_assoc",
-                                                                   ASSOC_FIELD_TYPE='D', IS_ACTIVE="N", CASE_TYPE_ID=18,
-                                                                   DESCRIPTION="tested assoc type added",
-                                                                   SYSTEM_CODE="STTUS",
-                                                                   CREATED_BY="satishp", SYSTEM_PRIORITY=10,
-                                                                   SHOW_ON_LIST="N", IS_REQUIRED="N",
-                                      
-                                                                   CREATED_DATETIME="2020-12-21 05:43:43.000",
-                                                                   MODIFIED_DATETIME="2020-12-22 06:43:43.000",
-                                                                   MODIFIED_BY="satishp")
+    def assoc_type_insert(self,data):
+        """
+        {"name":"test", "assoc_field_type":"D","is_active":"N", "case_type_id": 18, "description":"testing from postman"
+        , "system_code":"STS1", "created_by":"username", "system_priority":10, "show_on_list":"N", "is_required":"N",
+        "created_datetime":"2020-12-21 05:43:43.000", "modified_datetime":"2020-12-22 06:43:43.000", "modified_by":"username"}
+
+        use above json for add assoc type from postman and frontend
+        """
+        insert = AssocType.__table__.insert(None, isInline).values(NAME=data.get("name"),
+                                                                   ASSOC_FIELD_TYPE=data.get("assoc_field_type"),
+                                                                   IS_ACTIVE=data.get("is_active"),
+                                                                   CASE_TYPE_ID=data.get("case_type_id"),
+                                                                   DESCRIPTION=data.get("description"),
+                                                                   SYSTEM_CODE=data.get("system_code"),
+                                                                   CREATED_BY=data.get("created_by"),
+                                                                   SYSTEM_PRIORITY=data.get("system_priority"),
+                                                                   SHOW_ON_LIST=data.get("show_on_list"),
+                                                                   IS_REQUIRED=data.get("is_required"),
+                                                                   CREATED_DATETIME=data.get("created_datetime"),
+                                                                   MODIFIED_DATETIME=data.get("modified_datetime"),
+                                                                   MODIFIED_BY=data.get("modified_by"))
         self.session.execute(insert)
         self.session.commit()
         return json.dumps({
