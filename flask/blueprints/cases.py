@@ -50,3 +50,21 @@ def create():
 def assoc_type_data():
     if request.method == 'GET':
         return CaseHandler().assoc_type_data()
+
+
+@bp.route('/case_type', methods=['GET'])
+def case_type_data():
+    if request.method == 'GET':
+        return CaseHandler().case_type_data()
+
+
+@bp.route('/case_type_insert', methods=['POST'])
+def insert_case_type_data():
+    if request.method == 'POST':
+        return CaseHandler().case_type_insert()
+
+
+@bp.route('/assoc_type_insert', methods=['POST'])
+def insert_assoc_type_data():
+    if request.method == 'POST':
+        return CaseHandler().assoc_type_insert()

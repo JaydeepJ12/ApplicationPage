@@ -11,5 +11,16 @@ except:
 class AssocType(Base):
     __table__ = assoc_type
     __mapper_args__ = {
-        'include_properties': ['ASSOC_TYPE_ID', 'NAME', 'IS_ACTIVE', 'CREATED_BY']
+        'include_properties': ['ASSOC_TYPE_ID', 'NAME', 'ASSOC_FIELD_TYPE', 'CASE_TYPE_ID',
+                               'DESCRIPTION', 'SYSTEM_CODE', 'SYSTEM_PRIORITY', 'SHOW_ON_LIST',
+                               'IS_REQUIRED', 'IS_ACTIVE', 'CREATED_DATETIME', 'CREATED_BY', 'MODIFIED_DATETIME',
+                               'MODIFIED_BY']
+    }
+
+
+class CaseType(Base):
+    __table__ = case_type
+    __mapper_args = {
+        'include_properties': ['CASE_TYPE_ID', 'NAME', 'INSTANCE_NAME', 'IS_ACTIVE', 'CREATED_BY',
+                               'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY']
     }

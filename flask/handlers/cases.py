@@ -6,6 +6,9 @@ try:
     from models.cases.serializers import *
 except:
     from models.cases.serializers import *
+import json
+isInline = True
+from sqlalchemy import insert
 import base64
 
 
@@ -51,3 +54,63 @@ class CaseHandler(Response):
             "requestMethod": "GET",
             "customData": [],
             "values": values})
+
+    def case_type_data(self):
+        import json
+        values = [{
+            "label": "Case Type List",
+            "id": instance.CASE_TYPE_ID,
+            "name": instance.NAME,
+            "instance_name": instance.INSTANCE_NAME,
+            "created_by": instance.CREATED_BY,
+            "is_active": instance.IS_ACTIVE,
+            "href": f"#/",
+        } for instance in
+            self.session.query(CaseType)]
+        return json.dumps({
+            "label": "Assoc Type",
+            "href": "/Case Type/Case_Type",
+            "description": "List of all case Types",
+            "count": len(values),
+            "requestMethod": "GET",
+            "customData": [],
+            "values": values})
+
+    def case_type_insert(self):
+        insert = CaseType.__table__.insert(None, isInline).values(NAME="test", INSTANCE_NAME="sat_test", IS_ACTIVE="N",
+                                                                  CREATED_BY="satishp",
+                                                                  CREATED_DATETIME="2020-12-21 05:43:43.000",
+                                                                  MODIFIED_DATETIME="2020-12-22 06:43:43.000",
+                                                                  MODIFIED_BY="satishp")
+        self.session.execute(insert)
+        self.session.commit()
+        return json.dumps({
+            "label": "Assoc Type",
+            "href": "/Case Type/Case_Type",
+            "description": "List of all case Types",
+            "count": [],
+            "requestMethod": "POST",
+            "customData": [],
+            "values": case_type.compile().params})
+
+    def assoc_type_insert(self):
+        insert = AssocType.__table__.insert(None, isInline).values(NAME="test_assoc",
+                                                                   ASSOC_FIELD_TYPE='D', IS_ACTIVE="N", CASE_TYPE_ID=18,
+                                                                   DESCRIPTION="tested assoc type added",
+                                                                   SYSTEM_CODE="STTUS",
+                                                                   CREATED_BY="satishp", SYSTEM_PRIORITY=10,
+                                                                   SHOW_ON_LIST="N", IS_REQUIRED="N",
+                                      
+                                                                   CREATED_DATETIME="2020-12-21 05:43:43.000",
+                                                                   MODIFIED_DATETIME="2020-12-22 06:43:43.000",
+                                                                   MODIFIED_BY="satishp")
+        self.session.execute(insert)
+        self.session.commit()
+        return json.dumps({
+            "label": "Assoc Type added successfully",
+            "href": "/Assoc Type/Case_Type",
+            "description": "List of all case Types",
+            "count": [],
+            "requestMethod": "POST",
+            "customData": [],
+            "values": insert.compile().params})
