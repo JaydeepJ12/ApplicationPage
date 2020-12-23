@@ -77,6 +77,13 @@ class CaseHandler(Response):
             "values": values})
 
     def case_type_insert(self, data):
+        """
+        {"name":"test1", "instance_name":"test postman","created_by":"username",  "is_active":"N",
+        "created_datetime":"2020-12-21 05:43:43.000", "modified_datetime":"2020-12-22 06:43:43.000",
+        "modified_by":"username"}
+
+        use above json to store case type in db via postman
+        """
         insert = CaseType.__table__.insert(None, isInline).values(NAME=data.get("name"), INSTANCE_NAME=data.get("intance_name"),
                                                                   IS_ACTIVE=data.get("is_active"),
                                                                   CREATED_BY=data.get("created_by"),
