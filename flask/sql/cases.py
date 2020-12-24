@@ -22,31 +22,51 @@ class CasesSQL:
 
     def cases_type_form(self, id):
         query = f'''
-        SELECT [ASSOC_TYPE_ID]
-                ,[ASSOC_FIELD_TYPE] as [FIELD_TYPE]
-                ,[CASE_TYPE_ID]
-                ,[NAME] as [label]
-                ,[DESCRIPTION]
-                ,[EXTERNAL_DATASOURCE_ID]
-                ,[SYSTEM_CODE]
-                ,[SYSTEM_PRIORITY]
-                ,[SHOW_ON_LIST]
-                ,[UI_WIDTH]
-                ,[IS_REQUIRED]
+        SELECT [ASSOC_TYPE_ID] as AssocTypeId
+                ,[ASSOC_FIELD_TYPE] as AssocFieldType
+                ,[CASE_TYPE_ID] as CaseTypeId
+                ,[NAME] as [Name]
+                ,[DESCRIPTION] as Description
+                ,[EXTERNAL_DATASOURCE_ID] as ExternalDataSourceId
+                ,[SYSTEM_CODE] as SystemCode
+                ,[SYSTEM_PRIORITY] as SystemPriority
+                ,[SHOW_ON_LIST] as ShowOnList
+                ,[UI_WIDTH] as UiWidth
+                ,[IS_REQUIRED] as IsRequired
+                ,[IS_ACTIVE] as IsActive
   
             FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
             where is_active = 'Y'
             and CASE_TYPE_ID = {id}
-            order by SYSTEM_PRIORITY desc
+            order by SYSTEM_PRIORITY asc
+        '''
+        return self.db.execQuery(query)
+
+    def cases_types(self):
+        query = f'''
+        SELECT CT.*, CH.[NAME] As HopperName  FROM [BOXER_CME].[dbo].[CASE_TYPE] AS CT
+        INNER JOIN [BOXER_CME].[dbo].[CASE_HOPPER] AS CH ON CT.DEFAULT_HOPPER_ID = CH.HOPPER_ID
+        WHERE CT.IS_ACTIVE = 'Y'
         '''
         return self.db.execQuery(query)
 
     def assoc_decode(self, id):
         query = f'''
-        SELECT * FROM [BOXER_CME].[dbo].[ASSOC_DECODE]
+        SELECT ASSOC_DECODE_ID as DecodeId, NAME as DecodeValue FROM [BOXER_CME].[dbo].[ASSOC_DECODE]
             where is_active = 'Y'
-            and ASSOC_TYPE_ID IN ({id})
-            order by SYSTEM_PRIORITY desc
+            and ASSOC_TYPE_ID = {id}
+            order by SYSTEM_PRIORITY asc
+        '''
+        return self.db.execQuery(query)
+
+    def caseassoctypecascade(self, caseTypeId):
+        query = f'''
+        SELECT CATS.CASE_ASSOC_TYPE_CASCADE_ID,CATS.CASE_ASSOC_TYPE_ID_PARENT,CATS.CASE_ASSOC_TYPE_ID_CHILD    
+            FROM [BOXER_CME].[dbo].[CASE_ASSOC_TYPE_CASCADE] CATS WITH (NOLOCK)      
+            INNER JOIN [BOXER_CME].[dbo].[ASSOC_TYPE] AT WITH (NOLOCK) ON AT.ASSOC_TYPE_ID = CATS.CASE_ASSOC_TYPE_ID_PARENT AND AT.IS_ACTIVE ='Y' AND CATS.IS_ACTIVE = 'Y'    
+            INNER JOIN [BOXER_CME].[dbo].[CASE_TYPE] CT WITH (NOLOCK) ON AT.CASE_TYPE_ID = CT.CASE_TYPE_ID AND CT.IS_ACTIVE= 'Y'    
+            WHERE CT.CASE_TYPE_ID = {caseTypeId}     
+            AND (AT.ASSOC_FIELD_TYPE = 'E' OR AT.ASSOC_FIELD_TYPE = 'O')  
         '''
         return self.db.execQuery(query)
 

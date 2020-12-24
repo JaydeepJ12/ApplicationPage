@@ -17,7 +17,7 @@ import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PeopleIcon from '@material-ui/icons/People';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import ViewListIcon from '@material-ui/icons/ViewList';
-import { Link, BrowserRouter } from 'react-router-dom';
+import { Router, Link } from "@reach/router"
 
 const useStyles = makeStyles((theme)=>({
     avatar:{
@@ -51,9 +51,9 @@ export default function Dashboard(){
                         name={name}></AppIcon>
             </ListItem>
         <Divider/>
-            <ListItem button  onClick={() => {setPage('Overview')}}>
+            <ListItem>
                 <ListItemIcon> <Streetview/> </ListItemIcon>
-                <ListItemText> Overview </ListItemText>
+                <ListItemText> <Link to="overview">Overview</Link> </ListItemText>
             </ListItem>
         <Divider/>
             <ListItem button onClick={() => {setPage('Tasks')}}>
@@ -81,11 +81,19 @@ export default function Dashboard(){
                 <ListItemText> Insights </ListItemText>
             </ListItem>
         <Divider/>
-        <BrowserRouter>
-            </BrowserRouter>
-            <ListItem button onClick={() => {setPage('CaseCreator')}}>
+            <ListItem button>
                 <ListItemIcon> <PeopleIcon/> </ListItemIcon>
-                <ListItemText> CaseCreator </ListItemText>
+                <ListItemText><Link to="case-create">CaseCreator</Link></ListItemText>   
+            </ListItem>
+            <Divider/>
+            <ListItem button>
+                <ListItemIcon> <PeopleIcon/> </ListItemIcon>
+                <ListItemText><Link to="case-type-form">CaseTypeForm</Link></ListItemText>
+            </ListItem>
+            <Divider/>
+             <ListItem button>
+                <ListItemIcon> <PeopleIcon/> </ListItemIcon>
+                <ListItemText><Link to="case-type-form-field">CaseTypeFieldForm</Link></ListItemText>
             </ListItem>
             <Divider/>
             <Button color='secondary'>
