@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import API from "../api_base/api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +36,7 @@ export default function CaseTypeFieldForm(props) {
   const [dvalue, descriptValue] = React.useState("");
   const [age, setAge] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [system_code, setSystemCode] = React.useState("");
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -60,7 +62,39 @@ export default function CaseTypeFieldForm(props) {
   };
 
   const handleOpen = () => {
+    getSystemCOde();
     setOpen(true);
+  };
+
+  const getSystemCOde = async () => {
+    await API.get(`cases/system_code`)
+      .then(function (response) {
+        let data_cat = response.data.values;
+        if (data_cat.length) {
+          setSystemCode(data_cat);
+        }
+        console.log("75", system_code);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  // useEffect(() => {
+  //   pageLoad();
+  //   caseTypes();
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log("use effect==>");
+  //   // setTimeout(() => {
+  //   // }, 500);
+  // });
+
+  const getFullName = (item) => {
+    console.log("item satish==>", item);
+    var fullname = item.system_code;
+    return fullname;
   };
 
   return (
@@ -137,12 +171,13 @@ export default function CaseTypeFieldForm(props) {
               onChange={handleChange1}
               style={{ width: "150px" }}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>ASSOC</MenuItem>
-              <MenuItem value={20}>ENTITY</MenuItem>
-              <MenuItem value={30}>CASES</MenuItem>
+              {system_code.length
+                ? system_code.map((option) => (
+                    <MenuItem key={option.id} value={option.system_code}>
+                      {option.system_code}
+                    </MenuItem>
+                  ))
+                : []}
             </Select>
           </FormControl>
           <Checkbox

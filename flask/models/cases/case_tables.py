@@ -30,3 +30,14 @@ assoc_type = Table('ASSOC_TYPE', Base.metadata,
                     Column('MODIFIED_BY', String),
                    )
 
+system_code = Table('ASSOC_SYSTEM_CODE', Base.metadata,
+                    Column('ASSOC_SYSTEM_CODE_ID', Integer, primary_key=True),
+                    Column('SYSTEM_CODE', String),
+                    Column('SYSTEM_CODE_LEVEL', String),
+                    Column('SYSTEM_CODE_NAME', String),
+                    Column('IS_ACTIVE', String),
+                    Column('CREATED_DATETIME', String),
+                    Column('MODIFIED_DATETIME', String),
+                    Column('MODIFIED_BY', String),
+                    Column('CREATED_BY', String),
+                   )

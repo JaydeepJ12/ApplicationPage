@@ -151,4 +151,12 @@ def insert_assoc_type_data():
         try:
             return CaseHandler().assoc_type_insert(data)
         except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})\
+
+@bp.route('/system_code', methods=['GET'])
+def system_code_list():
+    if request.method == 'GET':
+        try:
+            return CaseHandler().system_code_list()
+        except Exception as exe:
             return json.dumps({"error_stack": str(exe)})
