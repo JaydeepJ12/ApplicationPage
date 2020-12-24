@@ -7,7 +7,7 @@ import pandas as pd
 import json 
 import time
 import numpy as np
-
+from handlers.cases import CaseHandler
 
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
@@ -40,7 +40,6 @@ def config():
         t1 = t()
         print(f"{row['AssocTypeId']} took: {t1-t0}")
         df['assoc_decode'][i] = json.loads(data1)
-
     return df.to_json(orient='records') #
 
 @bp.route('/assocDecode')
@@ -62,6 +61,7 @@ def caseassoctypecascade():
    caseTypeId = request.args.get('CaseTypeID')
    df = db.caseassoctypecascade(int(caseTypeId))
    return df.to_json(orient='records') #
+
 
 @bp.route('/test')
 def create():
@@ -117,3 +117,39 @@ def get_full_case_by_caseId():
         assocDecodeData = assocDecode(y['controlId'])
         y['assoc_decode'] = json.loads(assocDecodeData)
     return data
+    r = cases.get('http://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
+    print(r.text)
+    return r.text
+    
+
+@bp.route('/assoc_type', methods=['GET'])
+def assoc_type_data():
+    if request.method == 'GET':
+        return CaseHandler().assoc_type_data()
+
+
+@bp.route('/case_type', methods=['GET'])
+def case_type_data():
+    if request.method == 'GET':
+        return CaseHandler().case_type_data()
+
+
+@bp.route('/case_type_insert', methods=['POST'])
+def insert_case_type_data():
+    data = json.loads(request.data)
+    if request.method == 'POST':
+        try:
+            return CaseHandler().case_type_insert(data)
+        except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})
+
+
+@bp.route('/assoc_type_insert', methods=['POST'])
+def insert_assoc_type_data():
+    data = json.loads(request.data)
+    if request.method == 'POST':
+        try:
+            return CaseHandler().assoc_type_insert(data)
+        except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})
+
