@@ -76,6 +76,27 @@ class CaseHandler(Response):
             "customData": [],
             "values": values})
 
+    def system_code_list(self):
+        import json
+        print("in handler")
+        values = [{
+            "label": "System code List",
+            "id": instance.ASSOC_SYSTEM_CODE_ID,
+            "system_code": instance.SYSTEM_CODE,
+            "system_code_level": instance.SYSTEM_CODE_LEVEL,
+            "created_by": instance.CREATED_BY,
+            "is_active": instance.IS_ACTIVE,
+        } for instance in
+            self.session.query(SystemCode)]
+        return json.dumps({
+            "label": "System Code",
+            "href": "/System Code",
+            "description": "List of all system codes",
+            "count": len(values),
+            "requestMethod": "GET",
+            "customData": [],
+            "values": values})
+
     def case_type_insert(self, data):
         """
         {"name":"test1", "instance_name":"test postman","created_by":"username",  "is_active":"N",
@@ -132,3 +153,6 @@ class CaseHandler(Response):
             "requestMethod": "POST",
             "customData": [],
             "values": insert.compile().params})
+
+
+

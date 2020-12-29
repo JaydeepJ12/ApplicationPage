@@ -24,3 +24,11 @@ class CaseType(Base):
         'include_properties': ['CASE_TYPE_ID', 'NAME', 'INSTANCE_NAME', 'IS_ACTIVE', 'CREATED_BY',
                                'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY']
     }
+
+
+class SystemCode(Base):
+    __table__ = system_code
+    __mapper_args = {
+        'include_properties': ['ASSOC_SYSTEM_CODE_ID', 'SYSTEM_CODE', 'SYSTEM_CODE_LEVEL', 'SYSTEM_CODE_NAME', 'IS_ACTIVE',
+                               'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY', 'CREATED_BY']
+    }
