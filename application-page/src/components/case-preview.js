@@ -49,18 +49,23 @@ export default function CasePreview(props) {
   const [caseId, setCaseId] = useState(props.caseId);
   const [caseData, setCaseData] = useState(props.caseData);
   const [expanded, setExpanded] = useState(false);
+  const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
 
   const handleCasePreviewClick = (caseId, caseData) => (isExpanded) => {
     // setExpanded(isExpanded ? "panel" : false);
-    props.handleCasePreviewClick(caseId, caseData);
+    // props.handleCasePreviewClick(caseId, caseData);
+    if (caseLoaded) {
+      props.handleCasePreviewClick(caseId, caseData);
+    }
   };
 
   useEffect(() => {
     setCaseData(props.caseData);
     setCaseId(props.caseId);
-  }, [props.caseId, props.caseData]);
+    setCaseLoaded(props.caseLoaded);
+  }, [props.caseId, props.caseData, props.caseLoaded]);
 
-  useEffect(() => {}, [props.caseId, props.caseData]);
+  useEffect(() => {}, [props.caseId, props.caseLoaded]);
 
   const addDefaultSrc = (event) => {
     let userDefaultImage = require("../assets/images/default-userimage.png");
@@ -116,7 +121,7 @@ export default function CasePreview(props) {
                 : caseData.assignedTo
             }
           />
-          <Icon style={{ marginLeft: "auto" }} className="s-option-auto-image">
+          <Icon style={{ marginLeft: "1rem" }} className="s-option-auto-image">
             {renderUserImage(caseData.assignedTo)}
           </Icon>
         </ListItem>

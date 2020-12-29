@@ -224,3 +224,7 @@ code {
   width: max-content;
   /* margin-left: 10% !important; */
 }
+
+.case-fields{
+  display: block !important;
+}

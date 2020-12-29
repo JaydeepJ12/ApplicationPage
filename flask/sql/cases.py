@@ -76,6 +76,12 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
+    def get_system_priority(self, assocTypeId):
+        query = f'''
+        SELECT SYSTEM_PRIORITY FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE ASSOC_TYPE_ID = {assocTypeId} ORDER BY 1 DESC
+        '''
+        return self.db.execQuery(query)
+
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
         return the exid for that

@@ -79,6 +79,7 @@ export default function CaseList(props) {
   const classes = useStyles();
   const [caseId, setCaseId] = useState(0);
   const [caseList, setCaseList] = useState(props.caseListData);
+  const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
 
   const handleCasePreviewClick = (id, caseData) => {
     if (id > 0) {
@@ -93,7 +94,8 @@ export default function CaseList(props) {
 
   useEffect(() => {
     setCaseList(props.caseListData);
-  }, [props.caseListData]);
+    setCaseLoaded(props.caseLoaded);
+  }, [props.caseListData, props.caseLoaded]);
 
   return (
     <div className={classes.root}>
@@ -104,6 +106,7 @@ export default function CaseList(props) {
             handleCasePreviewClick={handleCasePreviewClick}
             caseId={caseData.caseID}
             caseData={caseData}
+            caseLoaded={caseLoaded}
           ></CasePreview>
         ))
       ) : (

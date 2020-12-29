@@ -1,12 +1,13 @@
 import {
-    Avatar,
-    Box,
-    Container,
-    Divider,
-    Grid,
-    MenuItem,
-    Paper,
-    TextField
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Divider,
+  Grid,
+  MenuItem,
+  Paper,
+  TextField
 } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -18,7 +19,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
-import UserAutocomplete from "./autocomplete.js";
+import CaseBasicInformation from "./case-basic-information.js";
 import FileUpload from "./file-upload.js";
 import Froala from "./froala.js";
 import Loading from "./Loader.js";
@@ -62,7 +63,6 @@ export default function CaseViewer(props) {
   const [notes, setNotes] = useState([]);
   const [loaded, setLoaded] = useState(true);
   const [state, setState] = useState({});
-  //   const [caseId, setCaseId] = useState(props.caseId);
   const [caseType, setCaseType] = useState(0);
   const [parentChildData, setParentChildData] = useState([]);
   const [froalaValue, setFroala] = useState({});
@@ -76,6 +76,10 @@ export default function CaseViewer(props) {
   const [expanded, setExpanded] = useState(false);
   const [fieldExpanded, setFieldExpanded] = useState(false);
   const [caseData, setCaseData] = useState(props.caseData);
+  const [caseDetails, setCaseDetails] = useState([props.caseData]);
+  const [caseFields, setCaseFields] = useState([]);
+  const [parentDropDownloaded, setParentDropDownloaded] = useState(false);
+  const [notesLoaded, setNotesLoaded] = useState(false);
 
   const handleFieldAccordionChange = (isFieldExpanded) => (
     event,
@@ -85,20 +89,14 @@ export default function CaseViewer(props) {
   };
   const handleCaseTypeChange = (caseId, caseData) => {
     const caseTypeId = 19;
+    setNotesLoaded(false);
+    props.handleCaseLoaded(false);
     setData([]);
     setNotes([]);
+    setCaseFields([]);
     setCaseData(caseData);
     setCaseType(caseTypeId);
     if (caseTypeId > 0) {
-      setLoaded(false);
-      // var defaultHopperValue = caseTypeData.find(
-      //   (x) => x.CASE_TYPE_ID === caseTypeId
-      // );
-      // if (defaultHopperValue) {
-      //   setDefaultHopper(defaultHopperValue.HopperName);
-      //   setDefaultHopperId(defaultHopperValue.DEFAULT_HOPPER_ID);
-      //   setAssignTo(defaultHopperValue.DEFAULT_HOPPER_ID);
-      // }
       caseNotes(caseTypeId, caseId);
     }
   };
@@ -119,10 +117,61 @@ export default function CaseViewer(props) {
       .then(function (response) {
         const notesData = response.data.responseContent;
         setNotes(notesData);
-        setLoaded(true);
-        fields(caseTypeId);
+        setNotesLoaded(true);
+        getCaseDetails(caseTypeId, caseId);
       })
       .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const getCaseDetails = async (caseTypeId, caseId) => {
+    setParentDropDownloaded(false);
+    var jsonData = {
+      caseId: caseId,
+      caseTypeId: caseTypeId,
+      assignedToMe: true,
+      isActive: "Y",
+      systemCode: "",
+      username: "BhavikS",
+      pageNumber: 1,
+      pageSize: 100,
+      userOwner: "",
+      userAssignTo: "",
+      userCreatedBy: "",
+      userTeam: "",
+      userClosedby: "",
+    };
+
+    var CancelToken = axios.CancelToken;
+    var cancel;
+
+    var config = {
+      method: "post",
+      url: "http://localhost:5000/cases/GetFullCaseByCaseId",
+      data: jsonData,
+      cancelToken: new CancelToken(function executor(c) {
+        // An executor function receives a cancel function as a parameter
+        cancel = c;
+      }),
+    };
+
+    await axios(config)
+      .then(function (response) {
+        let caseDetailsData = response.data.responseContent;
+
+        if (caseDetailsData.details.length) {
+          caseDetailsData.details = caseDetailsData.details.sort(
+            (a, b) => a.systemPriority - b.systemPriority
+          );
+        }
+
+        setCaseFields(caseDetailsData?.details);
+        loadAssocDecodeData(caseDetailsData?.details, caseTypeId);
+      })
+      .catch(function (error) {
+        // cancel the request
+        // cancel();
         console.log(error);
       });
   };
@@ -131,104 +180,215 @@ export default function CaseViewer(props) {
     handleCaseTypeChange(props.caseId, props.caseData);
   }, [props.caseId, props.caseData]);
 
-  const fields = (caseTypeId) => {
+  //// Todo : Don't remove this commented code. May be it is require in future.
+
+  // const fields = (caseTypeId) => {
+  //   // var ls = new SecureLS({encodingType: 'aes'});
+  //   var ls = new SecureLS({
+  //     encodingType: "des",
+  //     isCompression: false,
+  //     encryptionSecret: "BhavikS",
+  //   });
+  //   var fieldData = [];
+  //   caseTypeId = caseTypeId ? caseTypeId : caseType;
+  //   var localFieldData = ls.get("CaseType-" + caseTypeId);
+
+  //   var fieldDataReceived = false;
+  //   if (localFieldData || localFieldData != "") {
+  //     fieldData = JSON.parse(localFieldData);
+  //     // setData(fieldData);
+  //     console.log(fieldData);
+  //     fieldDataReceived = true;
+  //   }
+
+  //   var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
+
+  //   if (localParentChildData || localParentChildData != "") {
+  //     setParentChildData(JSON.parse(localParentChildData));
+  //     loadParentDropDown(
+  //       JSON.parse(localParentChildData),
+  //       fieldData,
+  //       caseTypeId
+  //     );
+  //   }
+  //   axios
+  //     .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
+  //     .then((resp) => {
+  //       if (localFieldData !== JSON.stringify(resp.data)) {
+  //         setData(resp.data);
+  //         // setLoaded(true);
+  //         ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
+  //         fieldData = resp.data;
+  //       }
+  //       if (fieldData.length > 0) {
+  //         axios
+  //           .get(
+  //             "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
+  //               caseTypeId
+  //             )
+  //           )
+  //           .then((resp) => {
+  //             if (localParentChildData !== JSON.stringify(resp.data)) {
+  //               setParentChildData(resp.data);
+  //               ls.set(
+  //                 "ParentChildData-" + caseTypeId,
+  //                 JSON.stringify(resp.data)
+  //               );
+  //               loadParentDropDown(resp.data, fieldData, caseTypeId);
+  //             }
+  //           });
+  //       }
+  //     });
+  // };
+
+  const loadAssocDecodeData = async (fieldData, caseTypeId) => {
+    let assocTypeIds = [];
+    var assocDecodeData = fieldData.filter(
+      (x) =>
+        x.externalDatasourceId == null &&
+        (x.controlTypeCode == "D" ||
+          x.controlTypeCode == "E" ||
+          x.controlTypeCode == "O")
+    );
+
+    assocTypeIds = assocDecodeData.map((x) => {
+      return x.controlId;
+    });
+
+    for (var i = 0; i < assocTypeIds.length; i++) {
+      const currentData = [...fieldData];
+      var commentIndex = fieldData.findIndex(function (c) {
+        return c.controlId == assocTypeIds[i];
+      });
+
+      if (currentData[commentIndex]) {
+        await axios
+          .get(
+            "http://localhost:5000/cases/assocDecode?AssocId=".concat(
+              assocTypeIds[i]
+            )
+          )
+          .then((resp) => {
+            if (resp.data.length) {
+              currentData[commentIndex].assoc_decode = resp.data;
+              setCaseFields(currentData);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+    }
+
     // var ls = new SecureLS({encodingType: 'aes'});
     var ls = new SecureLS({
       encodingType: "des",
       isCompression: false,
       encryptionSecret: "BhavikS",
     });
-    var fieldData = [];
-    caseTypeId = caseTypeId ? caseTypeId : caseType;
-    var localFieldData = ls.get("CaseType-" + caseTypeId);
 
-    var fieldDataReceived = false;
-    if (localFieldData || localFieldData != "") {
-      fieldData = JSON.parse(localFieldData);
-      // setData(fieldData);
-      console.log(fieldData);
-      fieldDataReceived = true;
+    if (fieldData.length > 0) {
+      var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
+
+      if (localParentChildData || localParentChildData != "") {
+        setParentChildData(JSON.parse(localParentChildData));
+        loadParentDropDown(fieldData, caseTypeId);
+      }
+
+      axios
+        .get(
+          "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
+            caseTypeId
+          )
+        )
+        .then((resp) => {
+          if (localParentChildData !== JSON.stringify(resp.data)) {
+            setParentChildData(resp.data);
+            ls.set("ParentChildData-" + caseTypeId, JSON.stringify(resp.data));
+            loadParentDropDown(fieldData, caseTypeId);
+          }
+        });
     }
-
-    var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
-
-    var parentChildDataReceived = false;
-    if (localParentChildData || localParentChildData != "") {
-      setParentChildData(JSON.parse(localParentChildData));
-      parentChildDataReceived = true;
-      loadParentDropDown(
-        JSON.parse(localParentChildData),
-        fieldData,
-        caseTypeId
-      );
-    }
-    axios
-      .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
-      .then((resp) => {
-        if (localFieldData !== JSON.stringify(resp.data)) {
-          setData(resp.data);
-          setLoaded(true);
-          ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
-          fieldData = resp.data;
-        }
-        if (fieldData.length > 0) {
-          axios
-            .get(
-              "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
-                caseTypeId
-              )
-            )
-            .then((resp) => {
-              if (localParentChildData !== JSON.stringify(resp.data)) {
-                setParentChildData(resp.data);
-                ls.set(
-                  "ParentChildData-" + caseTypeId,
-                  JSON.stringify(resp.data)
-                );
-                loadParentDropDown(resp.data, fieldData, caseTypeId);
-              }
-            });
-        }
-      });
   };
 
-  const loadParentDropDown = async (responseData, fieldData, caseTypeId) => {
+  const loadParentDropDown = async (fieldData, caseTypeId) => {
+    setParentDropDownloaded(false);
     let superParentAssocTypeIds = [];
-    var externalData = fieldData.filter((x) => x.ExternalDataSourceId > 0);
+    var externalData = fieldData.filter((x) => x.externalDatasourceId > 0);
 
-    // Use map to get a simple array of "CASE_ASSOC_TYPE_ID_CHILD" values. Ex: [1,2,3]
-    let childAssocTypeIds = responseData.map((x) => {
-      return x.CASE_ASSOC_TYPE_ID_CHILD;
+    superParentAssocTypeIds = externalData.map((x) => {
+      return x.controlId;
     });
-
-    if (externalData.length > 0 && childAssocTypeIds.length > 0) {
-      var filteredExternalData = externalData.filter(function (item) {
-        return childAssocTypeIds.indexOf(item.AssocTypeId) === -1;
-      });
-      superParentAssocTypeIds = filteredExternalData.map((x) => {
-        return x.AssocTypeId;
-      });
-    } else {
-      superParentAssocTypeIds = externalData.map((x) => {
-        return x.AssocTypeId;
-      });
-    }
 
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
+      let cascadeItems = currentData.find(
+        (x) => x.controlId === superParentAssocTypeIds[i]
+      )?.cascadeItems;
+      let parentId = 0;
+      if (cascadeItems && cascadeItems.length) {
+        parentId = cascadeItems.find(
+          (x) => x.childTypeId === superParentAssocTypeIds[i]
+        )?.parentTypeId;
+      }
+
+      let parentCascadeItems = currentData.find((x) => x.controlId === parentId)
+        ?.cascadeItems;
+      let superParentValue = 0;
+      let mainParentValue = 0;
+      let superParentId = 0;
+      let mainParentId = 0;
+      if (parentCascadeItems && parentCascadeItems.length) {
+        superParentId = parentCascadeItems.find(
+          (x) => x.childTypeId === superParentAssocTypeIds[i]
+        )?.parentTypeId;
+        if (superParentId > 0) {
+          superParentValue = currentData.find((x) => x.controlId === parentId)
+            ?.externalDatasourceObjectId;
+
+          let mainParentCascadeItems = currentData.find(
+            (x) => x.controlId === superParentId
+          )?.cascadeItems;
+          if (mainParentCascadeItems && mainParentCascadeItems.length) {
+            mainParentId = mainParentCascadeItems.find(
+              (x) => x.childTypeId === superParentId
+            )?.parentTypeId;
+            if (mainParentId > 0) {
+              mainParentValue = currentData.find(
+                (x) => x.controlId === mainParentId
+              )?.externalDatasourceObjectId;
+            }
+          }
+        }
+      }
+
+      let parentValue = 0;
+      if (superParentId > 0) {
+        parentValue = superParentValue;
+      }
+      if (mainParentId > 0 && !mainParentValue) {
+        parentValue = mainParentValue;
+      }
+
+      var maxRecordCount = parentId > 0 ? 1000 : maxCount;
       var commentIndex = fieldData.findIndex(function (c) {
-        return c.AssocTypeId == superParentAssocTypeIds[i];
+        return c.controlId == superParentAssocTypeIds[i];
       });
+
       if (currentData[commentIndex]) {
         var jsonData = {
           searchText: "",
-          maxCount: maxCount,
+          maxCount: maxRecordCount,
           skipCount: 0,
           application: 0,
           typeID: caseTypeId,
           fieldID: superParentAssocTypeIds[i],
           username: "",
-          parentValues: { ["0"]: ["0"] },
+          parentValues: {
+            [parentId ? String(parentId) : "0"]: [
+              parentValue ? String(parentValue) : "0",
+            ],
+          },
         };
 
         var config = {
@@ -241,14 +401,16 @@ export default function CaseViewer(props) {
           .then(function (response) {
             const externalData = response.data.responseContent;
             currentData[commentIndex].assoc_decode = externalData;
-            setData(currentData);
-            setLoaded(true);
+            setCaseFields(currentData);
+            // setLoaded(true);
+            setParentDropDownloaded(true);
           })
           .catch(function (error) {
             console.log(error);
           });
       }
     }
+    props.handleCaseLoaded(true);
   };
 
   const onScroll = (fieldData, event) => {
@@ -257,7 +419,7 @@ export default function CaseViewer(props) {
       event.target.clientHeight;
     if (bottom) {
       loadMoreData(
-        fieldData.AssocTypeId,
+        fieldData.controlId,
         "",
         maxCount,
         fieldData?.assoc_decode?.length,
@@ -275,7 +437,6 @@ export default function CaseViewer(props) {
   ) => {
     event.preventDefault();
     event.stopPropagation();
-    // setLoaded(false);
     setLoadMoreText(true);
     if (searchText !== "") {
       skipCount = 0;
@@ -290,11 +451,11 @@ export default function CaseViewer(props) {
       parentId = 0;
     }
 
-    var commentIndex = data.findIndex(function (c) {
-      return c.AssocTypeId == assocTypeId;
+    var commentIndex = caseFields.findIndex(function (c) {
+      return c.controlId == assocTypeId;
     });
 
-    const currentData = [...data];
+    const currentData = [...caseFields];
 
     if (currentData[commentIndex]) {
       var jsonData = {
@@ -331,34 +492,45 @@ export default function CaseViewer(props) {
     }
   };
 
-  const handleChange = (assocTypeId, event) => {
+  const handleChange = async (data, index, assocTypeId, event) => {
     if (event) {
+      const currentData = [...caseFields];
       const value = event.target.value;
+      if (currentData[index].externalDatasourceId > 0) {
+        currentData[index].externalDatasourceObjectId = value;
+      } else {
+        currentData[index].decodeId = value;
+      }
       setParentValue(value);
       var parentData = parentChildData.find(
         (x) => x.CASE_ASSOC_TYPE_ID_PARENT == assocTypeId
       );
 
+      var maxRecordCount = maxCount;
       if (value && value != "0" && parentData) {
-        var commentIndex = data.findIndex(function (c) {
-          return c.AssocTypeId == parentData.CASE_ASSOC_TYPE_ID_CHILD;
+        var commentIndex = currentData.findIndex(function (c) {
+          return c.controlId === parentData.CASE_ASSOC_TYPE_ID_CHILD;
         });
-        const currentData = [...data];
+
         if (currentData[commentIndex]) {
           parentChildData.forEach(function (item, index) {
             currentData[commentIndex].assoc_decode = [];
+            currentData[commentIndex].externalDatasourceObjectId = state.value;
+            maxRecordCount = 1000;
             var childData = parentChildData.find(
               (x) =>
                 x.CASE_ASSOC_TYPE_ID_PARENT ==
-                currentData[commentIndex].AssocTypeId
+                currentData[commentIndex].controlId
             );
             if (childData) {
               if (childData.CASE_ASSOC_TYPE_ID_CHILD > 0) {
-                var childIndex = data.findIndex(function (c) {
-                  return c.AssocTypeId == childData.CASE_ASSOC_TYPE_ID_CHILD;
+                var childIndex = caseFields.findIndex(function (c) {
+                  return c.controlId == childData.CASE_ASSOC_TYPE_ID_CHILD;
                 });
                 if (currentData[childIndex]) {
                   currentData[childIndex].assoc_decode = [];
+                  currentData[childIndex].externalDatasourceObjectId =
+                    state.value;
                 }
               }
             }
@@ -367,7 +539,7 @@ export default function CaseViewer(props) {
 
           var jsonData = {
             searchText: "",
-            maxCount: maxCount,
+            maxCount: maxRecordCount,
             skipCount: 0,
             application: 0,
             typeID: caseType,
@@ -381,12 +553,11 @@ export default function CaseViewer(props) {
             url: "http://localhost:5000/cases/GetExternalDataValues",
             data: jsonData,
           };
-
-          axios(config)
+          await axios(config)
             .then(function (response) {
               const externalData = response.data.responseContent;
               currentData[commentIndex].assoc_decode = externalData;
-              setData(currentData);
+              setCaseFields(currentData);
             })
             .catch(function (error) {
               console.log(error);
@@ -417,11 +588,7 @@ export default function CaseViewer(props) {
       fields["fileData"] = formDataValue;
     }
 
-    if (assignTo > 0) {
-      fields["AssignTo"] = assignTo;
-    } else {
-      fields["AssignTo"] = defaultHopperId;
-    }
+    fields["AssignTo"] = assignTo > 0 ? assignTo : caseData.assignTo;
 
     if (submitted == true) {
       //{ timer: 3000 }
@@ -444,14 +611,15 @@ export default function CaseViewer(props) {
   };
 
   const createTextField = (data, index) => {
-    var required = convertRequired(data);
+    // var required = convertRequired(control);
     return (
       <div className="">
         <TextField
-          name={String(data.AssocTypeId)}
-          id={String(data.AssocTypeId)}
-          label={data.Name}
-          required={required}
+          name={String(data.controlId)}
+          id={String(data.controlId)}
+          label={data.controlTitle}
+          defaultValue={data.controlValue}
+          required={data.isRequired}
           fullWidth={true}
           InputLabelProps={{ shrink: true }}
           autoFocus={index == 0 ? true : false}
@@ -474,17 +642,18 @@ export default function CaseViewer(props) {
   };
 
   const createDateField = (data, index) => {
-    var required = convertRequired(data);
-
+    // var required = convertRequired(data);
+    var dateFormat = require("dateformat");
     return (
       <div className="">
         <TextField
           type="date"
-          name={String(data.AssocTypeId)}
-          id={String(data.AssocTypeId)}
-          label={data.Name}
+          name={String(data.controlId)}
+          id={String(data.controlId)}
+          label={data.controlTitle}
+          defaultValue={dateFormat(data.controlValue, "yyyy-mm-dd")}
           InputLabelProps={{ shrink: true }}
-          required={required}
+          required={data.isRequired}
           fullWidth={true}
           autoFocus={index == 0 ? true : false}
         />
@@ -497,7 +666,7 @@ export default function CaseViewer(props) {
   };
 
   const createDropDownField = (data, index) => {
-    var required = convertRequired(data);
+    // var required = convertRequired(data);
 
     return (
       <div
@@ -507,17 +676,23 @@ export default function CaseViewer(props) {
       >
         {" "}
         <TextField
-          id={String(data?.AssocTypeId)}
+          id={String(data?.controlId)}
           select
-          name={String(data?.AssocTypeId + caseType)}
-          label={data.Name}
-          value={state.value}
-          onChange={(event) => handleChange(data?.AssocTypeId, event)}
+          name={String(data?.controlId + caseType)}
+          label={data.controlTitle}
+          value={
+            data.externalDatasourceId > 0
+              ? data.externalDatasourceObjectId
+              : data.decodeId
+          }
+          onChange={(event) => {
+            handleChange(data, index, data?.controlId, event);
+          }}
           fullWidth={true}
-          required={required}
+          required={data.isRequired}
           autoFocus={index == 0 ? true : false}
         >
-          {data.assoc_decode
+          {data.assoc_decode?.length
             ? data.assoc_decode.map((option) => (
                 <MenuItem key={option.DecodeId} value={option.DecodeId}>
                   {option.DecodeValue}
@@ -525,8 +700,8 @@ export default function CaseViewer(props) {
               ))
             : []}
 
-          {data?.assoc_decode.length >= maxCount &&
-          data?.assoc_decode.length % maxCount == 0 ? (
+          {data?.assoc_decode?.length >= maxCount &&
+          data?.assoc_decode?.length % maxCount == 0 ? (
             <span>Loading Please Wait...</span>
           ) : (
             <span></span>
@@ -557,34 +732,19 @@ export default function CaseViewer(props) {
     setAssignTo(userId);
   };
 
-  const createAssignTo = () => {
-    return (
-      <UserAutocomplete
-        defaultHopper={defaultHopperId}
-        defaultHopperId={defaultHopperId}
-        selectedUser={
-          caseData?.assignedToFullName
-            ? caseData?.assignedToFullName
-            : caseData?.assignedTo
-        }
-        handleAutocompleteChange={handleAutocompleteChange}
-      ></UserAutocomplete>
-    );
-  };
-
   const fieldHandler = (data, index) => {
     //TODO: implment id structure
-    var required = convertRequired(data);
+    // var required = convertRequired(data);
 
-    if (data.AssocFieldType === "T" || data.AssocFieldType === "N") {
+    if (data.controlTypeCode === "T" || data.controlTypeCode === "N") {
       return createTextField(data, index);
-    } else if (data.AssocFieldType === "A") {
+    } else if (data.controlTypeCode === "A") {
       return createDateField(data, index);
     } else if (
-      (data.AssocFieldType === "D" ||
-        data.AssocFieldType === "E" ||
-        data.AssocFieldType === "O") &&
-      data.ExternalDataSourceId !== 121
+      (data.controlTypeCode === "D" ||
+        data.controlTypeCode === "E" ||
+        data.controlTypeCode === "O") &&
+      data.externalDatasourceId !== 121
     ) {
       return createDropDownField(data, index);
     }
@@ -597,8 +757,8 @@ export default function CaseViewer(props) {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <div>
-                {data
-                  ? data.map((item, index) => (
+                {caseFields.length
+                  ? caseFields.map((item, index) => (
                       <div key={index}>{fieldHandler(item, index)}</div>
                     ))
                   : []}
@@ -656,7 +816,10 @@ export default function CaseViewer(props) {
           "src",
           "https://cases.boxerproperty.com/" + urlValue
         );
-        imgSrcUrls[i].setAttribute("style", "width:auto");
+        imgSrcUrls[i].setAttribute(
+          "style",
+          "height: 100%;max-width: 100%; max-height: 100%; margin: auto;"
+        );
       }
     }
 
@@ -711,11 +874,11 @@ export default function CaseViewer(props) {
             <Grid item xs={12}>
               <h1>Comments</h1>
               <div>
-                {notes
+                {notes.length
                   ? notes.map((item, index) => (
                       <div key={index}>{notesHandler(item, index)}</div>
                     ))
-                  : []}
+                  : "No Comments Available...!!!"}
               </div>
             </Grid>
           </Grid>
@@ -724,34 +887,6 @@ export default function CaseViewer(props) {
     );
   };
 
-  const handlePriority = (priority) => {
-    priority = "Normal";
-    if (priority && priority.includes("High")) {
-      priority = "High";
-    } else if (priority && priority.includes("Critical")) {
-      priority = "Critical";
-    } else if (priority && priority.includes("Low")) {
-      priority = "Low";
-    }
-
-    return (
-      <div className="sc-eOnLuU kbLHgv">
-        <div className="sc-igaqVs kvdIbC">
-          {/* <img
-            className="sc-ccXozh hymfyn"
-            src={imageSource}
-            width="16px"
-            height="16px"
-          /> */}
-        </div>
-        {priority ? (
-          <span className="sc-gcpVEs czZyXP">{priority}</span>
-        ) : (
-          "Normal"
-        )}
-      </div>
-    );
-  };
   return (
     <>
       <Grid container spacing={1}>
@@ -776,7 +911,7 @@ export default function CaseViewer(props) {
           <br />
           <div className={classes.fixedHeight}>
             {/* <CaseComments comments={notes}/> */}
-            {loaded ? (
+            {notesLoaded ? (
               <Container className="">{loadNotes()}</Container>
             ) : (
               <p>Please wait...!! Comments Loading</p>
@@ -787,74 +922,12 @@ export default function CaseViewer(props) {
           {/* <CaseDetailBasicInfo /> */}
           <Box>
             <div data-test-id="">
-              <div className="" data-test-id="">
-                <div className="" data-test-id=""></div>
-                <div>
-                  <div className="">
-                    <div className="" data-test-id="">
-                      <div>
-                        <div className="">
-                          <div>
-                            <label className="">
-                              <div className="">
-                                <span style={{ fontWeight: "bold" }}>
-                                  Assignee
-                                </span>
-                              </div>
-                            </label>
-                          </div>
-                          <div className="">
-                            {caseData?.assignedToFullName
-                              ? caseData?.assignedToFullName
-                              : caseData?.assignedTo}
-                          </div>
-                          <Box>{createAssignTo()}</Box>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <br />
-                <div className="">
-                  <div className="" data-test-id="">
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="">
-                            <div className="">
-                              <span style={{ fontWeight: "bold" }}>
-                                Reporter
-                              </span>
-                            </div>
-                          </label>
-                        </div>
-                        <div className="">{caseData?.createdByFullName}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <br />
-                <div className="">
-                  <div className="">
-                    <div>
-                      <div className="">
-                        <div>
-                          <label className="">
-                            <div className="">
-                              <span style={{ fontWeight: "bold" }}>
-                                Priority
-                              </span>
-                            </div>
-                          </label>
-                        </div>
-                        {handlePriority(caseData.priority)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <CaseBasicInformation
+                caseData={caseData}
+                handleAutocompleteChange={handleAutocompleteChange}
+              ></CaseBasicInformation>
               <br />
-              {data?.length > 0 ? (
+              {caseFields ? (
                 <Accordion
                   expanded={fieldExpanded}
                   onChange={handleFieldAccordionChange(fieldExpanded)}
@@ -865,14 +938,34 @@ export default function CaseViewer(props) {
                     id="panel1a-header"
                   >
                     <Typography>
-                      {!fieldExpanded
-                        ? "Show " + data.length + " more fields"
-                        : "Show less"}
+                      {!fieldExpanded ? "Show  more fields" : "Show less"}
                     </Typography>
                   </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>{loadFields()}</Typography>
-                  </AccordionDetails>
+                  {caseFields?.length ? (
+                    <AccordionDetails className="case-fields">
+                      <form
+                        onSubmit={handleSubmit}
+                        className="case-create-form"
+                      >
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          color="primary"
+                        >
+                          Save
+                        </Button>
+                        <br />
+                        <br />
+                        <Typography>{loadFields()}</Typography>
+                      </form>
+                    </AccordionDetails>
+                  ) : (
+                    <AccordionDetails>
+                      <Typography>
+                        Please wait while we are loading fields...!!
+                      </Typography>
+                    </AccordionDetails>
+                  )}
                 </Accordion>
               ) : (
                 ""

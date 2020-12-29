@@ -97,6 +97,9 @@ export default function ViewCase() {
   const [loaded, setLoaded] = useState(true);
   const [maxCount, setMaxCount] = useState(50);
   const [pageSize, setPageSize] = useState(50);
+  const [searchTextValue, setSearchTextValue] = useState("");
+  const [caseLoaded, setCaseLoaded] = useState(true);
+
   const timeoutRef = useRef(null);
 
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
@@ -104,6 +107,10 @@ export default function ViewCase() {
   const handleCasePreviewClick = (caseId, caseData) => {
     setCaseId(caseId);
     setCaseData(caseData);
+  };
+
+  const handleCaseLoaded = (value) => {
+    setCaseLoaded(value);
   };
 
   const caseList = async (searchText = "", skipCount = 0, loadMore = false) => {
@@ -202,7 +209,7 @@ export default function ViewCase() {
     const bottom =
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight;
-    if (bottom) {
+    if (bottom && !searchTextValue) {
       //   alert('bottom');
       caseList("", caseListData?.length, true);
     }
@@ -229,9 +236,11 @@ export default function ViewCase() {
       // SET A TIMEOUT
       timeoutRef.current = null; // RESET REF TO NULL WHEN IT RUNS
       if (searchText) {
+        setSearchTextValue(searchText);
         setFilteredCaseListData([]);
         getCases(searchText, event);
       } else {
+        setSearchTextValue("");
         setFilteredCaseListData(caseListData);
         setCaseListData(caseListData);
       }
@@ -268,7 +277,7 @@ export default function ViewCase() {
     <div className={classes.root}>
       {loaded ? (
         <main className={classes.content}>
-           <Container className={classes.container}>
+          <Container className={classes.container}>
             <AppBar position="static">
               <Toolbar>
                 <IconButton
@@ -306,10 +315,9 @@ export default function ViewCase() {
                     <CaseList
                       handleCasePreviewClick={handleCasePreviewClick}
                       caseListData={
-                        filteredCaseListData.length
-                          ? filteredCaseListData
-                          : []
+                        filteredCaseListData.length ? filteredCaseListData : []
                       }
+                      caseLoaded={caseLoaded}
                     ></CaseList>
                   </div>
                 </Paper>
@@ -321,6 +329,7 @@ export default function ViewCase() {
                     <CaseViewer
                       caseId={caseId}
                       caseData={caseData}
+                      handleCaseLoaded={handleCaseLoaded}
                     ></CaseViewer>
                   ) : (
                     ""
