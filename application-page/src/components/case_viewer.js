@@ -19,6 +19,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
+import * as apiConfig from "../components/api_base/api-config";
 import CaseBasicInformation from "./case-basic-information.js";
 import FileUpload from "./file-upload.js";
 import Froala from "./froala.js";
@@ -88,7 +89,7 @@ export default function CaseViewer(props) {
     setFieldExpanded(!isFieldExpanded);
   };
   const handleCaseTypeChange = (caseId, caseData) => {
-    const caseTypeId = 19;
+    const caseTypeId = caseData.typeId;
     setNotesLoaded(false);
     props.handleCaseLoaded(false);
     setData([]);
@@ -311,10 +312,24 @@ export default function CaseViewer(props) {
     }
   };
 
-  const loadParentDropDown = async (fieldData, caseTypeId) => {
+  const loadParentDropDown = async (
+    fieldData,
+    caseTypeId,
+    maxCountValue = maxCount,
+    controlId = 0
+  ) => {
     setParentDropDownloaded(false);
     let superParentAssocTypeIds = [];
-    var externalData = fieldData.filter((x) => x.externalDatasourceId > 0);
+    // var externalData = fieldData.filter((x) => x.externalDatasourceId > 0);
+
+    var externalData = [];
+    if (controlId > 0) {
+      externalData = fieldData.filter(
+        (x) => x.externalDatasourceId > 0 && x.controlId === controlId
+      );
+    } else {
+      externalData = fieldData.filter((x) => x.externalDatasourceId > 0);
+    }
 
     superParentAssocTypeIds = externalData.map((x) => {
       return x.controlId;
@@ -322,6 +337,13 @@ export default function CaseViewer(props) {
 
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
+
+      // let parentId = currentData.find(
+      //   (x) => x.childTypeId === superParentAssocTypeIds[i]
+      // )?.parentTypeId;
+      // let parentValue = currentData.find((x) => x.controlId === parentId)
+      //   ?.externalDatasourceObjectId;
+
       let cascadeItems = currentData.find(
         (x) => x.controlId === superParentAssocTypeIds[i]
       )?.cascadeItems;
@@ -370,7 +392,8 @@ export default function CaseViewer(props) {
         parentValue = mainParentValue;
       }
 
-      var maxRecordCount = parentId > 0 ? 1000 : maxCount;
+      var maxRecordCount =
+        maxCountValue > 0 ? maxCountValue : parentId > 0 ? 1000 : maxCount;
       var commentIndex = fieldData.findIndex(function (c) {
         return c.controlId == superParentAssocTypeIds[i];
       });
@@ -400,10 +423,37 @@ export default function CaseViewer(props) {
         await axios(config)
           .then(function (response) {
             const externalData = response.data.responseContent;
-            currentData[commentIndex].assoc_decode = externalData;
-            setCaseFields(currentData);
-            // setLoaded(true);
-            setParentDropDownloaded(true);
+
+            let dataAvailable = true;
+            if (currentData[commentIndex].externalDatasourceObjectId > 0) {
+              var dataValue = externalData.filter(
+                (x) =>
+                  x.DecodeId ===
+                  String(currentData[commentIndex].externalDatasourceObjectId)
+              );
+
+              if (dataValue && !dataValue.length) {
+                dataAvailable = false;
+                currentData[commentIndex].assoc_decode = currentData[
+                  commentIndex
+                ].assoc_decode
+                  ? currentData[commentIndex].assoc_decode.concat(externalData)
+                  : externalData;
+                loadParentDropDown(
+                  fieldData,
+                  caseTypeId,
+                  maxCountValue * 2,
+                  currentData[commentIndex].controlId
+                );
+              }
+            }
+
+            if (dataAvailable) {
+              currentData[commentIndex].assoc_decode = externalData;
+              setCaseFields(currentData);
+              // setLoaded(true);
+              setParentDropDownloaded(true);
+            }
           })
           .catch(function (error) {
             console.log(error);
@@ -785,10 +835,7 @@ export default function CaseViewer(props) {
       return (
         <img
           onError={(event) => addDefaultSrc(event)}
-          src={
-            "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=" +
-            userName
-          }
+          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
           height={50}
           width={50}
         />
@@ -811,25 +858,28 @@ export default function CaseViewer(props) {
     var hrefUrls = element.getElementsByTagName("a");
     for (var i = 0; i < imgSrcUrls.length; i++) {
       var urlValue = imgSrcUrls[i].getAttribute("src");
+      let isUrlContain = urlValue.includes("http");
+      if (!isUrlContain) {
+        urlValue = apiConfig.BASE_CASES_URL + urlValue;
+      }
       if (urlValue) {
-        imgSrcUrls[i].setAttribute(
-          "src",
-          "https://cases.boxerproperty.com/" + urlValue
-        );
-        imgSrcUrls[i].setAttribute(
-          "style",
-          "height: 100%;max-width: 100%; max-height: 100%; margin: auto;"
-        );
+        imgSrcUrls[i].setAttribute("src", urlValue);
+        // imgSrcUrls[i].setAttribute(
+        //   "style",
+        //   "height: 100%;max-width: 100%; max-height: 100%; margin: auto;"
+        // );
       }
     }
 
     for (var j = 0; j < hrefUrls.length; j++) {
       var hrefUrlValue = hrefUrls[j].getAttribute("href");
+      let hrefId = hrefUrls[j].getAttribute("id");
+      let isHrefUrlContain = hrefUrlValue.includes("http");
+      if (!isHrefUrlContain) {
+        hrefUrlValue = apiConfig.BASE_CASES_URL + hrefUrlValue;
+      }
       if (hrefUrlValue) {
-        hrefUrls[j].setAttribute(
-          "href",
-          "https://cases.boxerproperty.com/" + hrefUrlValue
-        );
+        hrefUrls[j].setAttribute("href", hrefUrlValue);
       }
     }
 

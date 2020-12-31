@@ -14,22 +14,32 @@ import React, { useEffect, useRef, useState } from "react";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
 import Loading from "./Loader";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import DraftsIcon from '@material-ui/icons/Drafts';
+import SendIcon from '@material-ui/icons/Send';
+
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
-    float: "left",
-    marginLeft: "12rem",
-    flexGrow: 1,
+    // display: "flex",
+    // float: "left",
+    // marginLeft: "12rem",
+    // flexGrow: 1,
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
-    flexGrow: 1,
-    height: "100vh",
+    // flexGrow: 1,
+    // height: "100vh",
   },
   container: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    // paddingTop: theme.spacing(1),
+    // paddingBottom: theme.spacing(1),
   },
   paper: {
     padding: theme.spacing(1),
@@ -89,6 +99,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const StyledMenu = withStyles({
+  paper: {
+    border: '1px solid #d3d4d5',
+  },
+})((props) => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'center',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'center',
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {
+    '&:focus': {
+      backgroundColor: theme.palette.primary.main,
+      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+        color: theme.palette.common.white,
+      },
+    },
+  },
+}))(MenuItem);
+
 export default function ViewCase() {
   const [caseId, setCaseId] = useState(0);
   const [caseData, setCaseData] = useState([]);
@@ -99,10 +140,21 @@ export default function ViewCase() {
   const [pageSize, setPageSize] = useState(50);
   const [searchTextValue, setSearchTextValue] = useState("");
   const [caseLoaded, setCaseLoaded] = useState(true);
+  const [documentList, setDocumentList] = useState([]);
 
   const timeoutRef = useRef(null);
 
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleCasePreviewClick = (caseId, caseData) => {
     setCaseId(caseId);
@@ -111,6 +163,10 @@ export default function ViewCase() {
 
   const handleCaseLoaded = (value) => {
     setCaseLoaded(value);
+  };
+
+  const handleDocumentList = (documentList) => {
+    setDocumentList(documentList);
   };
 
   const caseList = async (searchText = "", skipCount = 0, loadMore = false) => {
@@ -302,10 +358,37 @@ export default function ViewCase() {
                     onInput={(event) => searchCase(event.target.value, event)}
                   />
                 </div>
+                <div>
+                  <Button
+                    aria-controls="customized-menu"
+                    aria-haspopup="true"
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClick}
+                  >
+                    Document List
+                  </Button>
+                  <StyledMenu
+                    id="customized-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                  {documentList.length ? documentList.map((option) => (
+                      <StyledMenuItem>
+                        <ListItemIcon>
+                          <SendIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Sent mail" />
+                      </StyledMenuItem>
+                      ))
+                    : "Documents not uploaded..!!"}
+                  </StyledMenu>
+                </div>
               </Toolbar>
             </AppBar>
-            <Grid container spacing={1}>
-              {/* Chart */}
+            <Grid container item xs={12} spacing={1}>
               <Grid item xs={12} sm={6} md={4} lg={4}>
                 <Paper>
                   <div
@@ -330,16 +413,13 @@ export default function ViewCase() {
                       caseId={caseId}
                       caseData={caseData}
                       handleCaseLoaded={handleCaseLoaded}
+                      handleDocumentList={handleDocumentList}
                     ></CaseViewer>
                   ) : (
                     ""
                   )}
                 </Paper>
               </Grid>
-              {/* Recent Orders */}
-              {/* <Grid item xs={12}>
-              <Paper className={classes.paper}></Paper>
-            </Grid> */}
             </Grid>
           </Container>
         </main>

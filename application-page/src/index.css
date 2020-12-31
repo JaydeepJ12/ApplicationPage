@@ -219,9 +219,9 @@ code {
 }
 
 .view-case-main {
-  float: right;
+  /* float: right;
   margin-left: 12rem;
-  width: max-content;
+  width: max-content; */
   /* margin-left: 10% !important; */
 }
 

@@ -54,7 +54,7 @@ export default function CasePreview(props) {
   const handleCasePreviewClick = (caseId, caseData) => (isExpanded) => {
     // setExpanded(isExpanded ? "panel" : false);
     // props.handleCasePreviewClick(caseId, caseData);
-    if (caseLoaded) {
+    if(caseLoaded) {
       props.handleCasePreviewClick(caseId, caseData);
     }
   };
