@@ -84,7 +84,7 @@ code {
   min-height: 4rem !important;
 } */
 
-@media only screen and (max-width: 1366px) {
+@media only screen and (max-width: 1365px) {
   .case-create-form {
     float: left !important;
     width: 100% !important;
@@ -110,6 +110,18 @@ code {
     top: -3rem !important;
     float: right !important;
     left: -32rem !important;
+  }
+
+  .case-list-div{
+    height: 700px;
+    /* max-width: 15rem; */
+    width: auto;
+    overflow: auto;
+  }
+
+  .view-case-main {
+    /* float: left !important; */
+    margin-left: 1% !important;
   }
 }
 
@@ -168,4 +180,51 @@ code {
 .fr-box.fr-basic .fr-wrapper {
   height: 19rem;
   overflow: auto;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.case-list-div{
+  height: 700px;
+  max-width: 15rem;
+  width: auto;
+  overflow: auto;
+}
+
+.app-bar-div{
+  max-width: 15rem;
+  width: auto;
+}
+
+.field-div {
+  width: max-content;
+}
+
+.view-case-main {
+  /* float: right;
+  margin-left: 12rem;
+  width: max-content; */
+  /* margin-left: 10% !important; */
+}
+
+.case-fields{
+  display: block !important;
 }

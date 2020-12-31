@@ -16,7 +16,7 @@ export default function OverView(props) {
   }, []);
 
   const handleClick = (props) => {
-    props.navigate("/case-create");
+    props.navigate("/case-select");
   };
 
   return (
