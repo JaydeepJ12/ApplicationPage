@@ -18,7 +18,7 @@ function App() {
   const classes = useStyles();
   return (
     <div>
-      Continuous deployment test.
+      Continuous deployment test. With Flask.
     </div>
   );
 }
