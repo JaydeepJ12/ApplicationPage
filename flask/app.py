@@ -1,6 +1,6 @@
 from flask import Flask, request
 from blueprints.cases import bp as cases
-from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import json
 
 base = Flask(__name__)
