@@ -1,4 +1,4 @@
-import { Container } from "@material-ui/core";
+import { Container,Card } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   fixedHeight: {
-    height: "80vh",
+    height: "90vh",
     overflow: "auto",
   },
   accordionSam: {
@@ -330,11 +330,11 @@ export default function ViewCase() {
   };
 
   return (
-    <div className={classes.root}>
+    <div className="page" id="page-view-case">
+      <Card>
       {loaded ? (
-        <main className={classes.content}>
-          <Container className={classes.container}>
-            <AppBar position="static">
+        <>
+            <AppBar position="static" className="inner-navigation bg-primary">
               <Toolbar>
                 <IconButton
                   edge="start"
@@ -348,7 +348,7 @@ export default function ViewCase() {
                   <div className={classes.searchIcon}>
                     <SearchIcon />
                   </div>
-                  <InputBase
+                  <InputBase className="input-search"
                     placeholder="Search…"
                     classes={{
                       root: classes.inputRoot,
@@ -389,13 +389,14 @@ export default function ViewCase() {
               </Toolbar>
             </AppBar>
             <Grid container item xs={12} spacing={1}>
-              <Grid item xs={12} sm={6} md={4} lg={4}>
-                <Paper>
+              
+              <Grid item xs={12} sm={12} md={3} lg={3} className="panel-left user-list">
+               
                   <div
                     className={fixedHeightPaper}
                     onScroll={(event) => onScroll(caseListData, event)}
                   >
-                    <CaseList
+                    <CaseList 
                       handleCasePreviewClick={handleCasePreviewClick}
                       caseListData={
                         filteredCaseListData.length ? filteredCaseListData : []
@@ -403,11 +404,12 @@ export default function ViewCase() {
                       caseLoaded={caseLoaded}
                     ></CaseList>
                   </div>
-                </Paper>
+           
               </Grid>
-              {/* Recent Deposits */}
-              <Grid item xs={12} sm={6} md={8} lg={8}>
-                <Paper className={CaseDetailsPaper}>
+
+              <Grid item xs={12} sm={12} md={9} lg={9} className="panel-center">
+                
+                
                   {caseId > 0 ? (
                     <CaseViewer
                       caseId={caseId}
@@ -418,15 +420,15 @@ export default function ViewCase() {
                   ) : (
                     ""
                   )}
-                </Paper>
+              
               </Grid>
             </Grid>
-          </Container>
-        </main>
+            </>
       ) : (
         ""
       )}
       {!loaded ? createLoader() : []}
+      </Card>
     </div>
   );
 }

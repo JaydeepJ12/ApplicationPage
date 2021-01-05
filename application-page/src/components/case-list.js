@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
   pos: {
     marginBottom: 12,
-  },
+  },                                                                                                                       
   avatar: {
     marginLeft: "auto",
     // border: "2px solid #eee",
@@ -98,11 +98,11 @@ export default function CaseList(props) {
   }, [props.caseListData, props.caseLoaded]);
 
   return (
-    <div className={classes.root}>
+    <div className={"case-user-list "+classes.root}>
       <div className={classes.dropSelect}></div>
       {caseList.length ? (
         caseList.map((caseData) => (
-          <CasePreview
+          <CasePreview 
             handleCasePreviewClick={handleCasePreviewClick}
             caseId={caseData.caseID}
             caseData={caseData}

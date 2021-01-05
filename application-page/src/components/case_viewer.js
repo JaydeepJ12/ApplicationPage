@@ -771,7 +771,7 @@ export default function CaseViewer(props) {
 
   const createFileField = () => {
     return (
-      <FileUpload
+      <FileUpload className="input-file-upload"
         caseType={caseType}
         handleOnFileChange={handleOnFileChange}
       ></FileUpload>
@@ -886,10 +886,10 @@ export default function CaseViewer(props) {
     var dateFormat = require("dateformat");
 
     return (
-      <div>
-        <Paper>
+      <div className="card-user-comment">
+   
           <Grid container wrap="nowrap" spacing={2}>
-            <Grid item>
+            <Grid item className="st-p-1">
               <Avatar>{renderUserImage(notes.createdBy)}</Avatar>
             </Grid>
             <Grid justifyContent="left" item xs zeroMinWidth>
@@ -904,7 +904,7 @@ export default function CaseViewer(props) {
               </p>
             </Grid>
           </Grid>
-        </Paper>
+     
         <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
       </div>
     );
@@ -918,30 +918,27 @@ export default function CaseViewer(props) {
 
   const loadNotes = () => {
     return (
-      <Box>
-        <div>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
+   
+            <Grid item item xs={12} sm={12} md={8} lg={8}>
               <h1>Comments</h1>
-              <div>
+        
                 {notes.length
                   ? notes.map((item, index) => (
                       <div key={index}>{notesHandler(item, index)}</div>
                     ))
-                  : "No Comments Available...!!!"}
-              </div>
-            </Grid>
+                  : 
+                  "No Comments Available...!!!"
+                  }
+           
+
           </Grid>
-        </div>
-      </Box>
+   
     );
   };
 
   return (
-    <>
-      <Grid container spacing={1}>
-        {/* Chart */}
-        <Grid item xs={12} sm={6} md={4} lg={9}>
+    <Grid container item xs={12} spacing={1} className="panel-center st-p-1">
+        <Grid item xs={12} sm={12} md={8} lg={8}  className="st-p-1">
           <Typography
             className={classes.title}
             color="textSecondary"
@@ -952,23 +949,20 @@ export default function CaseViewer(props) {
           <Typography variant="h4" component="h3">
             {caseData.title}
           </Typography>
-          <Divider className={classes.dividersty} />
+        
 
           <Box>{createFileField()}</Box>
-          <br />
           <span>Description</span>
           {createFroalaField()}
-          <br />
           <div className={classes.fixedHeight}>
-            {/* <CaseComments comments={notes}/> */}
             {notesLoaded ? (
-              <Container className="">{loadNotes()}</Container>
+              <div className="comment-list">{loadNotes()}</div>
             ) : (
               <p>Please wait...!! Comments Loading</p>
             )}
           </div>
         </Grid>
-        <Grid item xs={12} sm={6} md={8} lg={3}>
+        <Grid item xs={12} sm={12} md={4} lg={4} className="panel-right st-p-1 side-bar-case-create">
           {/* <CaseDetailBasicInfo /> */}
           <Box>
             <div data-test-id="">
@@ -976,13 +970,13 @@ export default function CaseViewer(props) {
                 caseData={caseData}
                 handleAutocompleteChange={handleAutocompleteChange}
               ></CaseBasicInformation>
-              <br />
+      
               {caseFields ? (
-                <Accordion
+                <Accordion className="input-accordation"
                   expanded={fieldExpanded}
                   onChange={handleFieldAccordionChange(fieldExpanded)}
                 >
-                  <AccordionSummary
+                  <AccordionSummary className="input-accordation-summary"
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
@@ -1023,7 +1017,6 @@ export default function CaseViewer(props) {
             </div>
           </Box>
         </Grid>
-      </Grid>
-    </>
+    </Grid>
   );
 }

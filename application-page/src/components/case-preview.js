@@ -36,9 +36,6 @@ const useStyles = makeStyles({
   dropSelect: {
     width: "fit-content",
   },
-  card: {
-    margin: 10,
-  },
   listItem: {
     textAlign: "right",
   },
@@ -99,13 +96,13 @@ export default function CasePreview(props) {
   };
 
   return (
-    <Card
-      className={classes.card}
+    <Card  style={{ cursor: "pointer" }}
+      className={"card-user-case"}
       key={caseData.caseID}
       onClick={handleCasePreviewClick(caseId, caseData)}
     >
       <CardContent>
-        <Typography style={{ cursor: "pointer" }}>{caseData.title}</Typography>
+        <Typography >{caseData.title}</Typography>
       </CardContent>
       <CardActions disableSpacing>
         <Typography className={classes.title} color="textSecondary">
