@@ -5,7 +5,9 @@ import "./App.css";
 import CaseSelect from "./components/case_select.js";
 import CaseTypeForm from "./components/case_type_form/index";
 import Dashboard from "./components/dashboard.js";
+
 import Navigation from "./components/navigation";
+
 import OverView from "./components/overview";
 import Test from "./components/test";
 import theme from "./components/theme.js";
@@ -20,10 +22,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "1rem",
   },
 }));
-
+//
 function App() {
   const classes = useStyles();
   return (
+
     <Navigation></Navigation>
     // <ThemeProvider theme={theme}>
     //   <div classes={classes.root}></div>
@@ -42,7 +45,13 @@ function App() {
     //     </Router>
     //   </div>
     // </ThemeProvider>
+
   );
 }
 
 export default App;
+
+
+/*
+    
+*/
