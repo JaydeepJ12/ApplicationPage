@@ -8,6 +8,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
 import { default as Typography } from "@material-ui/core/Typography";
 import React, { useEffect, useState } from "react";
+import * as notification from "../components/common/toast";
 
 const useStyles = makeStyles({
   root: {
@@ -49,11 +50,13 @@ export default function CasePreview(props) {
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
 
   const handleCasePreviewClick = (caseId, caseData) => (isExpanded) => {
-    // setExpanded(isExpanded ? "panel" : false);
     // props.handleCasePreviewClick(caseId, caseData);
-    if(caseLoaded) {
-      props.handleCasePreviewClick(caseId, caseData);
+    if (!caseLoaded) {
+      notification.toast.warning("Please wait. Your case is loading...!!");
+      return false;
     }
+
+    props.handleCasePreviewClick(caseId, caseData);
   };
 
   useEffect(() => {
@@ -61,8 +64,6 @@ export default function CasePreview(props) {
     setCaseId(props.caseId);
     setCaseLoaded(props.caseLoaded);
   }, [props.caseId, props.caseData, props.caseLoaded]);
-
-  useEffect(() => {}, [props.caseId, props.caseLoaded]);
 
   const addDefaultSrc = (event) => {
     let userDefaultImage = require("../assets/images/default-userimage.png");

@@ -2,11 +2,9 @@ import {
   Avatar,
   Box,
   Button,
-  Container,
   Divider,
   Grid,
   MenuItem,
-  Paper,
   TextField
 } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
@@ -20,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
 import * as apiConfig from "../components/api_base/api-config";
+import * as notification from "../components/common/toast";
 import CaseBasicInformation from "./case-basic-information.js";
 import FileUpload from "./file-upload.js";
 import Froala from "./froala.js";
@@ -66,7 +65,7 @@ export default function CaseViewer(props) {
   const [state, setState] = useState({});
   const [caseType, setCaseType] = useState(0);
   const [parentChildData, setParentChildData] = useState([]);
-  const [froalaValue, setFroala] = useState({});
+  const [froalaValue, setFroalaValue] = useState({});
   const [formDataValue, setFormDataValue] = useState([]);
   const [maxCount, setMaxCount] = useState(50);
   const [parentValue, setParentValue] = useState(0);
@@ -92,9 +91,11 @@ export default function CaseViewer(props) {
     const caseTypeId = caseData.typeId;
     setNotesLoaded(false);
     props.handleCaseLoaded(false);
+    props.handleCaseFieldsLoaded(false);
     setData([]);
     setNotes([]);
     setCaseFields([]);
+    setCaseData([]);
     setCaseData(caseData);
     setCaseType(caseTypeId);
     if (caseTypeId > 0) {
@@ -116,7 +117,7 @@ export default function CaseViewer(props) {
 
     await axios(config)
       .then(function (response) {
-        const notesData = response.data.responseContent;
+        let notesData = response?.data?.responseContent;
         setNotes(notesData);
         setNotesLoaded(true);
         getCaseDetails(caseTypeId, caseId);
@@ -144,30 +145,31 @@ export default function CaseViewer(props) {
       userClosedby: "",
     };
 
-    var CancelToken = axios.CancelToken;
-    var cancel;
+    // var CancelToken = axios.CancelToken;
+    // var cancel;
 
     var config = {
       method: "post",
       url: "http://localhost:5000/cases/GetFullCaseByCaseId",
       data: jsonData,
-      cancelToken: new CancelToken(function executor(c) {
-        // An executor function receives a cancel function as a parameter
-        cancel = c;
-      }),
+      // cancelToken: new CancelToken(function executor(c) {
+      //   // An executor function receives a cancel function as a parameter
+      //   cancel = c;
+      // }),
     };
 
     await axios(config)
       .then(function (response) {
-        let caseDetailsData = response.data.responseContent;
+        let caseDetailsData = response?.data?.responseContent;
 
         if (caseDetailsData.details.length) {
           caseDetailsData.details = caseDetailsData.details.sort(
-            (a, b) => a.systemPriority - b.systemPriority
+            (a, b) => a.controlPriority - b.controlPriority
           );
         }
 
         setCaseFields(caseDetailsData?.details);
+        props.handleCaseFieldsLoaded(true);
         loadAssocDecodeData(caseDetailsData?.details, caseTypeId);
       })
       .catch(function (error) {
@@ -290,7 +292,6 @@ export default function CaseViewer(props) {
 
     if (fieldData.length > 0) {
       var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
-
       if (localParentChildData || localParentChildData != "") {
         setParentChildData(JSON.parse(localParentChildData));
         loadParentDropDown(fieldData, caseTypeId);
@@ -335,6 +336,7 @@ export default function CaseViewer(props) {
       return x.controlId;
     });
 
+    let isLastDropdown = false;
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
 
@@ -413,7 +415,6 @@ export default function CaseViewer(props) {
             ],
           },
         };
-
         var config = {
           method: "post",
           url: "http://localhost:5000/cases/GetExternalDataValues",
@@ -422,10 +423,14 @@ export default function CaseViewer(props) {
 
         await axios(config)
           .then(function (response) {
-            const externalData = response.data.responseContent;
+            let externalData = response?.data?.responseContent;
 
             let dataAvailable = true;
-            if (currentData[commentIndex].externalDatasourceObjectId > 0) {
+            if (
+              externalData &&
+              externalData.length &&
+              currentData[commentIndex].externalDatasourceObjectId > 0
+            ) {
               var dataValue = externalData.filter(
                 (x) =>
                   x.DecodeId ===
@@ -451,8 +456,10 @@ export default function CaseViewer(props) {
             if (dataAvailable) {
               currentData[commentIndex].assoc_decode = externalData;
               setCaseFields(currentData);
+              if (i + 1 === superParentAssocTypeIds.length) {
+                isLastDropdown = true;
+              }
               // setLoaded(true);
-              setParentDropDownloaded(true);
             }
           })
           .catch(function (error) {
@@ -460,7 +467,10 @@ export default function CaseViewer(props) {
           });
       }
     }
-    props.handleCaseLoaded(true);
+    setParentDropDownloaded(true);
+    if (isLastDropdown) {
+      props.handleCaseLoaded(true);
+    }
   };
 
   const onScroll = (fieldData, event) => {
@@ -529,7 +539,7 @@ export default function CaseViewer(props) {
 
       await axios(config)
         .then(function (response) {
-          const externalData = response.data.responseContent;
+          let externalData = response?.data?.responseContent;
           currentData[commentIndex].assoc_decode = currentData[
             commentIndex
           ].assoc_decode.concat(externalData);
@@ -605,7 +615,7 @@ export default function CaseViewer(props) {
           };
           await axios(config)
             .then(function (response) {
-              const externalData = response.data.responseContent;
+              let externalData = response?.data?.responseContent;
               currentData[commentIndex].assoc_decode = externalData;
               setCaseFields(currentData);
             })
@@ -619,8 +629,12 @@ export default function CaseViewer(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!parentDropDownloaded) {
+      notification.toast.warning("Please wait. Your fields are loading...!!");
+      return false;
+    }
     let fields = {};
-    var submitted = false;
+    var submitted = true;
     Object.entries(event.target.elements).forEach(([name, input]) => {
       if (input.type != "submit") {
         if (input.name != "" && input.value != "" && caseType > 0) {
@@ -642,6 +656,7 @@ export default function CaseViewer(props) {
 
     if (submitted == true) {
       //{ timer: 3000 }
+      notification.toast.success("Case updated successfully..!!!");
       swal(
         "Good job!",
         "Form Submitted : " + JSON.stringify(fields),
@@ -679,7 +694,7 @@ export default function CaseViewer(props) {
   };
 
   const handleModelChange = (event) => {
-    setFroala(event);
+    setFroalaValue(event);
   };
 
   const createFroalaField = () => {
@@ -771,7 +786,8 @@ export default function CaseViewer(props) {
 
   const createFileField = () => {
     return (
-      <FileUpload className="input-file-upload"
+      <FileUpload
+        className="input-file-upload"
         caseType={caseType}
         handleOnFileChange={handleOnFileChange}
       ></FileUpload>
@@ -858,7 +874,11 @@ export default function CaseViewer(props) {
     var hrefUrls = element.getElementsByTagName("a");
     for (var i = 0; i < imgSrcUrls.length; i++) {
       var urlValue = imgSrcUrls[i].getAttribute("src");
-      let isUrlContain = urlValue.includes("http");
+      let isUrlContain = false;
+      if (urlValue) {
+        isUrlContain = urlValue.includes("http");
+      }
+
       if (!isUrlContain) {
         urlValue = apiConfig.BASE_CASES_URL + urlValue;
       }
@@ -874,7 +894,11 @@ export default function CaseViewer(props) {
     for (var j = 0; j < hrefUrls.length; j++) {
       var hrefUrlValue = hrefUrls[j].getAttribute("href");
       let hrefId = hrefUrls[j].getAttribute("id");
-      let isHrefUrlContain = hrefUrlValue.includes("http");
+      let isHrefUrlContain = false;
+      if (hrefUrlValue) {
+        isHrefUrlContain = hrefUrlValue.includes("http");
+      }
+
       if (!isHrefUrlContain) {
         hrefUrlValue = apiConfig.BASE_CASES_URL + hrefUrlValue;
       }
@@ -887,24 +911,25 @@ export default function CaseViewer(props) {
 
     return (
       <div className="card-user-comment">
-   
-          <Grid container wrap="nowrap" spacing={2}>
-            <Grid item className="st-p-1">
-              <Avatar>{renderUserImage(notes.createdBy)}</Avatar>
-            </Grid>
-            <Grid justifyContent="left" item xs zeroMinWidth>
-              <h4 style={{ margin: 0, textAlign: "left" }}>{notes.fullName}</h4>
-              <p style={{ textAlign: "left", color: "gray" }}>
-                Posted at {dateFormat(notes.createdAt, "mmm dd, yyyy h:MM TT")}
-              </p>
-              <p style={{ textAlign: "left" }}>
-                <div
-                  dangerouslySetInnerHTML={{ __html: element.innerHTML }}
-                ></div>
-              </p>
-            </Grid>
+        <Grid container wrap="nowrap" spacing={2}>
+          <Grid item className="st-p-1">
+            <Avatar>{renderUserImage(notes.createdBy)}</Avatar>
           </Grid>
-     
+          <Grid justifyContent="left" item xs zeroMinWidth>
+            <h4 style={{ margin: 0, textAlign: "left" }}>
+              {notes.fullName ? notes.fullName : notes.createdBy}
+            </h4>
+            <p style={{ textAlign: "left", color: "gray" }}>
+              Posted at {dateFormat(notes.createdAt, "mmm dd, yyyy h:MM TT")}
+            </p>
+            <p style={{ textAlign: "left" }}>
+              <div
+                dangerouslySetInnerHTML={{ __html: element.innerHTML }}
+              ></div>
+            </p>
+          </Grid>
+        </Grid>
+
         <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
       </div>
     );
@@ -918,105 +943,100 @@ export default function CaseViewer(props) {
 
   const loadNotes = () => {
     return (
-   
-            <Grid item item xs={12} sm={12} md={8} lg={8}>
-              <h1>Comments</h1>
-        
-                {notes.length
-                  ? notes.map((item, index) => (
-                      <div key={index}>{notesHandler(item, index)}</div>
-                    ))
-                  : 
-                  "No Comments Available...!!!"
-                  }
-           
+      <Grid item item xs={12} sm={12} md={8} lg={8}>
+        <h1>Comments</h1>
 
-          </Grid>
-   
+        {notes.length
+          ? notes.map((item, index) => (
+              <div key={index}>{notesHandler(item, index)}</div>
+            ))
+          : "No Comments Available...!!!"}
+      </Grid>
     );
   };
 
   return (
     <Grid container item xs={12} spacing={1} className="panel-center st-p-1">
-        <Grid item xs={12} sm={12} md={8} lg={8}  className="st-p-1">
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-          >
-            {caseData.typeName}
-          </Typography>
-          <Typography variant="h4" component="h3">
-            {caseData.title}
-          </Typography>
-        
+      <Grid item xs={12} sm={12} md={8} lg={8} className="st-p-1">
+        <Typography
+          className={classes.title}
+          color="textSecondary"
+          gutterBottom
+        >
+          {caseData.typeName}
+        </Typography>
+        <Typography variant="h4" component="h3">
+          {caseData.title}
+        </Typography>
 
-          <Box>{createFileField()}</Box>
-          <span>Description</span>
-          {createFroalaField()}
-          <div className={classes.fixedHeight}>
-            {notesLoaded ? (
-              <div className="comment-list">{loadNotes()}</div>
+        <Box>{createFileField()}</Box>
+        <span>Description</span>
+        {createFroalaField()}
+        <div className={classes.fixedHeight}>
+          {notesLoaded ? (
+            <div className="comment-list">{loadNotes()}</div>
+          ) : (
+            <p>Please wait...!! Comments Loading</p>
+          )}
+        </div>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={4}
+        lg={4}
+        className="panel-right st-p-1 side-bar-case-create"
+      >
+        {/* <CaseDetailBasicInfo /> */}
+        <Box>
+          <div data-test-id="">
+            <CaseBasicInformation
+              caseData={caseData}
+              handleAutocompleteChange={handleAutocompleteChange}
+            ></CaseBasicInformation>
+
+            {caseFields ? (
+              <Accordion
+                className="input-accordation"
+                expanded={fieldExpanded}
+                onChange={handleFieldAccordionChange(fieldExpanded)}
+              >
+                <AccordionSummary
+                  className="input-accordation-summary"
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>
+                    {!fieldExpanded ? "Show  more fields" : "Show less"}
+                  </Typography>
+                </AccordionSummary>
+                {caseFields?.length ? (
+                  <AccordionDetails className="case-fields">
+                    <form onSubmit={handleSubmit} className="case-create-form">
+                      <Button type="submit" variant="contained" color="primary">
+                        Save
+                      </Button>
+                      <br />
+                      <br />
+                      <Typography>{loadFields()}</Typography>
+                    </form>
+                  </AccordionDetails>
+                ) : (
+                  <AccordionDetails>
+                    <Typography>
+                      Please wait while we are loading fields...!!
+                    </Typography>
+                  </AccordionDetails>
+                )}
+              </Accordion>
             ) : (
-              <p>Please wait...!! Comments Loading</p>
+              ""
             )}
           </div>
-        </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={4} className="panel-right st-p-1 side-bar-case-create">
-          {/* <CaseDetailBasicInfo /> */}
-          <Box>
-            <div data-test-id="">
-              <CaseBasicInformation
-                caseData={caseData}
-                handleAutocompleteChange={handleAutocompleteChange}
-              ></CaseBasicInformation>
-      
-              {caseFields ? (
-                <Accordion className="input-accordation"
-                  expanded={fieldExpanded}
-                  onChange={handleFieldAccordionChange(fieldExpanded)}
-                >
-                  <AccordionSummary className="input-accordation-summary"
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                  >
-                    <Typography>
-                      {!fieldExpanded ? "Show  more fields" : "Show less"}
-                    </Typography>
-                  </AccordionSummary>
-                  {caseFields?.length ? (
-                    <AccordionDetails className="case-fields">
-                      <form
-                        onSubmit={handleSubmit}
-                        className="case-create-form"
-                      >
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          color="primary"
-                        >
-                          Save
-                        </Button>
-                        <br />
-                        <br />
-                        <Typography>{loadFields()}</Typography>
-                      </form>
-                    </AccordionDetails>
-                  ) : (
-                    <AccordionDetails>
-                      <Typography>
-                        Please wait while we are loading fields...!!
-                      </Typography>
-                    </AccordionDetails>
-                  )}
-                </Accordion>
-              ) : (
-                ""
-              )}
-            </div>
-          </Box>
-        </Grid>
+        </Box>
+      </Grid>
     </Grid>
   );
 }

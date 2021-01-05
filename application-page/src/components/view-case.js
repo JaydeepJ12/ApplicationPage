@@ -1,29 +1,30 @@
-import { Container,Card } from "@material-ui/core";
+import { Card } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
+import Button from "@material-ui/core/Button";
+import FormControl from "@material-ui/core/FormControl";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import InputBase from "@material-ui/core/InputBase";
+import InputLabel from "@material-ui/core/InputLabel";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Paper from "@material-ui/core/Paper";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import Select from "@material-ui/core/Select";
+import { fade, makeStyles, withStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
+import SendIcon from "@material-ui/icons/Send";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
+import * as notification from "../components/common/toast";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
 import Loading from "./Loader";
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -97,23 +98,27 @@ const useStyles = makeStyles((theme) => ({
     // transition: theme.transitions.create('width'),
     width: "100%",
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 }));
 
 const StyledMenu = withStyles({
   paper: {
-    border: '1px solid #d3d4d5',
+    border: "1px solid #d3d4d5",
   },
 })((props) => (
   <Menu
     elevation={0}
     getContentAnchorEl={null}
     anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'center',
+      vertical: "bottom",
+      horizontal: "center",
     }}
     transformOrigin={{
-      vertical: 'top',
-      horizontal: 'center',
+      vertical: "top",
+      horizontal: "center",
     }}
     {...props}
   />
@@ -121,9 +126,9 @@ const StyledMenu = withStyles({
 
 const StyledMenuItem = withStyles((theme) => ({
   root: {
-    '&:focus': {
+    "&:focus": {
       backgroundColor: theme.palette.primary.main,
-      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: theme.palette.common.white,
       },
     },
@@ -139,11 +144,19 @@ export default function ViewCase() {
   const [maxCount, setMaxCount] = useState(50);
   const [pageSize, setPageSize] = useState(50);
   const [searchTextValue, setSearchTextValue] = useState("");
-  const [caseLoaded, setCaseLoaded] = useState(true);
+  const [caseLoaded, setCaseLoaded] = useState(false);
   const [documentList, setDocumentList] = useState([]);
-
+  const [caseFilter, setCaseFilter] = useState(0);
   const timeoutRef = useRef(null);
+  const [caseFieldsLoaded, setCaseFieldsLoaded] = useState(false);
+  const [caseListFiltered, setCaseListFiltered] = useState(false);
+  const [componentLoader, setComponentLoader] = useState(false);
+  const [caseTypeData, setCaseTypeData] = useState([]);
+  const [caseTypeIdValue, setCaseTypeIdValue] = useState(0);
+  const [state, setState] = React.useState(0);
+  const [labelWidth, setLabelWidth] = React.useState(0);
 
+  const inputLabel = React.useRef(null);
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -165,25 +178,82 @@ export default function ViewCase() {
     setCaseLoaded(value);
   };
 
+  const handleCaseFieldsLoaded = (value) => {
+    setCaseFieldsLoaded(value);
+  };
+
   const handleDocumentList = (documentList) => {
     setDocumentList(documentList);
   };
 
-  const caseList = async (searchText = "", skipCount = 0, loadMore = false) => {
-    if (!loadMore) {
+  const handleFilterCaseList = (
+    filter,
+    isFilterByType = true,
+    isCaseListFilterByCaseList = false,
+    caseTypeId = 0
+  ) => {
+    if (!caseListFiltered) {
+      notification.toast.warning("Please wait...!!");
+      return false;
+    }
+    caseTypeId = caseTypeId ? caseTypeId : caseTypeIdValue;
+    setState(caseTypeId);
+    setComponentLoader(true);
+    setCaseFilter(filter);
+    caseList(
+      "",
+      0,
+      false,
+      filter,
+      isFilterByType,
+      isCaseListFilterByCaseList,
+      caseTypeId
+    );
+  };
+
+  const caseTypes = async () => {
+    setComponentLoader(true);
+    await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
+      setCaseTypeData(resp.data);
+      caseList("", 0, false, 0, false, true, resp.data[0]?.CASE_TYPE_ID);
+    });
+  };
+
+  const caseList = async (
+    searchText = "",
+    skipCount = 0,
+    loadMore = false,
+    filter = 0,
+    isFilterByType = false,
+    isFilterByCaseType = false,
+    caseTypeId = 0
+  ) => {
+    if (isFilterByCaseType) {
+      caseTypeId = Number(caseTypeId);
+      setCaseTypeIdValue(caseTypeId);
+    }
+
+    if (isFilterByType) {
+      setCaseListFiltered(false);
+    }
+    if (loadMore && caseFilter > 0) {
+      return false;
+    }
+
+    if (!loadMore && !isFilterByType && !isFilterByCaseType) {
       setLoaded(false);
       skipCount = 0;
     }
     var jsonData = {
       Username: "bhaviks",
-      TypeId: 19,
+      TypeId: caseTypeId > 0 ? caseTypeId : caseTypeIdValue,
       PageSize: pageSize,
       MaxCount: maxCount,
       SkipCount: skipCount,
       CurrentPage: 1,
       Ascending: false,
       SortColumn: null,
-      Filter: 0,
+      Filter: filter,
       Filters: null,
       TypeIdsForGrouping: null,
     };
@@ -196,8 +266,17 @@ export default function ViewCase() {
 
     await axios(config)
       .then(function (response) {
+        setCaseListFiltered(true);
+        setCaseListData([]);
+        setFilteredCaseListData([]);
+        setComponentLoader(false);
         let caseHeadersData = response?.data?.responseContent;
-        if (caseHeadersData.length && !loadMore) {
+        if (
+          caseHeadersData.length &&
+          !loadMore &&
+          !isFilterByType &&
+          (!isFilterByCaseType || caseTypeIdValue == 0)
+        ) {
           setCaseListData(caseHeadersData);
           setFilteredCaseListData(caseHeadersData);
           setCaseData(caseHeadersData[0]);
@@ -207,7 +286,14 @@ export default function ViewCase() {
           caseHeadersData = caseListData.concat(caseHeadersData);
           setCaseListData(caseHeadersData);
           setFilteredCaseListData(caseHeadersData);
+        } else if (
+          caseHeadersData.length &&
+          (isFilterByType || isFilterByCaseType)
+        ) {
+          setCaseListData(caseHeadersData);
+          setFilteredCaseListData(caseHeadersData);
         }
+        setComponentLoader(false);
       })
       .catch(function (error) {
         console.log(error);
@@ -215,50 +301,12 @@ export default function ViewCase() {
   };
 
   useEffect(() => {
-    caseList();
+    caseTypes();
+    setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
   const createLoader = () => {
     return <Loading />;
-  };
-
-  const loadMoreCaseList = async (searchText = "", skipCount = 0) => {
-    if (searchText !== "") {
-      skipCount = 0;
-    }
-
-    var jsonData = {
-      Username: "bhaviks",
-      TypeId: 19,
-      PageSize: pageSize,
-      MaxCount: maxCount,
-      SkipCount: skipCount,
-      CurrentPage: 1,
-      Ascending: false,
-      SortColumn: null,
-      Filter: 0,
-      Filters: null,
-      TypeIdsForGrouping: null,
-    };
-
-    var config = {
-      method: "post",
-      url: "http://localhost:5000/cases/GetCaseHeaders",
-      data: jsonData,
-    };
-
-    await axios(config)
-      .then(function (response) {
-        let responseData = response?.data?.responseContent;
-        if (responseData) {
-          responseData = caseListData.concat(responseData);
-          setCaseListData(responseData);
-          setFilteredCaseListData(responseData);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
   };
 
   const onScroll = (caseListData, event) => {
@@ -332,8 +380,8 @@ export default function ViewCase() {
   return (
     <div className="page" id="page-view-case">
       <Card>
-      {loaded ? (
-        <>
+        {loaded ? (
+          <>
             <AppBar position="static" className="inner-navigation bg-primary">
               <Toolbar>
                 <IconButton
@@ -348,7 +396,7 @@ export default function ViewCase() {
                   <div className={classes.searchIcon}>
                     <SearchIcon />
                   </div>
-                  <InputBase className="input-search"
+                  <InputBase
                     placeholder="Search…"
                     classes={{
                       root: classes.inputRoot,
@@ -375,59 +423,111 @@ export default function ViewCase() {
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
                   >
-                  {documentList.length ? documentList.map((option) => (
-                      <StyledMenuItem>
-                        <ListItemIcon>
-                          <SendIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary="Sent mail" />
-                      </StyledMenuItem>
-                      ))
-                    : "Documents not uploaded..!!"}
+                    {documentList.length
+                      ? documentList.map((option) => (
+                          <StyledMenuItem>
+                            <ListItemIcon>
+                              <SendIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Sent mail" />
+                          </StyledMenuItem>
+                        ))
+                      : "Documents not uploaded..!!"}
                   </StyledMenu>
                 </div>
               </Toolbar>
             </AppBar>
             <Grid container item xs={12} spacing={1}>
-              
-              <Grid item xs={12} sm={12} md={3} lg={3} className="panel-left user-list">
-               
+              <Grid item xs={12} sm={6} md={3} lg={3}>
+                <Paper>
                   <div
                     className={fixedHeightPaper}
                     onScroll={(event) => onScroll(caseListData, event)}
                   >
-                    <CaseList 
+                    <FormControl
+                      style={{ width: "-webkit-fill-available" }}
+                      variant="outlined"
+                      className={classes.formControl}
+                    >
+                      <InputLabel
+                        htmlFor="outlined-caseType-native-simple"
+                        shrink
+                        ref={inputLabel}
+                      >
+                        Case Types
+                      </InputLabel>
+                      <Select
+                        native
+                        value={state.caseTypeId}
+                        onChange={(event) =>
+                          handleFilterCaseList(
+                            0,
+                            false,
+                            true,
+                            event.target.value
+                          )
+                        }
+                        label="Case Type"
+                        inputProps={{
+                          caseTypeId: "caseTypeId",
+                          id: "outlined-caseType-native-simple",
+                        }}
+                        input={
+                          <OutlinedInput
+                            notched
+                            labelWidth={labelWidth}
+                            name="caseType"
+                            id="outlined-caseType-always-notched"
+                          />
+                        }
+                        fullWidth={true}
+                      >
+                        {caseTypeData.length
+                          ? caseTypeData.map((option) => (
+                              <option
+                                key={option.CASE_TYPE_ID}
+                                value={option.CASE_TYPE_ID}
+                              >
+                                {option.NAME}
+                              </option>
+                            ))
+                          : []}
+                      </Select>
+                    </FormControl>
+                    <CaseList
                       handleCasePreviewClick={handleCasePreviewClick}
+                      handleFilterCaseList={handleFilterCaseList}
                       caseListData={
                         filteredCaseListData.length ? filteredCaseListData : []
                       }
                       caseLoaded={caseLoaded}
+                      componentLoader={componentLoader}
                     ></CaseList>
                   </div>
-           
+                </Paper>
               </Grid>
-
+              {/* Recent Deposits */}
               <Grid item xs={12} sm={12} md={9} lg={9} className="panel-center">
-                
-                
+                <Paper className={CaseDetailsPaper}>
                   {caseId > 0 ? (
                     <CaseViewer
                       caseId={caseId}
                       caseData={caseData}
                       handleCaseLoaded={handleCaseLoaded}
                       handleDocumentList={handleDocumentList}
+                      handleCaseFieldsLoaded={handleCaseFieldsLoaded}
                     ></CaseViewer>
                   ) : (
                     ""
                   )}
-              
+                </Paper>
               </Grid>
             </Grid>
-            </>
-      ) : (
-        ""
-      )}
-      {!loaded ? createLoader() : []}
+          </>
+        ) : (
+          ""
+        )}
+        {!loaded ? createLoader() : []}
       </Card>
     </div>
   );
