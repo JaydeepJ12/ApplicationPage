@@ -58,6 +58,73 @@ class Mobile:
                                     } '''
         return self.post(self.url +'/api/Home/GetEmployeesBySearch', json=data)
 
+    def get_employees_by_username(self, data):
+        ''' should take in response directly from react in form {
+                                    "searchText": "bhaviks",
+                                    "systemId": 0,
+                                    "typeId": 0,
+                                    "fieldId": 0,
+                                    "itemInfoFieldId": 0,
+                                    "fromPageIndex": 0,
+                                    "toPageIndex": 0,
+                                    "userName": "bhaviks"
+                                    } '''
+        return self.post(self.url +'/api/Home/GetEmployeeByUsername', json=data)
+
+    def external_data_values_entity(self, data):
+        ''' should take in response directly from react in form {
+                                    "Application": 1,
+                                    "TypeID": 1121,
+                                    "FieldID": 1950,
+                                    "Username": "BhavikS",
+                                    "ParentValues": {
+                                        "0": [
+                                        "0"
+                                        ]
+                                    }
+                                    } '''
+        return self.post(self.url +'/api/ExternalData/GetExternalDataValuesByFilter', json=data)
+
+    def get_case_notes(self, data):
+        ''' should take in response directly from react in form {
+                                    "applicationId": 1234,
+                                    "sinceDate": null
+                                    } '''
+        return self.post(self.url +'/api/Case/GetCaseNotes', json=data)
+
+    def get_case_headers(self, data):
+        ''' should take in response directly from react in form {
+                                    "Username": "BhavikS",
+                                    "TypeId": 19,
+                                    "PageSize": 50,
+                                    "MaxCount": 50,
+                                    "SkipCount": 0,
+                                    "CurrentPage": 1,
+                                    "Ascending": false,
+                                    "SortColumn": null,
+                                    "Filter": 1,
+                                    "Filters": null,
+                                    "TypeIdsForGrouping": null
+                                    } '''
+        return self.post(self.url +'/api/Case/GetCaseHeaders', json=data)
+
+    def get_full_case_by_caseId(self, data):
+        ''' should take in response directly from react in form {
+                                    "caseId": 123456,
+                                    "caseTypeId": 1,
+                                    "assignedToMe": true,
+                                    "isActive": "Y",
+                                    "systemCode": "string",
+                                    "username": "string",
+                                    "pageNumber": 0,
+                                    "pageSize": 0,
+                                    "userOwner": "string",
+                                    "userAssignTo": "string",
+                                    "userCreatedBy": "string",
+                                    "userTeam": "string",
+                                    "userClosedby": "string"
+                                    } '''
+        return self.post(self.url +'/api/Case/GetFullCaseByCaseId', json=data)
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
 

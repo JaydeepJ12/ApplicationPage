@@ -1,50 +1,221 @@
 import { Button, Card, Container } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
+import Loading from "./Loader.js";
+import { makeStyles ,useTheme } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Avatar from '@material-ui/core/Avatar';
+import SettingsIcon from '@material-ui/icons/Settings';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Box from '@material-ui/core/Box';
+import PropTypes from 'prop-types';
+import SwipeableViews from 'react-swipeable-views';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+  root: {
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+  },
+  root2: {
+    backgroundColor: theme.palette.background.paper,
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
 
 export default function OverView(props) {
+  const theme = useTheme();
+  const classes = useStyles();
   const [loaded, setLoaded] = useState(false);
-
-  //create function that just take sthe url and sets a json blob
+  const [value, setValue] = React.useState(0);
+  const [age, setAge] = React.useState('');
+ 
   const apps = () => {
     setTimeout(() => {
       setLoaded(true);
     }, 1000);
   };
-
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  const handleChangeIndex = (index) => {
+    setValue(index);
+  };
   useEffect(() => {
     apps();
   }, []);
 
   const handleClick = (props) => {
-    props.navigate("/case-create");
+    props.navigate("/case-select");
   };
-
   return (
-    <div>
-      {loaded ? (
-        <form>
-          <Card>
-            <Container maxWidth="sm">
-              <div style={{ marginTop: "11px" }}> OverView Works....!!!</div>
-              <div
-                className="create-button"
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  handleClick(props);
-                }}
-              >
-                <Button className="">+ Create</Button>
-              </div>
-            </Container>
-          </Card>
-        </form>
-      ) : (
-        <Card>
-          <Container maxWidth="sm">
-            <div className=""> Loading Please Wait....!!!</div>
-          </Container>
-        </Card>
-      )}
+    <div className="page" id="page-overview">
+      <Container>
+           <Grid container spacing={3}>
+              <Grid item lg={10} md={10} xs={12} sm={12} className="text-left"></Grid>
+                  <Grid item lg={2} md={2} xs={12} sm={12} className="text-right">
+                <div className={classes.root}>
+                    <SettingsIcon/>
+                    <NotificationsIcon/>
+                    <Avatar alt="Test"  src="https://s3-alpha-sig.figma.com/img/67fb/f195/182fba98c8d3f90d0466b52daece2698?Expires=1610928000&Signature=WbTSsAC2RK2pr2DDwOxX44kddohUxpwnCq9Y6QFkJ73fvWpfBn1w~~Sf0GxfLpuyhu4Csza5VpKa8kFbKUA1Y5-7zAnpeqSUCspdUnnkWyyPC1mFkBdkKp~yZbsnHIENumo3wTmvz~pSDdHoyFgxOREPaCWOQukUjXQrVyem4QY~wYdbkQLOeeorCecTzOi-qcXS1PqXe~tT1qpZuytEbfpy~oo~RysXbXrfUNdpIQ4HcSKnw7I-dgJuwvx5U2mWkX8CorMgQi5dmwYd5Dwyyvd-gD7cUJUP~PFYBJ0sxIGwMb-lfz9oCe~X80q4bacvjJb9-77-HrQuQ5N3yC8Vng__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA" />
+                  </div>
+                  </Grid>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+              <Box  boxShadow={0} className="card card-task-overview" borderRadius={35} >
+                <Grid container>
+                    <Grid item lg={2} md={2} xs={12} sm={2} justify="center" className="vertical-center">
+                        {  loaded ? (
+                      <form>
+                          <div
+                            className=""
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              handleClick(props);
+                            }}
+                          >
+                            <Button variant="contained" size="large"  className='btn btn-create-button btn-primary rounded-pill' variant="contained" color="primary">+ Create</Button>
+                          </div>
+                      </form>
+                      ) : (
+                        <Loading />
+                        )}
+                    </Grid>
+                 <Grid item lg={8} md={8} xs={12} sm={8} >
+                    <div className={classes.root2}>
+                         <Paper elevation={3}>
+                             <AppBar position="static" elevation={3}>
+                              <Tabs className="nav-tab-list"
+                                value={value}
+                                onChange={handleChange}
+                                indicatorColor="primary"
+                                textColor="primary"
+                                variant="fullWidth"
+                                aria-label="full width tabs example"
+                              >
+                                <Tab className="nav-tab" label="All" {...a11yProps(0)} />
+                                <Tab className="nav-tab" label="Tab" {...a11yProps(1)} />
+                                <Tab className="nav-tab" label="Tab" {...a11yProps(2)} />
+                              </Tabs>
+                            </AppBar>
+                            </Paper>
+                            <SwipeableViews
+                              axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                              index={value}
+                              onChangeIndex={handleChangeIndex}
+                            >
+                              <TabPanel value={value} index={0} dir={theme.direction}>
+                                Tab-1
+                              </TabPanel>
+                              <TabPanel value={value} index={1} dir={theme.direction}>
+                                Tab-2
+                              </TabPanel>
+                              <TabPanel value={value} index={2} dir={theme.direction}>
+                                  Tab-3 
+                              </TabPanel>
+                            </SwipeableViews>
+                          </div>
+                     </Grid>
+                  </Grid>
+                 </Box >
+              </Grid>
+              <Grid item lg={6} md={6} xs={12} sm={12}>
+                 <Box boxShadow={0}  className="card card-task-overview" borderRadius={35} >
+                 <FormControl variant="outlined" className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-outlined-label">People</InputLabel>
+                    <Select
+                     className="input-dropdown"
+                      labelId="demo-simple-select-outlined-label"
+                      id="demo-simple-select-outlined"
+                      value={age}
+                      onChange={handleChange}
+                      label="People"
+                    >
+                      <MenuItem value="">
+                        <em>None</em>
+                      </MenuItem>
+                      <MenuItem value={10}>Ten</MenuItem>
+                      <MenuItem value={20}>Twenty</MenuItem>
+                      <MenuItem value={30}>Thirty</MenuItem>
+                    </Select>
+                 </FormControl>
+                 </Box>
+              </Grid>
+              <Grid item lg={6} md={6} xs={12} sm={12}>
+              <Box boxShadow={0}  className="card card-task-overview" borderRadius={35} >
+                <FormControl variant="outlined" className={classes.formControl}>
+                      <InputLabel id="demo-simple-select-outlined-label">Items</InputLabel>
+                      <Select
+                        className="input-dropdown"
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        value={age}
+                        onChange={handleChange}
+                        label="Items"
+                      >
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        <MenuItem value={10}>Ten</MenuItem>
+                        <MenuItem value={20}>Twenty</MenuItem>
+                        <MenuItem value={30}>Thirty</MenuItem>
+                      </Select>
+                </FormControl>
+              </Box>
+              </Grid>
+            </Grid>
+         </Container>
     </div>
   );
 }
