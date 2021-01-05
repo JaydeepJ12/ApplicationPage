@@ -13,12 +13,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundImage: `url(https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png)`,
   },
 }));
-//<Dashboard></Dashboard>
+//
 function App() {
   const classes = useStyles();
   return (
     <div>
-      Continuous deployment test. With Flask. Merge 2.
+      <Dashboard></Dashboard>
     </div>
   );
 }
