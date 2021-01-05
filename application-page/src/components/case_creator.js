@@ -22,36 +22,21 @@ import Loading from "./Loader.js";
 
 export default function CaseCreator(props) {
   const [data, setData] = useState([]);
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(true);
   const [state, setState] = useState({});
   const [caseType, setCaseType] = useState(0);
-  const [caseTypeData, setCaseTypeData] = useState([]);
   const [parentChildData, setParentChildData] = useState([]);
   const [froalaValue, setFroala] = useState({});
   const [formDataValue, setFormDataValue] = useState([]);
   const [maxCount, setMaxCount] = useState(50);
   const [parentValue, setParentValue] = useState(0);
   const [loadMoreText, setLoadMoreText] = useState(false);
-  const [disableCaseType, setCaseTypeDisable] = useState(false);
   const [defaultHopper, setDefaultHopper] = useState("");
   const [defaultHopperId, setDefaultHopperId] = useState(0);
   const [assignTo, setAssignTo] = useState(0);
-  const [isFirstField, setIsFirstField] = useState(true);
 
-  const caseTypes = async () => {
-    setLoaded(false);
-    await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
-      setLoaded(true);
-      setCaseTypeData(resp.data);
-    });
-  };
-
-  useEffect(() => {
-    caseTypes();
-  }, []);
-
-  const handleCaseTypeChange = (event) => {
-    const caseTypeId = event.target.value;
+  const handleCaseTypeChange = (caseType, caseTypeData) => {
+    const caseTypeId = caseType;
     setData([]);
     setCaseType(caseTypeId);
     if (caseTypeId > 0) {
@@ -69,7 +54,12 @@ export default function CaseCreator(props) {
     }
   };
 
+  useEffect(() => {
+    handleCaseTypeChange(props.caseTypeId, props.caseTypeData);
+  }, [props.caseTypeId, props.caseTypeData]);
+
   const fields = (caseTypeId) => {
+    setLoaded(false);
     // var ls = new SecureLS({encodingType: 'aes'});
     var ls = new SecureLS({
       encodingType: "des",
@@ -78,35 +68,35 @@ export default function CaseCreator(props) {
     });
     var fieldData = [];
     caseTypeId = caseTypeId ? caseTypeId : caseType;
-    var sessionFieldData = ls.get("CaseType-" + caseTypeId);
+    var localFieldData = ls.get("CaseType-" + caseTypeId);
 
     var fieldDataReceived = false;
-    if (sessionFieldData || sessionFieldData != "") {
-      setData(JSON.parse(sessionFieldData));
-      fieldData = JSON.parse(sessionFieldData);
-      setLoaded(true);
+    if (localFieldData || localFieldData != "") {
+      fieldData = JSON.parse(localFieldData);
+      // setData(fieldData);
+      console.log(fieldData);
       fieldDataReceived = true;
     }
 
-    var sessionParentChildData = ls.get("ParentChildData-" + caseTypeId);
+    var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
 
     var parentChildDataReceived = false;
-    if (sessionParentChildData || sessionParentChildData != "") {
-      setParentChildData(JSON.parse(sessionParentChildData));
-      setLoaded(true);
+    if (localParentChildData || localParentChildData != "") {
+      setParentChildData(JSON.parse(localParentChildData));
       parentChildDataReceived = true;
       loadParentDropDown(
-        JSON.parse(sessionParentChildData),
+        JSON.parse(localParentChildData),
         fieldData,
         caseTypeId
       );
     }
-    setCaseTypeDisable(true);
+    props.disableEnableCaseTypeDropDown(true);
     axios
       .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
       .then((resp) => {
-        if (sessionFieldData !== JSON.stringify(resp.data)) {
+        if (localFieldData !== JSON.stringify(resp.data)) {
           setData(resp.data);
+          setLoaded(true);
           ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
           fieldData = resp.data;
         }
@@ -119,13 +109,12 @@ export default function CaseCreator(props) {
               )
             )
             .then((resp) => {
-              if (sessionParentChildData !== JSON.stringify(resp.data)) {
+              if (localParentChildData !== JSON.stringify(resp.data)) {
                 setParentChildData(resp.data);
                 ls.set(
                   "ParentChildData-" + caseTypeId,
                   JSON.stringify(resp.data)
                 );
-                setLoaded(true);
                 loadParentDropDown(resp.data, fieldData, caseTypeId);
               }
             });
@@ -185,13 +174,14 @@ export default function CaseCreator(props) {
             const externalData = response.data.responseContent;
             currentData[commentIndex].assoc_decode = externalData;
             setData(currentData);
+            setLoaded(true);
           })
           .catch(function (error) {
             console.log(error);
           });
       }
     }
-    setCaseTypeDisable(false);
+    props.disableEnableCaseTypeDropDown(false);
   };
 
   const onScroll = (fieldData, event) => {
@@ -386,10 +376,10 @@ export default function CaseCreator(props) {
     }
   };
 
-  const createTextField = (data) => {
+  const createTextField = (data, index) => {
     var required = convertRequired(data);
     return (
-      <div className="">
+      <div className="form-control">
         <TextField
           name={String(data.AssocTypeId)}
           id={String(data.AssocTypeId)}
@@ -397,6 +387,7 @@ export default function CaseCreator(props) {
           required={required}
           fullWidth={true}
           InputLabelProps={{ shrink: true }}
+          autoFocus={index == 0 ? true : false}
         />
       </div>
     );
@@ -408,7 +399,7 @@ export default function CaseCreator(props) {
 
   const createFroalaField = () => {
     return (
-      <div className="froala-editor">
+      <div className="form-control froala-editor">
         <br></br>
         <br></br>
         <Froala onModelChange={(e) => handleModelChange(e)} fullWidth={true} />
@@ -416,11 +407,11 @@ export default function CaseCreator(props) {
     );
   };
 
-  const createDateField = (data) => {
+  const createDateField = (data, index) => {
     var required = convertRequired(data);
 
     return (
-      <div className="">
+      <div className="form-control">
         <TextField
           type="date"
           name={String(data.AssocTypeId)}
@@ -429,6 +420,7 @@ export default function CaseCreator(props) {
           InputLabelProps={{ shrink: true }}
           required={required}
           fullWidth={true}
+          autoFocus={index == 0 ? true : false}
         />
       </div>
     );
@@ -438,7 +430,7 @@ export default function CaseCreator(props) {
     return <Loading />;
   };
 
-  const createDropDownField = (data) => {
+  const createDropDownField = (data, index) => {
     var required = convertRequired(data);
 
     return (
@@ -451,12 +443,13 @@ export default function CaseCreator(props) {
         <TextField
           id={String(data?.AssocTypeId)}
           select
-          name={String(data?.AssocTypeId)}
+          name={String(data?.AssocTypeId + caseType)}
           label={data.Name}
           // value={state.value}
           onChange={(event) => handleChange(data?.AssocTypeId, event)}
           fullWidth={true}
           required={required}
+          autoFocus={index == 0 ? true : false}
         >
           {data.assoc_decode
             ? data.assoc_decode.map((option) => (
@@ -508,47 +501,43 @@ export default function CaseCreator(props) {
     );
   };
 
-  const fieldHandler = (data) => {
+  const fieldHandler = (data, index) => {
     //TODO: implment id structure
     var required = convertRequired(data);
 
     if (data.AssocFieldType === "T" || data.AssocFieldType === "N") {
-      return createTextField(data);
+      return createTextField(data, index);
     } else if (data.AssocFieldType === "A") {
-      return createDateField(data);
+      return createDateField(data, index);
     } else if (
       (data.AssocFieldType === "D" ||
         data.AssocFieldType === "E" ||
         data.AssocFieldType === "O") &&
       data.ExternalDataSourceId !== 121
     ) {
-      return createDropDownField(data);
+      return createDropDownField(data, index);
     }
   };
 
   const loadFields = () => {
     return (
       <Box>
-        <div>
           <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <div>
+            <Grid item sm={12} xs={12} lg={6} md={6}>
                 {data
-                  ? data.map((item, idx) => (
-                      <div key={idx}>{fieldHandler(item)}</div>
+                  ? data.map((item, index) => (
+                      <div key={index}>{fieldHandler(item, index)}</div>
                     ))
                   : []}
                 <Box>
                   <Box>{data?.length > 0 ? createFileField() : ""}</Box>
                   <Box>{data?.length > 0 ? createAssignTo() : ""}</Box>
                 </Box>
-              </div>
             </Grid>
-            <Grid item xs={6}>
-              <div>{data?.length > 0 ? createFroalaField() : ""}</div>
+            <Grid item sm={12} xs={12} lg={6} md={6}>
+              {data?.length > 0 ? createFroalaField() : ""}
             </Grid>
           </Grid>
-        </div>
 
         {!loaded ? createLoader() : []}
       </Box>
@@ -556,53 +545,13 @@ export default function CaseCreator(props) {
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <form onSubmit={handleSubmit} className="case-create-form">
-          <Card>
-            <Container className="case-create-form-div">
-              <div style={{ width: "50%" }} className="">
-                {" "}
-                <TextField
-                  id={"CaseType" + caseType}
-                  name="CaseType"
-                  select
-                  label="Case Type"
-                  value={caseType}
-                  onChange={(e) => handleCaseTypeChange(e)}
-                  fullWidth={true}
-                  required
-                  disabled={disableCaseType}
-                >
-                  <MenuItem key="0" value="0">
-                    {"Please Select Case Type"}
-                  </MenuItem>
-                  {caseTypeData
-                    ? caseTypeData.map((option) => (
-                        <MenuItem
-                          key={option.CASE_TYPE_ID}
-                          value={option.CASE_TYPE_ID}
-                        >
-                          {option.NAME}
-                        </MenuItem>
-                      ))
-                    : []}
-                </TextField>
-                <Fab
-                  style={{ top: 49 }}
-                  className="create-case-button"
-                  aria-label="add"
-                  type="submit"
-                >
-                  +
-                </Fab>
-              </div>
-
+        <form onSubmit={handleSubmit} className="st-form frm-case-create">
+            <Fab className="btn-create-case bg-primary" aria-label="add" type="submit">
+              +
+            </Fab>
               {loadFields()}
-            </Container>
-          </Card>
-        </form>
-      </Grid>
-    </Grid>
+          </form>
+  
+    
   );
 }

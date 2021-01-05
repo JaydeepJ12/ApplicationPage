@@ -7,6 +7,7 @@ import pandas as pd
 import json 
 import time
 import numpy as np
+from handlers.cases import CaseHandler
 
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
@@ -39,11 +40,13 @@ def config():
         t1 = t()
         print(f"{row['AssocTypeId']} took: {t1-t0}")
         df['assoc_decode'][i] = json.loads(data1)
-
     return df.to_json(orient='records') #
 
 @bp.route('/assocDecode')
-def assocDecode(assoc_id):
+def assocDecode(assoc_id = 0):
+    AssocId = request.args.get('AssocId')
+    if AssocId:
+       assoc_id = AssocId
     df = db.assoc_decode(assoc_id)
     # r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetAssocDecode?assocTypeID={assoc_id}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
     # data1 = json.loads(r.text)
@@ -75,7 +78,89 @@ def external_data_values():
         x["DecodeValue"] =  x.pop("name")
     return data
 
+@bp.route('/GetEntityExternalDataValues',methods=['POST'])
+def external_data_values_entity():
+    data = mobile.external_data_values_entity(request.json).json()
+    return data
+
 @bp.route('/GetEmployeesBySearch', methods=['POST'])
 def get_employees_by_search():
     data = mobile.get_employees_by_search(request.json).json()
     return data
+
+def getUserFullName(userShortName):
+    df = db.get_user_fullname(userShortName) #always returns dataframe
+    return df.to_json(orient='records')
+   
+@bp.route('/GetCaseNotes', methods=['POST'])
+def get_case_notes():
+    data = mobile.get_case_notes(request.json).json()
+    for x in data['responseContent']: #can throw error with resp is empty
+        userShortName = x.get('createdBy')
+        userFullName = json.loads(getUserFullName(str(userShortName)))
+        if userFullName:
+            x['fullName'] = userFullName[0]['FULL_NAME']
+        # x.update({'createdBy':userFullName[0]['FULL_NAME']}) 
+    return data
+
+@bp.route('/GetCaseHeaders', methods=['POST'])
+def get_case_headers():
+    data = mobile.get_case_headers(request.json).json()
+    return data
+
+def getSystemPriority(assocTypeId):
+    df = db.get_system_priority(assocTypeId) #always returns dataframe
+    return df.to_json(orient='records')
+
+@bp.route('/GetFullCaseByCaseId', methods=['POST'])
+def get_full_case_by_caseId():
+    data = mobile.get_full_case_by_caseId(request.json).json()
+    # for x in data['responseContent']['notes']: #can throw error with resp is empty
+    #     userShortName = x['createdBy']
+    #     print('userShortName --- ' , userShortName)
+    #     userFullName = json.loads(getUserFullName(str(userShortName)))
+    #     print('userFullName-----', userFullName)
+    #     if userFullName:
+    #         x['fullName'] = userFullName[0]['FULL_NAME']
+    # for y in data['responseContent']['details']: #can throw error with resp is empty
+    #     systemPriority = json.loads(getSystemPriority(y['controlId']))
+    #     y['systemPriority'] = systemPriority[0]['SYSTEM_PRIORITY']
+    #     # y['assoc_decode'] = []
+    #     # y['systemPriority'] = 1
+    return data
+
+@bp.route('/assoc_type', methods=['GET'])
+def assoc_type_data():
+    if request.method == 'GET':
+        return CaseHandler().assoc_type_data()
+
+@bp.route('/case_type', methods=['GET'])
+def case_type_data():
+    if request.method == 'GET':
+        return CaseHandler().case_type_data()
+
+@bp.route('/case_type_insert', methods=['POST'])
+def insert_case_type_data():
+    data = json.loads(request.data)
+    if request.method == 'POST':
+        try:
+            return CaseHandler().case_type_insert(data)
+        except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})
+
+@bp.route('/assoc_type_insert', methods=['POST'])
+def insert_assoc_type_data():
+    data = json.loads(request.data)
+    if request.method == 'POST':
+        try:
+            return CaseHandler().assoc_type_insert(data)
+        except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})
+
+@bp.route('/system_code', methods=['GET'])
+def system_code_list():
+    if request.method == 'GET':
+        try:
+            return CaseHandler().system_code_list()
+        except Exception as exe:
+            return json.dumps({"error_stack": str(exe)})
