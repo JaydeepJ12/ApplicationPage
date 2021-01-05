@@ -52,48 +52,47 @@ export default function CaseSelect(props) {
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <form className="">
-          <Card>
+       <div id="page-case-select" className="page">
             <Container className="">
-              <div style={{ width: "50%" }} className="case-select-form">
-                {" "}
-                <TextField
-                  id={"CaseType" + caseType}
-                  name="CaseType"
-                  select
-                  label="Case Type"
-                  value={caseType}
-                  onChange={(e) => handleCaseTypeChange(e)}
-                  fullWidth={true}
-                  required
-                  disabled={disableCaseType}
-                >
-                  <MenuItem key="0" value="0">
-                    {"Please Select Case Type"}
-                  </MenuItem>
-                  {caseTypeData
-                    ? caseTypeData.map((option) => (
-                        <MenuItem
-                          key={option.CASE_TYPE_ID}
-                          value={option.CASE_TYPE_ID}
-                        >
-                          {option.NAME}
-                        </MenuItem>
-                      ))
-                    : []}
-                </TextField>
+              <Grid item xs={12}>
+                <Card>
+                <form  className="st-p-2">
+                  <div  className="drp-select-case-type">
+                    <TextField
+                      id={"CaseType" + caseType}
+                      name="CaseType"
+                      select
+                      label="Case Type"
+                      value={caseType}
+                      onChange={(e) => handleCaseTypeChange(e)}
+                      fullWidth={true}
+                      required
+                      disabled={disableCaseType}
+                    >
+                    <MenuItem key="0" value="0">
+                      {"Please Select Case Type"}
+                    </MenuItem>
+                    {caseTypeData
+                      ? caseTypeData.map((option) => (
+                          <MenuItem
+                            key={option.CASE_TYPE_ID}
+                            value={option.CASE_TYPE_ID}
+                          >
+                            {option.NAME}
+                          </MenuItem>
+                        ))
+                      : []}
+                  </TextField>
               </div>
-              <CaseCreator
-                caseTypeId={caseType}
-                caseTypeData={caseTypeData}
-                disableEnableCaseTypeDropDown={disableEnableCaseTypeDropDown}
-              ></CaseCreator>
+                    <CaseCreator
+                      caseTypeId={caseType}
+                      caseTypeData={caseTypeData}
+                      disableEnableCaseTypeDropDown={disableEnableCaseTypeDropDown}
+                    ></CaseCreator>
+                </form>
+               </Card>
+               </Grid>
             </Container>
-          </Card>
-        </form>
-      </Grid>
-    </Grid>
+    </div>
   );
 }
