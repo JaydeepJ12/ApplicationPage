@@ -2,11 +2,9 @@ import {
   Avatar,
   Box,
   Button,
-  Container,
   Divider,
   Grid,
   MenuItem,
-  Paper,
   TextField
 } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
@@ -789,6 +787,7 @@ export default function CaseViewer(props) {
   const createFileField = () => {
     return (
       <FileUpload
+        className="input-file-upload"
         caseType={caseType}
         handleOnFileChange={handleOnFileChange}
       ></FileUpload>
@@ -911,27 +910,26 @@ export default function CaseViewer(props) {
     var dateFormat = require("dateformat");
 
     return (
-      <div>
-        <Paper>
-          <Grid container wrap="nowrap" spacing={2}>
-            <Grid item>
-              <Avatar>{renderUserImage(notes.createdBy)}</Avatar>
-            </Grid>
-            <Grid justifyContent="left" item xs zeroMinWidth>
-              <h4 style={{ margin: 0, textAlign: "left" }}>
-                {notes.fullName ? notes.fullName : notes.createdBy}
-              </h4>
-              <p style={{ textAlign: "left", color: "gray" }}>
-                Posted at {dateFormat(notes.createdAt, "mmm dd, yyyy h:MM TT")}
-              </p>
-              <p style={{ textAlign: "left" }}>
-                <div
-                  dangerouslySetInnerHTML={{ __html: element.innerHTML }}
-                ></div>
-              </p>
-            </Grid>
+      <div className="card-user-comment">
+        <Grid container wrap="nowrap" spacing={2}>
+          <Grid item className="st-p-1">
+            <Avatar>{renderUserImage(notes.createdBy)}</Avatar>
           </Grid>
-        </Paper>
+          <Grid justifyContent="left" item xs zeroMinWidth>
+            <h4 style={{ margin: 0, textAlign: "left" }}>
+              {notes.fullName ? notes.fullName : notes.createdBy}
+            </h4>
+            <p style={{ textAlign: "left", color: "gray" }}>
+              Posted at {dateFormat(notes.createdAt, "mmm dd, yyyy h:MM TT")}
+            </p>
+            <p style={{ textAlign: "left" }}>
+              <div
+                dangerouslySetInnerHTML={{ __html: element.innerHTML }}
+              ></div>
+            </p>
+          </Grid>
+        </Grid>
+
         <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
       </div>
     );
@@ -945,110 +943,100 @@ export default function CaseViewer(props) {
 
   const loadNotes = () => {
     return (
-      <Box>
-        <div>
-          <Grid item xs={12} sm={6} md={9} lg={9}>
-            <h1>Comments</h1>
-            <div>
-              {notes.length
-                ? notes.map((item, index) => (
-                    <div key={index}>{notesHandler(item, index)}</div>
-                  ))
-                : "No Comments Available...!!!"}
-            </div>
-          </Grid>
-        </div>
-      </Box>
+      <Grid item item xs={12} sm={12} md={8} lg={8}>
+        <h1>Comments</h1>
+
+        {notes.length
+          ? notes.map((item, index) => (
+              <div key={index}>{notesHandler(item, index)}</div>
+            ))
+          : "No Comments Available...!!!"}
+      </Grid>
     );
   };
 
   return (
-    <>
-      <Grid container spacing={1}>
-        {/* Chart */}
-        <Grid item xs={12} sm={6} md={9} lg={9}>
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-          >
-            {caseData.typeName}
-          </Typography>
-          <Typography variant="h4" component="h3">
-            {caseData.title}
-          </Typography>
-          <Divider className={classes.dividersty} />
+    <Grid container item xs={12} spacing={1} className="panel-center st-p-1">
+      <Grid item xs={12} sm={12} md={8} lg={8} className="st-p-1">
+        <Typography
+          className={classes.title}
+          color="textSecondary"
+          gutterBottom
+        >
+          {caseData.typeName}
+        </Typography>
+        <Typography variant="h4" component="h3">
+          {caseData.title}
+        </Typography>
 
-          <Box>{createFileField()}</Box>
-          <br />
-          <span>Description</span>
-          {createFroalaField()}
-          <br />
-          <div className={classes.fixedHeight}>
-            {/* <CaseComments comments={notes}/> */}
-            {notesLoaded ? (
-              <Container className="">{loadNotes()}</Container>
+        <Box>{createFileField()}</Box>
+        <span>Description</span>
+        {createFroalaField()}
+        <div className={classes.fixedHeight}>
+          {notesLoaded ? (
+            <div className="comment-list">{loadNotes()}</div>
+          ) : (
+            <p>Please wait...!! Comments Loading</p>
+          )}
+        </div>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={4}
+        lg={4}
+        className="panel-right st-p-1 side-bar-case-create"
+      >
+        {/* <CaseDetailBasicInfo /> */}
+        <Box>
+          <div data-test-id="">
+            <CaseBasicInformation
+              caseData={caseData}
+              handleAutocompleteChange={handleAutocompleteChange}
+            ></CaseBasicInformation>
+
+            {caseFields ? (
+              <Accordion
+                className="input-accordation"
+                expanded={fieldExpanded}
+                onChange={handleFieldAccordionChange(fieldExpanded)}
+              >
+                <AccordionSummary
+                  className="input-accordation-summary"
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>
+                    {!fieldExpanded ? "Show  more fields" : "Show less"}
+                  </Typography>
+                </AccordionSummary>
+                {caseFields?.length ? (
+                  <AccordionDetails className="case-fields">
+                    <form onSubmit={handleSubmit} className="case-create-form">
+                      <Button type="submit" variant="contained" color="primary">
+                        Save
+                      </Button>
+                      <br />
+                      <br />
+                      <Typography>{loadFields()}</Typography>
+                    </form>
+                  </AccordionDetails>
+                ) : (
+                  <AccordionDetails>
+                    <Typography>
+                      Please wait while we are loading fields...!!
+                    </Typography>
+                  </AccordionDetails>
+                )}
+              </Accordion>
             ) : (
-              <p>Please wait...!! Comments Loading</p>
+              ""
             )}
           </div>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3}>
-          {/* <CaseDetailBasicInfo /> */}
-          <Box>
-            <div data-test-id="">
-              <CaseBasicInformation
-                caseData={caseData}
-                handleAutocompleteChange={handleAutocompleteChange}
-              ></CaseBasicInformation>
-              <br />
-              {caseFields ? (
-                <Accordion
-                  expanded={fieldExpanded}
-                  onChange={handleFieldAccordionChange(fieldExpanded)}
-                >
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                  >
-                    <Typography>
-                      {!fieldExpanded ? "Show  more fields" : "Show less"}
-                    </Typography>
-                  </AccordionSummary>
-                  {caseFields?.length ? (
-                    <AccordionDetails className="case-fields">
-                      <form
-                        onSubmit={handleSubmit}
-                        className="case-create-form"
-                      >
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          color="primary"
-                        >
-                          Save
-                        </Button>
-                        <br />
-                        <br />
-                        <Typography>{loadFields()}</Typography>
-                      </form>
-                    </AccordionDetails>
-                  ) : (
-                    <AccordionDetails>
-                      <Typography>
-                        Please wait while we are loading fields...!!
-                      </Typography>
-                    </AccordionDetails>
-                  )}
-                </Accordion>
-              ) : (
-                ""
-              )}
-            </div>
-          </Box>
-        </Grid>
+        </Box>
       </Grid>
-    </>
+    </Grid>
   );
 }

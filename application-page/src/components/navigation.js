@@ -34,67 +34,6 @@ import ViewCase from "./view-case";
 
 const drawerWidth = 240;
 
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     display: "flex",
-//   },
-//   appBar: {
-//     background: "white",
-//     color: "black",
-//     transition: theme.transitions.create(["margin", "width"], {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.leavingScreen,
-//     }),
-//   },
-//   appBarShift: {
-//     width: `calc(100% - ${drawerWidth}px)`,
-//     marginLeft: drawerWidth,
-//     transition: theme.transitions.create(["margin", "width"], {
-//       easing: theme.transitions.easing.easeOut,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//   },
-//   menuButton: {
-//     marginRight: theme.spacing(2),
-//   },
-//   hide: {
-//     display: "none",
-//   },
-//   drawer: {
-//     width: drawerWidth,
-//     flexShrink: 0,
-//   },
-//   drawerPaper: {
-//     width: drawerWidth,
-//   },
-//   drawerHeader: {
-//     display: "flex",
-//     alignItems: "center",
-//     padding: theme.spacing(0, 1),
-//     // necessary for content to be below app bar
-//     ...theme.mixins.toolbar,
-//     justifyContent: "flex-end",
-//   },
-//   content: {
-//     // flexGrow: 1,
-//     padding: theme.spacing(3),
-//     transition: theme.transitions.create("margin", {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.leavingScreen,
-//     }),
-//     marginLeft: -drawerWidth,
-//   },
-//   contentShift: {
-//     transition: theme.transitions.create("margin", {
-//       easing: theme.transitions.easing.easeOut,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//     marginLeft: 0,
-//   },
-//   avtar: {
-//     marginLeft: "-1rem",
-//   },
-// }));
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -117,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 25,
   },
   hide: {
     display: "none",
@@ -150,15 +89,17 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "flex-end",
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
+    borderBottom: '1px solid #eee',
     ...theme.mixins.toolbar,
   },
   content: {
     //   flexGrow: 1,
+    width: `calc(100%)`,
     padding: theme.spacing(3),
   },
   avtar: {
-    // marginLeft: "-1rem",
+    marginRight: '.5em',
+    backgroundColor: 'transparent'
   },
 }));
 // const useStyles = makeStyles((theme) => ({
@@ -308,7 +249,7 @@ export default function Navigation(props) {
               </IconButton>
               <Typography className={classes.avtar}>
                 <Avatar className={classes.avtar}>
-                  <img src="http://home.boxerproperty.com/Assets/CommonFiles/New_Images/Main_logo.png"></img>
+                  <img src="http://home.boxerproperty.com/Assets/CommonFiles/New_Images/Main_logo.png" style={{'max-width':'100%'}} className="header-logo" alt="stemmons-logo"></img>
                 </Avatar>
               </Typography>
 
@@ -330,14 +271,15 @@ export default function Navigation(props) {
               }),
             }}
           >
-            <div className={classes.toolbar}>
-              {open ? (
+            <div className={classes.toolbar+' side-click'}>
+              {/* {open ? (
                 <ListItem>
                   <AppIcon src={app_icon} name={name}></AppIcon>
                 </ListItem>
               ) : (
                 ""
-              )}
+              )} */}
+              <h2>Navigation</h2>
               <IconButton onClick={handleDrawerClose}>
                 {theme.direction === "rtl" ? (
                   <ChevronRightIcon />
@@ -346,7 +288,6 @@ export default function Navigation(props) {
                 )}
               </IconButton>
             </div>
-            <Divider />
             <List>
               {menuItems.map((item, index) => (
                 <ListItem
@@ -374,7 +315,7 @@ export default function Navigation(props) {
       </List> */}
           </Drawer>
           <main className={classes.content}>
-            <div className={classes.toolbar} />
+            
             <Router>
               <CaseSelect path="case-select" />
               <OverView path="overview" />

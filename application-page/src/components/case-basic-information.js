@@ -15,7 +15,7 @@ export default function CaseBasicInformation(props) {
 
   const createAssignTo = () => {
     return (
-      <UserAutocomplete
+      <UserAutocomplete className="input-auto-suggest"
         defaultHopper={""}
         defaultHopperId={0}
         selectedUser={
@@ -39,77 +39,36 @@ export default function CaseBasicInformation(props) {
     }
 
     return (
-      <div className="sc-eOnLuU kbLHgv">
-        <div className="sc-igaqVs kvdIbC"></div>
+      <>
         {priority ? (
           <span className="sc-gcpVEs czZyXP">{priority}</span>
         ) : (
           "Normal"
         )}
-      </div>
+     </>
     );
   };
 
   return (
-    <div className="" data-test-id="">
-      <div className="" data-test-id=""></div>
-      <div>
-        <div className="">
-          <div className="" data-test-id="">
-            <div>
-              <div className="">
-                <div>
-                  <label className="">
-                    <div className="">
-                      <span style={{ fontWeight: "bold" }}>Assignee</span>
-                    </div>
-                  </label>
-                </div>
-                <div className="">
-                  {caseData?.assignedToFullName
-                    ? caseData?.assignedToFullName
-                    : caseData?.assignedTo}
-                </div>
-                <Box>{createAssignTo()}</Box>
-              </div>
-            </div>
-          </div>
+    <>
+       <div className="text-left" style={{ marginBottom: '1rem' }}>
+              <span style={{ fontWeight: "bold" }}>Assignee :  </span>
+              {caseData?.assignedToFullName
+              ? caseData?.assignedToFullName
+              : caseData?.assignedTo}  
         </div>
-      </div>
+      <Box className="input-box">{createAssignTo()}</Box>
       <br />
-      <div className="">
-        <div className="" data-test-id="">
-          <div>
-            <div className="">
-              <div>
-                <label className="">
-                  <div className="">
-                    <span style={{ fontWeight: "bold" }}>Reporter</span>
-                  </div>
-                </label>
-              </div>
-              <div className="">{caseData?.createdByFullName}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+       <div className="text-left">
+          <span style={{ fontWeight: "bold" }}>Reporter :  </span>
+          {caseData?.createdByFullName}            
+       </div>
       <br />
-      <div className="">
-        <div className="">
-          <div>
-            <div className="">
-              <div>
-                <label className="">
-                  <div className="">
-                    <span style={{ fontWeight: "bold" }}>Priority</span>
-                  </div>
-                </label>
-              </div>
-              {handlePriority(caseData.priority)}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+       <div className="text-left" style={{ marginBottom: '1rem' }}>
+        <span style={{ fontWeight: "bold" }}>Priority :  </span>
+        {handlePriority(caseData.priority)}       
+       </div>
+
+    </>
   );
 }

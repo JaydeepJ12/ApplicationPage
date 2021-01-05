@@ -145,12 +145,12 @@ export default function UserAutocomplete(props) {
   return (
     <div className="assign-to-div">
       <label>Assign To :</label>
-      <div style={{ width: "auto", marginTop: "1rem" }}>
+      <div style={{ width: "auto", marginTop: ".5em" }}>
         {" "}
         {
-          <Autocomplete
+          <Autocomplete 
             {...props}
-            className=""
+            className="input-auto-complete"
             id="users"
             options={users}
             getOptionLabel={(option) => option.displayName}
