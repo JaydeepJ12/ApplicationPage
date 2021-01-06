@@ -114,7 +114,7 @@ export default function Navigation(props) {
   const [isLogin, setIsLogin] = React.useState(false);
 
   return (
-            <Router>
+            <Router basepath='/react'>
               <CaseSelect path="/case-select" />
               <OverView path="/overview" />
               <Test path="/test"></Test>
