@@ -121,8 +121,8 @@ export default function Navigation(props) {
               <CaseTypeForm path="/case-type-form"></CaseTypeForm>
               <ViewCase path="/viewcase"></ViewCase>
             </Router>
-          </main>
-        </div>
+          
+       
       )
 
 }
