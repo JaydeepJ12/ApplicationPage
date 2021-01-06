@@ -28,6 +28,14 @@ export default function Test() {
             fieldId={7913}
             handleExternalLookupChange={handleExternalLookupChange}
           />
+           <br></br>
+          <br></br>
+          <ExternalLookup
+            typeId={213}
+            fieldName="Vendor"
+            fieldId={3405}
+            handleExternalLookupChange={handleExternalLookupChange}
+          />
         </Container>
       </Card>
     </form>
