@@ -1,8 +1,9 @@
 from flask import Flask, request
 from blueprints.cases import bp as cases
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import json
-import plotly.express as px
 
+base = Flask(__name__)
 app = Flask(__name__)
 
 app.register_blueprint(cases)
@@ -16,6 +17,10 @@ def after_request(r):
 @app.route('/test', methods=['GET'])
 def test():
     return 'Hello World'
+
+deploy = DispatcherMiddleware(base,{
+    '/flask':app
+})
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
