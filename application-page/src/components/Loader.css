@@ -1,6 +1,3 @@
-/* LOADING CSS */
-
-/* ---------------Loading START------------------ */
 
 .sk-cube-grid {
   width: 70px;
@@ -11,7 +8,6 @@
   left: 45%;
   text-align: center;
 }
-
 .loader-overlay {
   position: fixed;
   left: 0px;
@@ -20,12 +16,9 @@
   height: auto;
   top: 0;
   bottom: 0;
-  /* background-color: darkgrey;
-  opacity: 0; */
   z-index: 999;
   text-align: center;
 }
-
 .cm-spinner {
   height: 150px;
   width: 150px;
@@ -37,7 +30,6 @@
   position: fixed;
   overflow: hidden;
 }
-
 .cm-spinner::before,
 .cm-spinner::after {
   content: "";
@@ -49,40 +41,21 @@
   border-radius: 50%;
   border: 4px solid transparent;
 }
-
 .cm-spinner::before {
   border-top-color: rgb(242, 140, 26);
   -webkit-animation: 3s spin linear infinite;
   animation: 3s spin linear infinite;
 }
-
 .cm-spinner::after {
   border-top-color: rgb(242, 140, 26);
   -webkit-animation: spin 1.5s linear infinite;
   animation: spin 1.5s linear infinite;
 }
-
-/* --------------------------Loading END------------------------ */
-
-/* ---------------Component Loading START------------------ */
-
 .component-loader-overlay {
-  /* position: fixed;
-  left: 0px;
-  right: 0px;
-  width: 100%;
-  height: auto;
-  top: 0;
-  bottom: 0; */
-  /* background-color: darkgrey;
-  opacity: 0; */
-  /* z-index: 999;
-  text-align: center; */
   position: absolute;
   left: 12%;
   top: 50%;
 }
-
 .loader-image {
   display: block;
 }
