@@ -1,30 +1,34 @@
-import { Avatar } from "@material-ui/core";
+import {
+  Avatar,
+  CssBaseline,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  Grid
+} from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import IconButton from "@material-ui/core/IconButton";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { Streetview } from "@material-ui/icons";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import CreateIcon from "@material-ui/icons/Create";
-import DvrIcon from "@material-ui/icons/Dvr";
-import MenuIcon from "@material-ui/icons/Menu";
-import PeopleIcon from "@material-ui/icons/People";
-import TimelineIcon from "@material-ui/icons/Timeline";
-import ViewListIcon from "@material-ui/icons/ViewList";
+import {
+  Assignment,
+  ChevronLeft,
+  ChevronRight,
+  Create,
+  Dvr,
+  Menu,
+  People,
+  Streetview,
+  Timeline,
+  ViewList
+} from "@material-ui/icons";
 import { Link, Router } from "@reach/router";
 import clsx from "clsx";
 import React, { useState } from "react";
-import AppIcon from "./app_icon.js";
+// components
 import CaseSelect from "./case_select.js";
 import CaseTypeForm from "./case_type_form/index";
 import Login from "./Login/index.js";
@@ -33,7 +37,7 @@ import Test from "./test";
 import ViewCase from "./view-case";
 
 const drawerWidth = 240;
-
+// styles
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -89,52 +93,22 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "flex-end",
     padding: theme.spacing(0, 1),
-    borderBottom: '1px solid #eee',
+    borderBottom: "1px solid #eee",
     ...theme.mixins.toolbar,
   },
   content: {
-    //   flexGrow: 1,
     width: `calc(100%)`,
     padding: theme.spacing(3),
   },
   avtar: {
-    marginRight: '.5em',
-    backgroundColor: 'transparent'
+    marginRight: ".5em",
+    backgroundColor: "transparent",
   },
 }));
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     minHeight: "100vh",
-//     backgroundImage: `url(https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png)`,
-//   },
-//   dividerDiv: {
-//     marginTop: "1rem",
-//   },
-// }));
-
 export default function Navigation(props) {
-  // const classes = useStyles();
-  // return (
-  //   <ThemeProvider theme={theme}>
-  //     <div classes={classes.root}></div>
-  //     <Dashboard></Dashboard>
-  //     <div className={classes.dividerDiv}>
-  //       <Divider />
-  //     </div>
-  //     <div>
-  //       <Router>
-  //         <Dashboard path="/" />
-  //         <CaseSelect path="case-select" />
-  //         <OverView path="overview" />
-  //         <Test path="test"></Test>
-  //         <CaseTypeForm path="case-type-form"></CaseTypeForm>
-  //         <ViewCase path="viewcase"></ViewCase>
-  //       </Router>
-  //     </div>
-  //   </ThemeProvider>
-  // );
   const classes = useStyles();
   const theme = useTheme();
+
   const [open, setOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [isLogin, setIsLogin] = React.useState(false);
@@ -148,43 +122,43 @@ export default function Navigation(props) {
     },
     {
       menuName: "Tasks",
-      menuIcon: <AssignmentIcon />,
+      menuIcon: <Assignment />,
       menuPath: "tasks",
       pageTitle: "Tasks",
     },
     {
       menuName: "People",
-      menuIcon: <PeopleIcon />,
+      menuIcon: <People />,
       menuPath: "people",
       pageTitle: "People",
     },
     {
       menuName: "Items",
-      menuIcon: <ViewListIcon />,
+      menuIcon: <ViewList />,
       menuPath: "items",
       pageTitle: "Items",
     },
     {
       menuName: "Insights",
-      menuIcon: <TimelineIcon />,
+      menuIcon: <Timeline />,
       menuPath: "insights",
       pageTitle: "Insights",
     },
     {
       menuName: "CaseCreator",
-      menuIcon: <CreateIcon />,
+      menuIcon: <Create />,
       menuPath: "case-select",
       pageTitle: "Create Case",
     },
     {
       menuName: "View Cases",
-      menuIcon: <ViewListIcon />,
+      menuIcon: <ViewList />,
       menuPath: "viewcase",
       pageTitle: "View Cases",
     },
     {
       menuName: "Case Type Form",
-      menuIcon: <DvrIcon />,
+      menuIcon: <Dvr />,
       menuPath: "case-type-form",
       pageTitle: "Case Type",
     },
@@ -213,22 +187,12 @@ export default function Navigation(props) {
     setOpen(false);
   };
 
-  const navigateToRoute = (props, route) => {
-    props.navigate("/case-create");
-  };
-
-  const app_icon =
-    "http://entities.boxerproperty.com//Download.aspx?FileID=458702";
-  const name = "Inside Sales";
-  const avatar =
-    "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=MichaelAF";
   return (
-    <div>
+    <div className="side-navigation">
       {isLogin ? (
         <Login path="/login" />
       ) : (
         <div className={classes.root}>
-          <CssBaseline />
           <AppBar
             position="fixed"
             className={clsx(classes.appBar, {
@@ -245,11 +209,16 @@ export default function Navigation(props) {
                   [classes.hide]: open,
                 })}
               >
-                <MenuIcon />
+                <Menu />
               </IconButton>
               <Typography className={classes.avtar}>
                 <Avatar className={classes.avtar}>
-                  <img src="http://home.boxerproperty.com/Assets/CommonFiles/New_Images/Main_logo.png" style={{'max-width':'100%'}} className="header-logo" alt="stemmons-logo"></img>
+                  <img
+                    src="http://home.boxerproperty.com/Assets/CommonFiles/New_Images/Main_logo.png"
+                    style={{ "max-width": "100%" }}
+                    className="header-logo"
+                    alt="stemmons-logo"
+                  ></img>
                 </Avatar>
               </Typography>
 
@@ -258,6 +227,7 @@ export default function Navigation(props) {
               </Typography>
             </Toolbar>
           </AppBar>
+     
           <Drawer
             variant="permanent"
             className={clsx(classes.drawer, {
@@ -271,8 +241,9 @@ export default function Navigation(props) {
               }),
             }}
           >
-            <div className={classes.toolbar+' side-click'}>
-              {/* {open ? (
+            <div className={classes.toolbar + " side-click"}>
+            {/*-------note:----code for dropdownlist(future development)
+              {/*{open ? (
                 <ListItem>
                   <AppIcon src={app_icon} name={name}></AppIcon>
                 </ListItem>
@@ -280,135 +251,43 @@ export default function Navigation(props) {
                 ""
               )} */}
               <h2>Navigation</h2>
+              <div></div>
               <IconButton onClick={handleDrawerClose}>
-                {theme.direction === "rtl" ? (
-                  <ChevronRightIcon />
-                ) : (
-                  <ChevronLeftIcon />
-                )}
+                {theme.direction === "rtl" ? <ChevronRight /> : <ChevronLeft />}
               </IconButton>
             </div>
-            <List>
+            <List className="sidebar-navigation-block">
               {menuItems.map((item, index) => (
-                <ListItem
-                  onClick={() => {
-                    setCurrentPage(item.pageTitle);
-                    // navigateToRoute(props, item.menuPath);
-                  }}
-                >
-                  <ListItemIcon>{item.menuIcon}</ListItemIcon>
-                  <ListItemText>
-                    <Link to={item.menuPath} style={{ color: "black" }}>
-                      {item.menuName}
-                    </Link>
-                  </ListItemText>
-                </ListItem>
+                   <Link to={item.menuPath} style={{ color: "black" }}>
+                      <ListItem
+                        onClick={() => {
+                          setCurrentPage(item.pageTitle);
+                        }}
+                      >
+                        <ListItemIcon>{item.menuIcon}</ListItemIcon>
+                        <ListItemText>
+                      
+                            {item.menuName}
+                        
+                        </ListItemText>
+                      </ListItem>
+                  </Link>
               ))}
             </List>
-            {/* <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List> */}
           </Drawer>
           <main className={classes.content}>
-            
-            <Router basepath="/react">
-              <CaseSelect path="/case-select" />
-              <OverView path="/overview" />
-              <Test path="/test"></Test>
-              <CaseTypeForm path="/case-type-form"></CaseTypeForm>
-              <ViewCase path="/viewcase"></ViewCase>
+
+            <Router>
+              <CaseSelect path="case-select" />
+              <OverView path="overview" />
+              <Test path="test"></Test>
+              <CaseTypeForm path="case-type-form"></CaseTypeForm>
+              <ViewCase path="viewcase"></ViewCase>
+
             </Router>
           </main>
         </div>
       )}
     </div>
-    // <div className={classes.root}>
-    //   <CssBaseline />
-    //   <AppBar
-    //     position="fixed"
-    //     className={clsx(classes.appBar, {
-    //       [classes.appBarShift]: open,
-    //     })}
-    //   >
-    //     <Toolbar>
-    //       <IconButton
-    //         color="inherit"
-    //         aria-label="open drawer"
-    //         onClick={handleDrawerOpen}
-    //         edge="start"
-    //         className={clsx(classes.menuButton, open && classes.hide)}
-    //       >
-    //         <MenuIcon />
-    //       </IconButton>
-    //       <Typography className={classes.avtar}>
-    //         <Avatar>
-    //           <img src="http://home.boxerproperty.com/Assets/CommonFiles/New_Images/Main_logo.png"></img>
-    //         </Avatar>
-    //       </Typography>
-
-    //       <Typography variant="h6" noWrap>
-    //         {currentPage}
-    //       </Typography>
-    //     </Toolbar>
-    //   </AppBar>
-    //   <Drawer
-    //     className={classes.drawer}
-    //     variant="persistent"
-    //     anchor="left"
-    //     open={open}
-    //     classes={{
-    //       paper: classes.drawerPaper,
-    //     }}
-    //   >
-    //     <div className={classes.drawerHeader}>
-    //       <ListItem alignItems="center">
-    //         <AppIcon src={app_icon} name={name}></AppIcon>
-    //       </ListItem>
-    //       <IconButton onClick={handleDrawerClose}>
-    //         {theme.direction === "ltr" ? (
-    //           <ChevronLeftIcon />
-    //         ) : (
-    //           <ChevronRightIcon />
-    //         )}
-    //       </IconButton>
-    //     </div>
-    //     <Divider />
-    //     <List>
-    //       {menuItems.map((item, index) => (
-    //         <ListItem
-    //           onClick={() => {
-    //             setCurrentPage(item.pageTitle);
-    //           }}
-    //         >
-    //           <ListItemIcon>{item.menuIcon}</ListItemIcon>
-    //           <ListItemText>
-    //             <Link to={item.menuPath} style={{ color: "black" }}>
-    //               {item.menuName}
-    //             </Link>
-    //           </ListItemText>
-    //         </ListItem>
-    //       ))}
-    //     </List>
-    //   </Drawer>
-    //   <main
-    //     className={clsx(classes.content, {
-    //       [classes.contentShift]: open,
-    //     })}
-    //   >
-    //     <div className={classes.drawerHeader} />
-    //     <Router>
-    //       <CaseSelect path="case-select" />
-    //       <OverView path="overview" />
-    //       <Test path="test"></Test>
-    //       <CaseTypeForm path="case-type-form"></CaseTypeForm>
-    //       <ViewCase path="viewcase"></ViewCase>
-    //     </Router>
-    //   </main>
-    // </div>
   );
 }

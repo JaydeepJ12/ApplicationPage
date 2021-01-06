@@ -1,4 +1,5 @@
 import { Box, Button } from "@material-ui/core";
+// icons
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import React, { useState } from "react";
 
@@ -7,23 +8,19 @@ export default function FileUpload(props) {
 
   const onFileChange = (event) => {
     var file = event.target.files[0];
-
     const formData = new FormData();
     if (file) {
       formData.append("myFile" + props.caseType, file, file.name);
       const fileData = [...formData];
-      //Set details of the uploaded file
       setFormDataValue(fileData);
-      console.log(file);
       props.handleOnFileChange(fileData);
     }
   };
-
   return (
-    <div className="cm-file-input">
+    <div className="file-input">
       <br></br>
       <Button style={{ paddingLeft: 0 }} component="label">
-        <Box className="file-input">
+        <Box className="input-file-upload">
           <AttachFileIcon></AttachFileIcon>
         </Box>
         <input type="file" hidden id="fileUpload" onChange={onFileChange} />
