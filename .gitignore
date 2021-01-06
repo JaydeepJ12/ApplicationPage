@@ -32,7 +32,7 @@ yarn-error.log*
 
 # Distribution / packaging
 bin/
-build/
+node_modules/
 develop-eggs/
 dist/
 eggs/
