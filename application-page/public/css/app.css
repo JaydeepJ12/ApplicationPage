@@ -1,16 +1,17 @@
 body {background-color: #fff !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 a {
   text-decoration: none !important;
 }
+/* use for common page on deshboard */
 main {
   padding-left: 3.3rem;
   margin-top: 5rem;
   padding-right: 1rem;
   margin-bottom: 0.5rem;
 }
-
-.MuiList-root .MuiListItem-root:hover {
+.ul li:hover {
   color: #444 !important;
   background-color: #e0f3ff !important;
 }
@@ -176,7 +177,7 @@ main {
     text-align: center;
     font-size: 25px;
     font-weight: normal;
-    line-height: 2em;
+    line-height: 8px;
     border-radius: 27px;
     -moz-border-radius: 27px;
     -webkit-border-radius: 27px;
@@ -220,5 +221,14 @@ main {
 }
 #page-overview .MuiTabs-indicator {
   background-color: #f0f0f0 ! important;
+}
+.component-loader-overlay {
+  position: absolute;
+  left: 13% ! important;
+  top: 50%;
+}
+.file-input .MuiButton-root:hover {
+  text-decoration: none;
+  background-color: transparent;
 }
 /* ----------------------end---overview----------------------- */
