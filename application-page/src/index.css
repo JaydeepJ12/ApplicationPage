@@ -21,7 +21,7 @@
   width: 50px !important;
   height: 50px !important;
   margin-right: 5px !important;
-  display: flex !important;
+   display: inline-block !important;
   overflow: hidden !important;
   position: relative !important;
   font-size: 1.25rem !important;
