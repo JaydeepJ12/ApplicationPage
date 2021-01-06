@@ -12,16 +12,16 @@ import {
   Select,
   Tab,
   Tabs,
-  Typography
+  Typography,
 } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+
 // // icons
 import { Notifications, Settings } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import SwipeableViews from "react-swipeable-views";
 import Loading from "./Loader.js";
-
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
@@ -32,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     "& > *": {
       margin: theme.spacing(1),
+    },
+  },
+  image_spacing: {
+    display: "flex",
+    "& > *": {
+      margin: theme.spacing(5),
     },
   },
   root2: {
@@ -76,24 +82,15 @@ TabPanel.propTypes = {
 export default function OverView(props) {
   const theme = useTheme();
   const classes = useStyles();
-  const [loaded, setLoaded] = useState(false);
   const [value, setValue] = React.useState(0);
   const [age, setAge] = React.useState("");
 
-  const apps = () => {
-    setTimeout(() => {
-      setLoaded(true);
-    }, 1000);
-  };
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-  useEffect(() => {
-    apps();
-  }, []);
 
   const handleClick = (props) => {
     props.navigate("/case-select");
@@ -136,29 +133,25 @@ export default function OverView(props) {
                   justify="center"
                   className="vertical-center"
                 >
-                  {loaded ? (
-                    <form>
-                      <div
-                        className=""
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          handleClick(props);
-                        }}
+                  <form>
+                    <div
+                      className=""
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        handleClick(props);
+                      }}
+                    >
+                      <Button
+                        variant="contained"
+                        size="large"
+                        className="btn btn-create-button btn-primary rounded-pill"
+                        variant="contained"
+                        color="primary"
                       >
-                        <Button
-                          variant="contained"
-                          size="large"
-                          className="btn btn-create-button btn-primary rounded-pill"
-                          variant="contained"
-                          color="primary"
-                        >
-                          + Create
-                        </Button>
-                      </div>
-                    </form>
-                  ) : (
-                    <Loading />
-                  )}
+                        + Create
+                      </Button>
+                    </div>
+                  </form>
                 </Grid>
                 <Grid item lg={8} md={8} xs={12} sm={8}>
                   <div className={classes.root2}>
@@ -237,6 +230,79 @@ export default function OverView(props) {
                   <MenuItem value={30}>Thirty</MenuItem>
                 </Select>
               </FormControl>
+
+              <div className="people-image-list">
+                <Grid container spacing={3}>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                    <Box>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                  <Box>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                  <Box>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                  <Box>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </div>
             </Box>
           </Grid>
           <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -265,6 +331,78 @@ export default function OverView(props) {
                   <MenuItem value={30}>Thirty</MenuItem>
                 </Select>
               </FormControl>
+              <div className="people-image-list"   style={{ cursor: "pointer" }}>
+                <Grid container spacing={3}>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                    <Box>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                  <Box>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                  <Box className="text-center">
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item lg={2} md={2} xs={2} sm={2}>
+                  <Box>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                      <Typography variant="caption" display="block" gutterBottom>
+                       Dixit
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (10)
+                      </Typography>
+                      <Typography variant="caption" display="block" gutterBottom>
+                       (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </div>
             </Box>
           </Grid>
         </Grid>
