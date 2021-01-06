@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import CaseCreator from "./case_creator.js";
 
-export default function CaseSelect(props) {
+export default function CaseSelect() {
   const [caseType, setCaseType] = useState(0);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [disableCaseType, setCaseTypeDisable] = useState(false);

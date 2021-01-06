@@ -1,41 +1,21 @@
-import { Icon } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import { makeStyles } from "@material-ui/core/styles";
-import { default as Typography } from "@material-ui/core/Typography";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  Icon,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  makeStyles,
+  Typography
+} from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import * as notification from "../components/common/toast";
 
 const useStyles = makeStyles({
-  root: {
-    minWidth: 275,
-    marginBottom: 5,
-    backgroundColor: "#ede7f6",
-  },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)",
-  },
   title: {
     fontSize: 14,
     fontWeight: "bold",
-  },
-  pos: {
-    marginBottom: 12,
-  },
-  avatar: {
-    marginLeft: "auto",
-    // border: "2px solid #eee",
-    // marginLeft: 10,
-    // padding: 1,
-  },
-  dropSelect: {
-    width: "fit-content",
   },
   card: {
     margin: 10,
@@ -49,10 +29,9 @@ export default function CasePreview(props) {
   const classes = useStyles();
   const [caseId, setCaseId] = useState(props.caseId);
   const [caseData, setCaseData] = useState(props.caseData);
-  const [expanded, setExpanded] = useState(false);
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
 
-  const handleCasePreviewClick = (caseId, caseData) => (isExpanded) => {
+  const handleCasePreviewClick = (caseId, caseData) => {
     // props.handleCasePreviewClick(caseId, caseData);
     if (!caseLoaded) {
       notification.toast.warning("Please wait. Your case is loading...!!");
@@ -103,7 +82,9 @@ export default function CasePreview(props) {
     <Card
       className={classes.card}
       key={caseData.caseID}
-      onClick={handleCasePreviewClick(caseId, caseData)}
+      onClick={(event) => {
+        handleCasePreviewClick(caseId, caseData);
+      }}
     >
       <CardContent>
         <Typography style={{ cursor: "pointer" }}>{caseData.title}</Typography>

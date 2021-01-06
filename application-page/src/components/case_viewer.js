@@ -1,19 +1,19 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Avatar,
   Box,
   Button,
   Container,
   Divider,
   Grid,
+  makeStyles,
   MenuItem,
   Paper,
-  TextField
+  TextField,
+  Typography
 } from "@material-ui/core";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -27,28 +27,8 @@ import Froala from "./froala.js";
 import Loading from "./Loader.js";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)",
-  },
   title: {
     fontSize: 16,
-  },
-  pos: {
-    marginBottom: 12,
   },
   dividersty: {
     marginBottom: "1rem",
@@ -61,40 +41,31 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CaseViewer(props) {
   const classes = useStyles();
-  const [data, setData] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [loaded, setLoaded] = useState(true);
   const [state, setState] = useState({});
+  const [loaded, setLoaded] = useState(true);
+  const [notes, setNotes] = useState([]);
+  const [notesLoaded, setNotesLoaded] = useState(false);
   const [caseType, setCaseType] = useState(0);
   const [parentChildData, setParentChildData] = useState([]);
   const [froalaValue, setFroalaValue] = useState({});
   const [formDataValue, setFormDataValue] = useState([]);
   const [maxCount, setMaxCount] = useState(50);
   const [parentValue, setParentValue] = useState(0);
-  const [loadMoreText, setLoadMoreText] = useState(false);
-  const [defaultHopper, setDefaultHopper] = useState("");
-  const [defaultHopperId, setDefaultHopperId] = useState(0);
   const [assignTo, setAssignTo] = useState(0);
-  const [expanded, setExpanded] = useState(false);
   const [fieldExpanded, setFieldExpanded] = useState(false);
   const [caseData, setCaseData] = useState(props.caseData);
-  const [caseDetails, setCaseDetails] = useState([props.caseData]);
   const [caseFields, setCaseFields] = useState([]);
   const [parentDropDownloaded, setParentDropDownloaded] = useState(false);
-  const [notesLoaded, setNotesLoaded] = useState(false);
 
-  const handleFieldAccordionChange = (isFieldExpanded) => (
-    event,
-    isExpanded
-  ) => {
+  const handleFieldAccordionChange = (isFieldExpanded) => {
     setFieldExpanded(!isFieldExpanded);
   };
+
   const handleCaseTypeChange = (caseId, caseData) => {
     const caseTypeId = caseData.typeId;
     setNotesLoaded(false);
     props.handleCaseLoaded(false);
     props.handleCaseFieldsLoaded(false);
-    setData([]);
     setNotes([]);
     setCaseFields([]);
     setCaseData([]);
@@ -147,6 +118,8 @@ export default function CaseViewer(props) {
       userClosedby: "",
     };
 
+    // This commented code is for cancel axios. It may require in future.
+    
     // var CancelToken = axios.CancelToken;
     // var cancel;
 
@@ -184,67 +157,6 @@ export default function CaseViewer(props) {
   useEffect(() => {
     handleCaseTypeChange(props.caseId, props.caseData);
   }, [props.caseId, props.caseData]);
-
-  //// Todo : Don't remove this commented code. May be it is require in future.
-
-  // const fields = (caseTypeId) => {
-  //   // var ls = new SecureLS({encodingType: 'aes'});
-  //   var ls = new SecureLS({
-  //     encodingType: "des",
-  //     isCompression: false,
-  //     encryptionSecret: "BhavikS",
-  //   });
-  //   var fieldData = [];
-  //   caseTypeId = caseTypeId ? caseTypeId : caseType;
-  //   var localFieldData = ls.get("CaseType-" + caseTypeId);
-
-  //   var fieldDataReceived = false;
-  //   if (localFieldData || localFieldData != "") {
-  //     fieldData = JSON.parse(localFieldData);
-  //     // setData(fieldData);
-  //     console.log(fieldData);
-  //     fieldDataReceived = true;
-  //   }
-
-  //   var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
-
-  //   if (localParentChildData || localParentChildData != "") {
-  //     setParentChildData(JSON.parse(localParentChildData));
-  //     loadParentDropDown(
-  //       JSON.parse(localParentChildData),
-  //       fieldData,
-  //       caseTypeId
-  //     );
-  //   }
-  //   axios
-  //     .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
-  //     .then((resp) => {
-  //       if (localFieldData !== JSON.stringify(resp.data)) {
-  //         setData(resp.data);
-  //         // setLoaded(true);
-  //         ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
-  //         fieldData = resp.data;
-  //       }
-  //       if (fieldData.length > 0) {
-  //         axios
-  //           .get(
-  //             "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
-  //               caseTypeId
-  //             )
-  //           )
-  //           .then((resp) => {
-  //             if (localParentChildData !== JSON.stringify(resp.data)) {
-  //               setParentChildData(resp.data);
-  //               ls.set(
-  //                 "ParentChildData-" + caseTypeId,
-  //                 JSON.stringify(resp.data)
-  //               );
-  //               loadParentDropDown(resp.data, fieldData, caseTypeId);
-  //             }
-  //           });
-  //       }
-  //     });
-  // };
 
   const loadAssocDecodeData = async (fieldData, caseTypeId) => {
     let assocTypeIds = [];
@@ -285,7 +197,6 @@ export default function CaseViewer(props) {
       }
     }
 
-    // var ls = new SecureLS({encodingType: 'aes'});
     var ls = new SecureLS({
       encodingType: "des",
       isCompression: false,
@@ -323,7 +234,6 @@ export default function CaseViewer(props) {
   ) => {
     setParentDropDownloaded(false);
     let superParentAssocTypeIds = [];
-    // var externalData = fieldData.filter((x) => x.externalDatasourceId > 0);
 
     var externalData = [];
     if (controlId > 0) {
@@ -341,12 +251,6 @@ export default function CaseViewer(props) {
     let isLastDropdown = false;
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
-
-      // let parentId = currentData.find(
-      //   (x) => x.childTypeId === superParentAssocTypeIds[i]
-      // )?.parentTypeId;
-      // let parentValue = currentData.find((x) => x.controlId === parentId)
-      //   ?.externalDatasourceObjectId;
 
       let cascadeItems = currentData.find(
         (x) => x.controlId === superParentAssocTypeIds[i]
@@ -461,7 +365,6 @@ export default function CaseViewer(props) {
               if (i + 1 === superParentAssocTypeIds.length) {
                 isLastDropdown = true;
               }
-              // setLoaded(true);
             }
           })
           .catch(function (error) {
@@ -499,7 +402,6 @@ export default function CaseViewer(props) {
   ) => {
     event.preventDefault();
     event.stopPropagation();
-    setLoadMoreText(true);
     if (searchText !== "") {
       skipCount = 0;
     }
@@ -545,8 +447,6 @@ export default function CaseViewer(props) {
           currentData[commentIndex].assoc_decode = currentData[
             commentIndex
           ].assoc_decode.concat(externalData);
-          setData(currentData);
-          setLoadMoreText(false);
         })
         .catch(function (error) {
           console.log(error);
@@ -678,7 +578,6 @@ export default function CaseViewer(props) {
   };
 
   const createTextField = (data, index) => {
-    // var required = convertRequired(control);
     return (
       <div className="">
         <TextField
@@ -709,7 +608,6 @@ export default function CaseViewer(props) {
   };
 
   const createDateField = (data, index) => {
-    // var required = convertRequired(data);
     var dateFormat = require("dateformat");
     return (
       <div className="">
@@ -733,8 +631,6 @@ export default function CaseViewer(props) {
   };
 
   const createDropDownField = (data, index) => {
-    // var required = convertRequired(data);
-
     return (
       <div
         className="card-page-wrap"
@@ -800,9 +696,6 @@ export default function CaseViewer(props) {
   };
 
   const fieldHandler = (data, index) => {
-    //TODO: implment id structure
-    // var required = convertRequired(data);
-
     if (data.controlTypeCode === "T" || data.controlTypeCode === "N") {
       return createTextField(data, index);
     } else if (data.controlTypeCode === "A") {
@@ -885,6 +778,8 @@ export default function CaseViewer(props) {
       }
       if (urlValue) {
         imgSrcUrls[i].setAttribute("src", urlValue);
+        // This commented code is for set image width and height
+
         // imgSrcUrls[i].setAttribute(
         //   "style",
         //   "height: 100%;max-width: 100%; max-height: 100%; margin: auto;"
@@ -1005,7 +900,9 @@ export default function CaseViewer(props) {
               {caseFields ? (
                 <Accordion
                   expanded={fieldExpanded}
-                  onChange={handleFieldAccordionChange(fieldExpanded)}
+                  onChange={(event) => {
+                    handleFieldAccordionChange(fieldExpanded);
+                  }}
                 >
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}

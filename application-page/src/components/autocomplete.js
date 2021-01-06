@@ -1,8 +1,7 @@
-import { Icon, TextField } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { CircularProgress, Icon, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
-import React, { Fragment, useRef, useState, useEffect } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 
 export default function UserAutocomplete(props) {
   const [users, setUsersData] = useState([]);
@@ -19,10 +18,6 @@ export default function UserAutocomplete(props) {
   useEffect(() => {
     setSelectedUser(props.selectedUser);
   }, [props.selectedUser]);
-
-  const handleAutocompleteKeyPress = () => {
-    clearTimeout(timeoutRef.current);
-  };
 
   const handleAutocompleteKeyUp = (searchText) => {
     if (searchText == "") {
@@ -61,7 +56,6 @@ export default function UserAutocomplete(props) {
     if (searchText != "") {
       setLoading(true);
     }
-    // clearTimeout(timer);
 
     timeoutRef.current = setTimeout(() => {
       // SET A TIMEOUT
