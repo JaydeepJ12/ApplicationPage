@@ -276,12 +276,14 @@ export default function Navigation(props) {
             </List>
           </Drawer>
           <main className={classes.content}>
+
             <Router>
               <CaseSelect path="case-select" />
               <OverView path="overview" />
               <Test path="test"></Test>
               <CaseTypeForm path="case-type-form"></CaseTypeForm>
               <ViewCase path="viewcase"></ViewCase>
+
             </Router>
           </main>
         </div>
