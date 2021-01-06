@@ -16,21 +16,15 @@ import FileUpload from "./file-upload.js";
 import Froala from "./froala.js";
 import Loading from "./Loader.js";
 
-//Ideally this componet takes in a case-type-id,
-//make call to backend for data, then generates
-//case inpus component
-
 export default function CaseCreator(props) {
   const [data, setData] = useState([]);
   const [loaded, setLoaded] = useState(true);
-  const [state, setState] = useState({});
   const [caseType, setCaseType] = useState(0);
   const [parentChildData, setParentChildData] = useState([]);
   const [froalaValue, setFroala] = useState({});
   const [formDataValue, setFormDataValue] = useState([]);
   const [maxCount, setMaxCount] = useState(50);
   const [parentValue, setParentValue] = useState(0);
-  const [loadMoreText, setLoadMoreText] = useState(false);
   const [defaultHopper, setDefaultHopper] = useState("");
   const [defaultHopperId, setDefaultHopperId] = useState(0);
   const [assignTo, setAssignTo] = useState(0);
@@ -60,7 +54,6 @@ export default function CaseCreator(props) {
 
   const fields = (caseTypeId) => {
     setLoaded(false);
-    // var ls = new SecureLS({encodingType: 'aes'});
     var ls = new SecureLS({
       encodingType: "des",
       isCompression: false,
@@ -73,17 +66,14 @@ export default function CaseCreator(props) {
     var fieldDataReceived = false;
     if (localFieldData || localFieldData != "") {
       fieldData = JSON.parse(localFieldData);
-      // setData(fieldData);
       console.log(fieldData);
       fieldDataReceived = true;
     }
 
     var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
 
-    var parentChildDataReceived = false;
     if (localParentChildData || localParentChildData != "") {
       setParentChildData(JSON.parse(localParentChildData));
-      parentChildDataReceived = true;
       loadParentDropDown(
         JSON.parse(localParentChildData),
         fieldData,
@@ -121,8 +111,6 @@ export default function CaseCreator(props) {
         }
       });
   };
-
-  // useEffect(caseTypes, fields, []);
 
   const loadParentDropDown = async (responseData, fieldData, caseTypeId) => {
     let superParentAssocTypeIds = [];
@@ -208,8 +196,6 @@ export default function CaseCreator(props) {
   ) => {
     event.preventDefault();
     event.stopPropagation();
-    // setLoaded(false);
-    setLoadMoreText(true);
     if (searchText !== "") {
       skipCount = 0;
     }
@@ -256,7 +242,6 @@ export default function CaseCreator(props) {
             commentIndex
           ].assoc_decode.concat(externalData);
           setData(currentData);
-          setLoadMoreText(false);
         })
         .catch(function (error) {
           console.log(error);
@@ -445,7 +430,6 @@ export default function CaseCreator(props) {
           select
           name={String(data?.AssocTypeId + caseType)}
           label={data.Name}
-          // value={state.value}
           onChange={(event) => handleChange(data?.AssocTypeId, event)}
           fullWidth={true}
           required={required}
@@ -502,9 +486,6 @@ export default function CaseCreator(props) {
   };
 
   const fieldHandler = (data, index) => {
-    //TODO: implment id structure
-    var required = convertRequired(data);
-
     if (data.AssocFieldType === "T" || data.AssocFieldType === "N") {
       return createTextField(data, index);
     } else if (data.AssocFieldType === "A") {
