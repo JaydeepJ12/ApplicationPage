@@ -1,3 +1,4 @@
+import { Card } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   fixedHeight: {
-    height: "80vh",
+    height: "90vh",
     overflow: "auto",
   },
   accordionSam: {
@@ -377,150 +378,157 @@ export default function ViewCase() {
   };
 
   return (
-    <div className={classes.root}>
-      {loaded ? (
-        <main className={classes.content}>
-          <AppBar position="static">
-            <Toolbar>
-              <IconButton
-                edge="start"
-                className={classes.menuButton}
-                color="inherit"
-                aria-label="open drawer"
-              >
-                <MenuIcon />
-              </IconButton>
-              <div className={classes.search}>
-                <div className={classes.searchIcon}>
-                  <SearchIcon />
+    <div className="page" id="page-view-case">
+      <Card>
+        {loaded ? (
+          <>
+            <AppBar position="static" className="inner-navigation bg-primary">
+              <Toolbar>
+                <IconButton
+                  edge="start"
+                  className={classes.menuButton}
+                  color="inherit"
+                  aria-label="open drawer"
+                >
+                  <MenuIcon />
+                </IconButton>
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon />
+                  </div>
+                  <InputBase
+                    placeholder="Search…"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    inputProps={{ "aria-label": "search" }}
+                    onInput={(event) => searchCase(event.target.value, event)}
+                  />
                 </div>
-                <InputBase
-                  placeholder="Search…"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  inputProps={{ "aria-label": "search" }}
-                  onInput={(event) => searchCase(event.target.value, event)}
-                />
-              </div>
-              <div>
-                <Button
-                  aria-controls="customized-menu"
-                  aria-haspopup="true"
-                  variant="contained"
-                  color="primary"
-                  onClick={handleClick}
-                >
-                  Document List
-                </Button>
-                <StyledMenu
-                  id="customized-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                >
-                  {documentList.length
-                    ? documentList.map((option) => (
-                        <StyledMenuItem>
-                          <ListItemIcon>
-                            <SendIcon fontSize="small" />
-                          </ListItemIcon>
-                          <ListItemText primary="Sent mail" />
-                        </StyledMenuItem>
-                      ))
-                    : "Documents not uploaded..!!"}
-                </StyledMenu>
-              </div>
-            </Toolbar>
-          </AppBar>
-          <Grid container item xs={12} spacing={1}>
-            <Grid item xs={12} sm={6} md={3} lg={3}>
-              <Paper>
-                <div
-                  className={fixedHeightPaper}
-                  onScroll={(event) => onScroll(caseListData, event)}
-                >
-                  <FormControl
-                    style={{ width: "-webkit-fill-available" }}
-                    variant="outlined"
-                    className={classes.formControl}
+                <div>
+                  <Button
+                    aria-controls="customized-menu"
+                    aria-haspopup="true"
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClick}
                   >
-                    <InputLabel
-                      htmlFor="outlined-caseType-native-simple"
-                      shrink
-                      ref={inputLabel}
-                    >
-                      Case Types
-                    </InputLabel>
-                    <Select
-                      native
-                      value={state.caseTypeId}
-                      onChange={(event) =>
-                        handleFilterCaseList(0, false, true, event.target.value)
-                      }
-                      label="Case Type"
-                      inputProps={{
-                        caseTypeId: "caseTypeId",
-                        id: "outlined-caseType-native-simple",
-                      }}
-                      input={
-                        <OutlinedInput
-                          notched
-                          labelWidth={labelWidth}
-                          name="caseType"
-                          id="outlined-caseType-always-notched"
-                        />
-                      }
-                      fullWidth={true}
-                    >
-                      {caseTypeData.length
-                        ? caseTypeData.map((option) => (
-                            <option
-                              key={option.CASE_TYPE_ID}
-                              value={option.CASE_TYPE_ID}
-                            >
-                              {option.NAME}
-                            </option>
-                          ))
-                        : []}
-                    </Select>
-                  </FormControl>
-                  <CaseList
-                    handleCasePreviewClick={handleCasePreviewClick}
-                    handleFilterCaseList={handleFilterCaseList}
-                    caseListData={
-                      filteredCaseListData.length ? filteredCaseListData : []
-                    }
-                    caseLoaded={caseLoaded}
-                    componentLoader={componentLoader}
-                  ></CaseList>
+                    Document List
+                  </Button>
+                  <StyledMenu
+                    id="customized-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                    {documentList.length
+                      ? documentList.map((option) => (
+                          <StyledMenuItem>
+                            <ListItemIcon>
+                              <SendIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Sent mail" />
+                          </StyledMenuItem>
+                        ))
+                      : "Documents not uploaded..!!"}
+                  </StyledMenu>
                 </div>
-              </Paper>
+              </Toolbar>
+            </AppBar>
+            <Grid container item xs={12} spacing={1}>
+              <Grid item xs={12} sm={6} md={3} lg={3}>
+                <Paper>
+                  <div
+                    className={fixedHeightPaper}
+                    onScroll={(event) => onScroll(caseListData, event)}
+                  >
+                    <FormControl
+                      style={{ width: "-webkit-fill-available" }}
+                      variant="outlined"
+                      className={classes.formControl}
+                    >
+                      <InputLabel
+                        htmlFor="outlined-caseType-native-simple"
+                        shrink
+                        ref={inputLabel}
+                      >
+                        Case Types
+                      </InputLabel>
+                      <Select
+                        native
+                        value={state.caseTypeId}
+                        onChange={(event) =>
+                          handleFilterCaseList(
+                            0,
+                            false,
+                            true,
+                            event.target.value
+                          )
+                        }
+                        label="Case Type"
+                        inputProps={{
+                          caseTypeId: "caseTypeId",
+                          id: "outlined-caseType-native-simple",
+                        }}
+                        input={
+                          <OutlinedInput
+                            notched
+                            labelWidth={labelWidth}
+                            name="caseType"
+                            id="outlined-caseType-always-notched"
+                          />
+                        }
+                        fullWidth={true}
+                      >
+                        {caseTypeData.length
+                          ? caseTypeData.map((option) => (
+                              <option
+                                key={option.CASE_TYPE_ID}
+                                value={option.CASE_TYPE_ID}
+                              >
+                                {option.NAME}
+                              </option>
+                            ))
+                          : []}
+                      </Select>
+                    </FormControl>
+                    <CaseList
+                      handleCasePreviewClick={handleCasePreviewClick}
+                      handleFilterCaseList={handleFilterCaseList}
+                      caseListData={
+                        filteredCaseListData.length ? filteredCaseListData : []
+                      }
+                      caseLoaded={caseLoaded}
+                      componentLoader={componentLoader}
+                    ></CaseList>
+                  </div>
+                </Paper>
+              </Grid>
+              {/* Recent Deposits */}
+              <Grid item xs={12} sm={12} md={9} lg={9} className="panel-center">
+                <Paper className={CaseDetailsPaper}>
+                  {caseId > 0 ? (
+                    <CaseViewer
+                      caseId={caseId}
+                      caseData={caseData}
+                      handleCaseLoaded={handleCaseLoaded}
+                      handleDocumentList={handleDocumentList}
+                      handleCaseFieldsLoaded={handleCaseFieldsLoaded}
+                    ></CaseViewer>
+                  ) : (
+                    ""
+                  )}
+                </Paper>
+              </Grid>
             </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} sm={6} md={9} lg={9}>
-              <Paper className={CaseDetailsPaper}>
-                {caseId > 0 ? (
-                  <CaseViewer
-                    caseId={caseId}
-                    caseData={caseData}
-                    handleCaseLoaded={handleCaseLoaded}
-                    handleDocumentList={handleDocumentList}
-                    handleCaseFieldsLoaded={handleCaseFieldsLoaded}
-                  ></CaseViewer>
-                ) : (
-                  ""
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
-        </main>
-      ) : (
-        ""
-      )}
-      {!loaded ? createLoader() : []}
+          </>
+        ) : (
+          ""
+        )}
+        {!loaded ? createLoader() : []}
+      </Card>
     </div>
   );
 }

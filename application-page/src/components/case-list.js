@@ -42,7 +42,8 @@ export default function CaseList(props) {
   }, [props.caseListData, props.caseLoaded, props.componentLoader]);
 
   return (
-    <div className={classes.root}>
+    <div className={"case-user-list " + classes.root}>
+      <div className={classes.dropSelect}></div>
       <ComponentLoader componentLoader={componentLoader}></ComponentLoader>
       <FormControl
         style={{ width: "-webkit-fill-available" }}

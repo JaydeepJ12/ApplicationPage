@@ -80,14 +80,15 @@ export default function CasePreview(props) {
 
   return (
     <Card
-      className={classes.card}
+      style={{ cursor: "pointer" }}
+      className={"card-user-case"}
       key={caseData.caseID}
       onClick={(event) => {
         handleCasePreviewClick(caseId, caseData);
       }}
     >
       <CardContent>
-        <Typography style={{ cursor: "pointer" }}>{caseData.title}</Typography>
+        <Typography>{caseData.title}</Typography>
       </CardContent>
       <CardActions disableSpacing>
         <Typography className={classes.title} color="textSecondary">

@@ -364,7 +364,7 @@ export default function CaseCreator(props) {
   const createTextField = (data, index) => {
     var required = convertRequired(data);
     return (
-      <div className="">
+      <div className="form-control">
         <TextField
           name={String(data.AssocTypeId)}
           id={String(data.AssocTypeId)}
@@ -384,7 +384,7 @@ export default function CaseCreator(props) {
 
   const createFroalaField = () => {
     return (
-      <div className="froala-editor">
+      <div className="form-control froala-editor">
         <br></br>
         <br></br>
         <Froala onModelChange={(e) => handleModelChange(e)} fullWidth={true} />
@@ -396,7 +396,7 @@ export default function CaseCreator(props) {
     var required = convertRequired(data);
 
     return (
-      <div className="">
+      <div className="form-control">
         <TextField
           type="date"
           name={String(data.AssocTypeId)}
@@ -503,10 +503,8 @@ export default function CaseCreator(props) {
   const loadFields = () => {
     return (
       <Box>
-        <div>
           <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <div>
+            <Grid item sm={12} xs={12} lg={6} md={6}>
                 {data
                   ? data.map((item, index) => (
                       <div key={index}>{fieldHandler(item, index)}</div>
@@ -516,13 +514,11 @@ export default function CaseCreator(props) {
                   <Box>{data?.length > 0 ? createFileField() : ""}</Box>
                   <Box>{data?.length > 0 ? createAssignTo() : ""}</Box>
                 </Box>
-              </div>
             </Grid>
-            <Grid item xs={6}>
-              <div>{data?.length > 0 ? createFroalaField() : ""}</div>
+            <Grid item sm={12} xs={12} lg={6} md={6}>
+              {data?.length > 0 ? createFroalaField() : ""}
             </Grid>
           </Grid>
-        </div>
 
         {!loaded ? createLoader() : []}
       </Box>
@@ -530,13 +526,13 @@ export default function CaseCreator(props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="case-create-form">
-      <Fab className="create-case-button" aria-label="add" type="submit">
-        +
-      </Fab>
-      <Card>
-        <Container className="">{loadFields()}</Container>
-      </Card>
-    </form>
+        <form onSubmit={handleSubmit} className="st-form frm-case-create">
+            <Fab className="btn-create-case bg-primary" aria-label="add" type="submit">
+              +
+            </Fab>
+              {loadFields()}
+          </form>
+  
+    
   );
 }
