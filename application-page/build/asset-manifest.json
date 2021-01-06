@@ -2,12 +2,12 @@
   "files": {
 
     "main.css": "/react/static/css/main.bab1dd9e.chunk.css",
-    "main.js": "/react/static/js/main.8035dec7.chunk.js",
+    "main.js": "/react/static/js/main.f490f1a3.chunk.js",
     "runtime-main.js": "/react/static/js/runtime-main.2ef66ffd.js",
     "static/css/2.91c7f05e.chunk.css": "/react/static/css/2.91c7f05e.chunk.css",
     "static/js/2.1a2ca0be.chunk.js": "/react/static/js/2.1a2ca0be.chunk.js",
     "index.html": "/react/index.html",
-    "precache-manifest.133ed6ed585c9ae7799957bdaedb2682.js": "/react/precache-manifest.133ed6ed585c9ae7799957bdaedb2682.js",
+    "precache-manifest.f363f72c1b7ed94b8b20e6c9c50f6ea5.js": "/react/precache-manifest.f363f72c1b7ed94b8b20e6c9c50f6ea5.js",
     "service-worker.js": "/react/service-worker.js",
     "static/js/2.1a2ca0be.chunk.js.LICENSE.txt": "/react/static/js/2.1a2ca0be.chunk.js.LICENSE.txt",
 
@@ -19,7 +19,11 @@
     "static/css/2.91c7f05e.chunk.css",
     "static/js/2.1a2ca0be.chunk.js",
     "static/css/main.bab1dd9e.chunk.css",
+<<<<<<< HEAD
+    "static/js/main.f490f1a3.chunk.js"
+=======
     "static/js/main.8035dec7.chunk.js"
 
+>>>>>>> b4bf23b7bcaf33a8d2d687481ccd586c85afdcb1
   ]
 }
