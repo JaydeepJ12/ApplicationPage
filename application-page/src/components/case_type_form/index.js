@@ -81,8 +81,8 @@ export default function CaseTypeForm(props) {
   };
 
   return (
-    <div style={{ marginLeft: "300px" }}>
-      <form className={classes.root} noValidate autoComplete="off">
+    <div>
+      <form  noValidate autoComplete="off">
         {inputFields.map((inputField, index) => (
           <div>
             <TextField
@@ -164,10 +164,7 @@ export default function CaseTypeForm(props) {
         ))}
         <AddBoxIcon
           style={{
-            color: orange[500],
-            marginLeft: "-400px",
-            marginTop: "20px",
-            height: "30px",
+            color: orange[500]
           }}
           onClick={() => handleAddFields()}
         />

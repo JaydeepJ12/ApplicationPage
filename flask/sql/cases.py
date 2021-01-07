@@ -121,6 +121,56 @@ class CasesSQL:
         """
         return self.db.execQuery(query)
 
+    def case_type_count_dues(self, case_type_ids):
+        if case_type_ids is None:
+            case_type_ids = 19
+        query = f"""
+                Select [Case_Type_Name]
+        ,MAX(A.Past_due_case) AS Past_due_case
+        ,MAX(A.Not_Due) As  Not_Due
+        ,MAX(A.No_due_date) As No_due_date
+
+        from
+        (
+        SELECT [Case_Type_Name]
+        ,Count(CL.Case_id)  As Past_due_case
+        , NULL as Not_Due
+        , Null as No_due_date
+        FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+        UNION
+
+        SELECT [Case_Type_Name]
+        ,NULL As Past_due_case
+        ,Count(CL.Case_id) as Not_Due
+        ,NULL as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+
+        Union
+
+        SELECT [Case_Type_Name]
+        ,NUll As Past_due_case
+        ,NULL as Not_Due, Count(CL.Case_id) as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+        ) A
+
+        Group BY [Case_Type_Name]
+        """
+        return self.db.execQuery(query)
+
     def assigne_supervisor(self, case_type_ids):
         if case_type_ids is None:
             case_type_ids = 19
@@ -221,8 +271,22 @@ class CasesSQL:
 
         )A '''
 
-        return self.execQuery(query)
+        return self.db.execQuery(query)
 
+    def get_user_fullname(self, userShortName):
+        query = f'''
+        SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ('{userShortName}') ORDER BY 1 DESC
+        '''
+        return self.db.execQuery(query)
+
+    def get_system_priority(self, assocTypeId):
+        try:
+            query = f'''
+            SELECT SYSTEM_PRIORITY FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE ASSOC_TYPE_ID = {assocTypeId} ORDER BY 1 DESC
+            '''
+            return self.db.execQuery(query)
+        except:
+            return '[]'
 
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
