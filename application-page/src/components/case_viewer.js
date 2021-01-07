@@ -63,7 +63,6 @@ export default function CaseViewer(props) {
     const caseTypeId = caseData.typeId;
     setNotesLoaded(false);
     props.handleCaseLoaded(false);
-    props.handleCaseFieldsLoaded(false);
     setNotes([]);
     setCaseFields([]);
     setCaseData([]);
@@ -142,7 +141,6 @@ export default function CaseViewer(props) {
         }
 
         setCaseFields(caseDetailsData?.details);
-        props.handleCaseFieldsLoaded(true);
         loadAssocDecodeData(caseDetailsData?.details, caseTypeId);
       })
       .catch(function (error) {

@@ -1,20 +1,24 @@
-import { Card } from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-import InputBase from "@material-ui/core/InputBase";
-import InputLabel from "@material-ui/core/InputLabel";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import Paper from "@material-ui/core/Paper";
-import Select from "@material-ui/core/Select";
-import { fade, makeStyles, withStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
+import {
+  AppBar,
+  Button,
+  Card,
+  fade,
+  FormControl,
+  Grid,
+  IconButton,
+  InputBase,
+  InputLabel,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Menu,
+  MenuItem,
+  OutlinedInput,
+  Paper,
+  Select,
+  Toolbar,
+  withStyles
+} from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import SendIcon from "@material-ui/icons/Send";
@@ -27,21 +31,6 @@ import CaseViewer from "./case_viewer";
 import Loading from "./Loader";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    // display: "flex",
-    // float: "left",
-    // marginLeft: "12rem",
-    // flexGrow: 1,
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    // flexGrow: 1,
-    // height: "100vh",
-  },
-  container: {
-    // paddingTop: theme.spacing(1),
-    // paddingBottom: theme.spacing(1),
-  },
   paper: {
     padding: theme.spacing(1),
     display: "flex",
@@ -52,22 +41,11 @@ const useStyles = makeStyles((theme) => ({
     height: "90vh",
     overflow: "auto",
   },
-  accordionSam: {
-    height: "80vh",
-    overflow: "auto",
-  },
   caseDetails: {
     padding: theme.spacing(2),
   },
   menuButton: {
     marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-    display: "none",
-    [theme.breakpoints.up("sm")]: {
-      display: "block",
-    },
   },
   search: {
     position: "relative",
@@ -148,7 +126,6 @@ export default function ViewCase() {
   const [documentList, setDocumentList] = useState([]);
   const [caseFilter, setCaseFilter] = useState(0);
   const timeoutRef = useRef(null);
-  const [caseFieldsLoaded, setCaseFieldsLoaded] = useState(false);
   const [caseListFiltered, setCaseListFiltered] = useState(false);
   const [componentLoader, setComponentLoader] = useState(false);
   const [caseTypeData, setCaseTypeData] = useState([]);
@@ -176,10 +153,6 @@ export default function ViewCase() {
 
   const handleCaseLoaded = (value) => {
     setCaseLoaded(value);
-  };
-
-  const handleCaseFieldsLoaded = (value) => {
-    setCaseFieldsLoaded(value);
   };
 
   const handleDocumentList = (documentList) => {
@@ -515,7 +488,6 @@ export default function ViewCase() {
                       caseData={caseData}
                       handleCaseLoaded={handleCaseLoaded}
                       handleDocumentList={handleDocumentList}
-                      handleCaseFieldsLoaded={handleCaseFieldsLoaded}
                     ></CaseViewer>
                   ) : (
                     ""

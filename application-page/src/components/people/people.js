@@ -10,7 +10,8 @@ import {
     Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,6 +36,31 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Peoples() {
   const classes = useStyles();
+  const [peopleData, setPeopleData] = useState([]);
+
+  const getPeople = async () => {
+    var jsonData = {
+      maxCount: 50,
+      skipCount: 0,
+    };
+    var config = {
+      method: "post",
+      url: "http://localhost:5000/cases/getpeople",
+      data: jsonData
+    };
+
+    await axios(config)
+      .then(function (response) {
+        setPeopleData(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getPeople();
+  }, []);
 
   return (
     <Box boxShadow={0} className="card card-task-overview" borderRadius={35}>

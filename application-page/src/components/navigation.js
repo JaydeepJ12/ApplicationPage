@@ -1,6 +1,5 @@
 import {
   Avatar,
-  CssBaseline,
   Drawer,
   IconButton,
   List,
@@ -8,8 +7,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
-  Grid
+  Typography
 } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -28,6 +26,7 @@ import {
 import { Link, Router } from "@reach/router";
 import clsx from "clsx";
 import React, { useState } from "react";
+import * as pathConfig from "../components/api_base/path-config";
 // components
 import CaseSelect from "./case_select.js";
 import CaseTypeForm from "./case_type_form/index";
@@ -112,54 +111,55 @@ export default function Navigation(props) {
   const [open, setOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [isLogin, setIsLogin] = React.useState(false);
+  const basePath = pathConfig.BASE_ROUTE_PATH;
 
   const menuItems = [
     {
       menuName: "Overview",
       menuIcon: <Streetview />,
-      menuPath: "overview",
+      menuPath: basePath + "/overview",
       pageTitle: "Overview",
     },
     {
       menuName: "Tasks",
       menuIcon: <Assignment />,
-      menuPath: "tasks",
+      menuPath: basePath + "/tasks",
       pageTitle: "Tasks",
     },
     {
       menuName: "People",
       menuIcon: <People />,
-      menuPath: "people",
+      menuPath: basePath + "/people",
       pageTitle: "People",
     },
     {
       menuName: "Items",
       menuIcon: <ViewList />,
-      menuPath: "items",
+      menuPath: basePath + "/items",
       pageTitle: "Items",
     },
     {
       menuName: "Insights",
       menuIcon: <Timeline />,
-      menuPath: "insights",
+      menuPath: basePath + "/insights",
       pageTitle: "Insights",
     },
     {
       menuName: "CaseCreator",
       menuIcon: <Create />,
-      menuPath: "case-select",
+      menuPath: basePath + "/case-select",
       pageTitle: "Create Case",
     },
     {
       menuName: "View Cases",
       menuIcon: <ViewList />,
-      menuPath: "viewcase",
+      menuPath: basePath + "/viewcase",
       pageTitle: "View Cases",
     },
     {
       menuName: "Case Type Form",
       menuIcon: <Dvr />,
-      menuPath: "case-type-form",
+      menuPath: basePath + "/case-type-form",
       pageTitle: "Case Type",
     },
   ];
@@ -167,13 +167,19 @@ export default function Navigation(props) {
   React.useEffect(() => setCurrentPageValue(), []);
 
   const setCurrentPageValue = () => {
-    let path = window.location.pathname.replace("/", "");
+    let path = window.location.pathname;
+
     if (path) {
+      let result = path.replace("/", "");
+      let isLogin = result === "login";
       let page = menuItems.find((x) => x.menuPath == path);
       if (page) {
         setCurrentPage(page.pageTitle);
+      } else if (!isLogin) {
+        setCurrentPage("");
       }
-      if (path === "login") {
+
+      if (isLogin) {
         setIsLogin(true);
       }
     }
@@ -227,7 +233,7 @@ export default function Navigation(props) {
               </Typography>
             </Toolbar>
           </AppBar>
-     
+
           <Drawer
             variant="permanent"
             className={clsx(classes.drawer, {
@@ -242,7 +248,7 @@ export default function Navigation(props) {
             }}
           >
             <div className={classes.toolbar + " side-click"}>
-            {/*-------note:----code for dropdownlist(future development)
+              {/*-------note:----code for dropdownlist(future development)
               {/*{open ? (
                 <ListItem>
                   <AppIcon src={app_icon} name={name}></AppIcon>
@@ -258,25 +264,21 @@ export default function Navigation(props) {
             </div>
             <List className="sidebar-navigation-block">
               {menuItems.map((item, index) => (
-                   <Link to={item.menuPath} style={{ color: "black" }}>
-                      <ListItem
-                        onClick={() => {
-                          setCurrentPage(item.pageTitle);
-                        }}
-                      >
-                        <ListItemIcon>{item.menuIcon}</ListItemIcon>
-                        <ListItemText>
-                      
-                            {item.menuName}
-                        
-                        </ListItemText>
-                      </ListItem>
-                  </Link>
+                <Link to={item.menuPath} style={{ color: "black" }}>
+                  <ListItem
+                    onClick={() => {
+                      setCurrentPage(item.pageTitle);
+                    }}
+                  >
+                    <ListItemIcon>{item.menuIcon}</ListItemIcon>
+                    <ListItemText>{item.menuName}</ListItemText>
+                  </ListItem>
+                </Link>
               ))}
             </List>
           </Drawer>
           <main className={classes.content}>
-            <Router basepath='/react'>
+            <Router basepath={basePath}>
               <CaseSelect path="/case-select" />
               <OverView path="/overview" />
               <Test path="/test"></Test>
