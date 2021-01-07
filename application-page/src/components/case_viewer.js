@@ -247,6 +247,9 @@ export default function CaseViewer(props) {
     });
 
     let isLastDropdown = false;
+    if(!superParentAssocTypeIds.length){
+      isLastDropdown = true
+    }
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
 
