@@ -65,6 +65,12 @@ def caseassoctypecascade():
    df = db.caseassoctypecascade(int(caseTypeId))
    return df.to_json(orient='records') #
 
+@bp.route('/getpeople', methods=['POST'])
+def getpeople():
+   data = request.json
+   df = db.get_people(data['skipCount'], data['maxCount'])
+   return df.to_json(orient='records') #
+
 @bp.route('/test')
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
@@ -115,18 +121,6 @@ def getSystemPriority(assocTypeId):
 @bp.route('/GetFullCaseByCaseId', methods=['POST'])
 def get_full_case_by_caseId():
     data = mobile.get_full_case_by_caseId(request.json).json()
-    # for x in data['responseContent']['notes']: #can throw error with resp is empty
-    #     userShortName = x['createdBy']
-    #     print('userShortName --- ' , userShortName)
-    #     userFullName = json.loads(getUserFullName(str(userShortName)))
-    #     print('userFullName-----', userFullName)
-    #     if userFullName:
-    #         x['fullName'] = userFullName[0]['FULL_NAME']
-    # for y in data['responseContent']['details']: #can throw error with resp is empty
-    #     systemPriority = json.loads(getSystemPriority(y['controlId']))
-    #     y['systemPriority'] = systemPriority[0]['SYSTEM_PRIORITY']
-    #     # y['assoc_decode'] = []
-    #     # y['systemPriority'] = 1
     return data
 
 @bp.route('/assoc_type', methods=['GET'])
