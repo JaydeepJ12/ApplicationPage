@@ -196,7 +196,7 @@ def assoc_type_data():
     if request.method == 'GET':
         return CaseHandler().assoc_type_data()
 
-@bp.route('/case_type', methods=['GET'])
+@bp.route('/case_type_data', methods=['GET'])
 def case_type_data():
     if request.method == 'GET':
         return CaseHandler().case_type_data()

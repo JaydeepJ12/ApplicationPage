@@ -2,6 +2,8 @@
   "name": "application-page",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://dashqa.stemmons.com/react",
+  "start_url": ".",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -21,6 +23,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-select": "^3.1.1",
+    "react-slick": "^0.27.13",
     "react-swipeable-views": "^0.13.9",
     "secure-ls": "^1.2.6",
     "sweetalert": "^2.1.2"
