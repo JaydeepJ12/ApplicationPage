@@ -12,7 +12,7 @@ from handlers.cases import CaseHandler
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
-mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2020')
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
