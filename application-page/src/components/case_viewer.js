@@ -7,10 +7,9 @@ import {
   Button,
   Divider,
   Grid,
-  makeStyles,
   MenuItem,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import axios from "axios";
@@ -24,21 +23,7 @@ import FileUpload from "./file-upload.js";
 import Froala from "./froala.js";
 import Loading from "./Loader.js";
 
-const useStyles = makeStyles((theme) => ({
-  title: {
-    fontSize: 16,
-  },
-  dividersty: {
-    marginBottom: "1rem",
-  },
-  fixedHeight: {
-    height: "60vh",
-    overflow: "auto",
-  },
-}));
-
 export default function CaseViewer(props) {
-  const classes = useStyles();
   const [state, setState] = useState({});
   const [loaded, setLoaded] = useState(true);
   const [notes, setNotes] = useState([]);
@@ -245,8 +230,8 @@ export default function CaseViewer(props) {
     });
 
     let isLastDropdown = false;
-    if(!superParentAssocTypeIds.length){
-      isLastDropdown = true
+    if (!superParentAssocTypeIds.length) {
+      isLastDropdown = true;
     }
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
@@ -839,12 +824,11 @@ export default function CaseViewer(props) {
 
   const loadNotes = () => {
     return (
-      <Grid item item xs={12} sm={12} md={8} lg={8}>
+      <Grid item item xs={12} sm={12} md={12} lg={12}>
         <h1>Comments</h1>
-
         {notes.length
           ? notes.map((item, index) => (
-              <div key={index}>{notesHandler(item, index)}</div>
+              <span key={index}>{notesHandler(item, index)}</span>
             ))
           : "No Comments Available...!!!"}
       </Grid>
@@ -852,13 +836,9 @@ export default function CaseViewer(props) {
   };
 
   return (
-    <Grid container item xs={12} spacing={1} className="panel-center st-p-1">
-      <Grid item xs={12} sm={12} md={8} lg={8} className="st-p-1">
-        <Typography
-          className={classes.title}
-          color="textSecondary"
-          gutterBottom
-        >
+    <>
+      <Grid item lg={6} md={6} xs={12} sm={12} className="panel-center">
+        <Typography color="textSecondary" gutterBottom>
           {caseData.typeName}
         </Typography>
         <Typography variant="h4" component="h3">
@@ -868,7 +848,7 @@ export default function CaseViewer(props) {
         <Box>{createFileField()}</Box>
         <span>Description</span>
         {createFroalaField()}
-        <div className={classes.fixedHeight}>
+        <div>
           {notesLoaded ? (
             <div className="comment-list">{loadNotes()}</div>
           ) : (
@@ -880,8 +860,8 @@ export default function CaseViewer(props) {
         item
         xs={12}
         sm={12}
-        md={4}
-        lg={4}
+        md={3}
+        lg={3}
         className="panel-right st-p-1 side-bar-case-create"
       >
         {/* <CaseDetailBasicInfo /> */}
@@ -935,6 +915,6 @@ export default function CaseViewer(props) {
           </div>
         </Box>
       </Grid>
-    </Grid>
+    </>
   );
 }

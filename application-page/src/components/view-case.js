@@ -1,27 +1,17 @@
 import {
-  AppBar,
-  Button,
   Card,
   fade,
   FormControl,
   Grid,
-  IconButton,
-  InputBase,
   InputLabel,
-  ListItemIcon,
-  ListItemText,
   makeStyles,
   Menu,
   MenuItem,
   OutlinedInput,
-  Paper,
   Select,
   Toolbar,
   withStyles
 } from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
-import SearchIcon from "@material-ui/icons/Search";
-import SendIcon from "@material-ui/icons/Send";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
@@ -353,9 +343,12 @@ export default function ViewCase() {
   return (
     <div className="page" id="page-view-case">
       <Card>
+      <Grid container spacing={0}>
+      
         {loaded ? (
           <>
-            <AppBar position="static" className="inner-navigation bg-primary">
+          {/* dont remove this code its usefull for reference of work after confirm i will remove this */}
+            {/* <AppBar position="static" className="inner-navigation bg-primary">
               <Toolbar>
                 <IconButton
                   edge="start"
@@ -409,10 +402,9 @@ export default function ViewCase() {
                   </StyledMenu>
                 </div>
               </Toolbar>
-            </AppBar>
-            <Grid container item xs={12} spacing={1}>
-              <Grid item xs={12} sm={6} md={3} lg={3}>
-                <Paper>
+            </AppBar> */}
+           
+              <Grid item xs={12} sm={3} md={3} lg={3} className="panel-left">
                   <div
                     className={fixedHeightPaper}
                     onScroll={(event) => onScroll(caseListData, event)}
@@ -477,11 +469,10 @@ export default function ViewCase() {
                       componentLoader={componentLoader}
                     ></CaseList>
                   </div>
-                </Paper>
               </Grid>
               {/* Recent Deposits */}
-              <Grid item xs={12} sm={12} md={9} lg={9} className="panel-center">
-                <Paper className={CaseDetailsPaper}>
+            
+               
                   {caseId > 0 ? (
                     <CaseViewer
                       caseId={caseId}
@@ -492,15 +483,17 @@ export default function ViewCase() {
                   ) : (
                     ""
                   )}
-                </Paper>
-              </Grid>
-            </Grid>
+              
+         
+         
           </>
         ) : (
           ""
         )}
         {!loaded ? createLoader() : []}
-      </Card>
+      
+        </Grid>
+        </Card>
     </div>
   );
 }
