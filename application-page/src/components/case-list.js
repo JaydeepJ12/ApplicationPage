@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, makeStyles, Select } from "@material-ui/core";
+import { FormControl, InputLabel, makeStyles, Select, MenuItem } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import CasePreview from "./case-preview.js";
 import ComponentLoader from "./common/component-loader.js";
@@ -47,12 +47,13 @@ export default function CaseList(props) {
       <ComponentLoader componentLoader={componentLoader}></ComponentLoader>
       <FormControl
         style={{ width: "-webkit-fill-available" }}
-        variant="outlined"
         className={classes.formControl}
       >
         <InputLabel htmlFor="outlined-filter-native-simple">Filter</InputLabel>
         <Select
-          native
+          labelId="filter-label"
+          id="filter-select"
+          value={state.filter}
           value={state.filter}
           onChange={handleFilterCaseList}
           label="Filter"
@@ -62,10 +63,10 @@ export default function CaseList(props) {
           }}
           fullWidth={true}
         >
-          <option value={0}>All Cases</option>
-          <option value={1}>Assigned To Me</option>
-          <option value={2}>Assigned To My Team</option>
-          <option value={3}>Created By Me</option>
+          <MenuItem  value={0}>All Cases</MenuItem>
+          <MenuItem  value={1}>Assigned To Me</MenuItem>
+          <MenuItem  value={2}>Assigned To My Team</MenuItem>
+          <MenuItem  value={3}>Created By Me</MenuItem>
         </Select>
       </FormControl>
       {caseList.length ? (

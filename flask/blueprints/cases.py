@@ -12,7 +12,7 @@ from handlers.cases import CaseHandler
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
-mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2020')
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
@@ -65,10 +65,18 @@ def caseassoctypecascade():
    df = db.caseassoctypecascade(int(caseTypeId))
    return df.to_json(orient='records') #
 
+def getPastDueCount(userShortName):
+    df = db.get_past_due_count(userShortName) #always returns dataframe
+    return df.to_json(orient='records')
+
 @bp.route('/getpeople', methods=['POST'])
 def getpeople():
    data = request.json
    df = db.get_people(data['skipCount'], data['maxCount'])
+#    for i, row in df.iterrows():
+#         pastDueCount = getPastDueCount(f"{row['ShortUserName']}")
+#         if(json.loads(pastDueCount)):
+#             df['PastDueCount'][i] = json.loads(pastDueCount)[0]['CNT']
    return df.to_json(orient='records') #
 
 @bp.route('/test')
