@@ -15,6 +15,7 @@ export default function Test() {
       <Card>
         <Container maxWidth="sm">
           <ExternalLookup
+            applicationId = {1}
             typeId={1121}
             fieldName="Hotel"
             fieldId={1950}
@@ -23,6 +24,7 @@ export default function Test() {
           <br></br>
           <br></br>
           <ExternalLookup
+            applicationId = {1}
             typeId={1360}
             fieldName="Owner"
             fieldId={7913}
@@ -31,6 +33,7 @@ export default function Test() {
            <br></br>
           <br></br>
           <ExternalLookup
+            applicationId = {0}
             typeId={213}
             fieldName="Vendor"
             fieldId={3405}

@@ -1,18 +1,19 @@
 import {
-    Box,
-    Button,
-    FormControl,
-    Grid,
-    Icon,
-    InputLabel,
-    MenuItem,
-    Select,
-    Typography
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  Icon,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import * as apiConfig from "../../components/api_base/api-config";
+import UserAutocomplete from "../autocomplete";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,18 +37,23 @@ const useStyles = makeStyles((theme) => ({
   fontWeight: {
     fontWeight: "bold",
   },
+  nextButton: {
+    float: "right",
+  },
 }));
 
 export default function Peoples() {
   const classes = useStyles();
   const [peopleData, setPeopleData] = useState([]);
   const [componentLoader, setComponentLoader] = useState(false);
+  const [maxCount, setMaxCount] = useState(16);
+  const [recordLength, setRecordLength] = useState(0);
 
-  const getPeople = async () => {
+  const getPeople = async (skipCount = 0, isPrev = false) => {
     setComponentLoader(true);
     var jsonData = {
-      maxCount: 16,
-      skipCount: 0,
+      maxCount: maxCount,
+      skipCount: skipCount,
     };
     var config = {
       method: "post",
@@ -59,6 +65,11 @@ export default function Peoples() {
       .then(function (response) {
         setComponentLoader(false);
         setPeopleData(response.data);
+        if (isPrev) {
+          setRecordLength(recordLength - maxCount);
+        } else {
+          setRecordLength(recordLength + maxCount);
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -97,10 +108,26 @@ export default function Peoples() {
     }
   };
 
+  const handleNextClick = () => {
+    setComponentLoader(true);
+    setPeopleData([]);
+    getPeople(recordLength);
+  };
+
+  const handlePrevClick = () => {
+    setComponentLoader(true);
+    setPeopleData([]);
+    getPeople(recordLength - maxCount * 2, true);
+  };
+
+  const handleAutocompleteChange = (userId) => {
+    console.log(userId);
+  };
+
   return (
     <Box boxShadow={0} className="card card-task-overview" borderRadius={35}>
-      <Grid container spacing={3}>
-        <Grid item lg={9} md={9} xs={6} sm={6}>
+      <Grid item xs={12} container spacing={3}>
+        <Grid item lg={3} md={3} xs={6} sm={6}>
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel id="demo-simple-select-outlined-label">
               People
@@ -119,6 +146,14 @@ export default function Peoples() {
               <MenuItem value={30}>Thirty</MenuItem>
             </Select>
           </FormControl>
+        </Grid>
+        <Grid item lg={6} md={6} xs={6} sm={6}>
+          <UserAutocomplete
+            className=""
+            defaultHopper={""}
+            defaultHopperId={0}
+            handleAutocompleteChange={handleAutocompleteChange}
+          ></UserAutocomplete>
         </Grid>
         <Grid
           item
@@ -182,6 +217,27 @@ export default function Peoples() {
           )}
         </Grid>
       </div>
+      <div>
+        {peopleData.length && recordLength !== maxCount ? (
+          <Button variant="contained" onClick={handlePrevClick}>
+            Prev
+          </Button>
+        ) : (
+          ""
+        )}
+        {peopleData.length ? (
+          <Button
+            variant="contained"
+            className={recordLength !== maxCount ? classes.nextButton : ""}
+            onClick={handleNextClick}
+          >
+            Next
+          </Button>
+        ) : (
+          ""
+        )}
+      </div>
+
       {/* </Slider> */}
     </Box>
   );
