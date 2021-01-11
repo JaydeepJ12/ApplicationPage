@@ -65,10 +65,18 @@ def caseassoctypecascade():
    df = db.caseassoctypecascade(int(caseTypeId))
    return df.to_json(orient='records') #
 
+def getPastDueCount(userShortName):
+    df = db.get_past_due_count(userShortName) #always returns dataframe
+    return df.to_json(orient='records')
+
 @bp.route('/getpeople', methods=['POST'])
 def getpeople():
    data = request.json
    df = db.get_people(data['skipCount'], data['maxCount'])
+#    for i, row in df.iterrows():
+#         pastDueCount = getPastDueCount(f"{row['ShortUserName']}")
+#         if(json.loads(pastDueCount)):
+#             df['PastDueCount'][i] = json.loads(pastDueCount)[0]['CNT']
    return df.to_json(orient='records') #
 
 @bp.route('/test')
