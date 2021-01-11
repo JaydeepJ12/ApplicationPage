@@ -5,12 +5,6 @@ body {background-color: #fff !important;
     text-decoration: none !important;
   }
   /* use for common page on deshboard */
-  main {
-    padding-left: 3.3rem;
-    margin-top: 5rem;
-    padding-right: 1rem;
-    margin-bottom: 0.5rem;
-  }
   .ul li:hover {
     color: #444 !important;
     background-color: #e0f3ff !important;
@@ -73,9 +67,7 @@ body {background-color: #fff !important;
   .MuiInput-underline:before {
     border-bottom: 1px solid #CCCCCC !important;
   }
-  .MuiFormControl-fullWidth {
-    width: 94%  !important;
-  }
+
   .MuiInput-underline:after {
     border-bottom: 2px solid orange  !important;
   }
@@ -123,8 +115,7 @@ body {background-color: #fff !important;
   .card-user-case {
     background: rgba(196, 196, 196, 0.25) !important;
     box-shadow: none !important;
-    margin: .5rem;
-    margin-bottom: .8rem;
+    margin-bottom: 4px;
   }
   .card-user-comment {
     background: #F1F1F1;
@@ -234,3 +225,17 @@ body {background-color: #fff !important;
     text-align: center;
 }
   /* ----------------------end---overview----------------------- */
+  .panel-center {
+    padding: 1rem;
+}
+/* found this css in material and remove this its place temp */
+.header-icon-search_makeStyles-searchIcon-26{
+  right: 16px;
+  width: 37px;
+  height: 100%;
+  display: flex;
+  position: absolute;
+  transition: right 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  align-items: center;
+  justify-content: center;
+}
