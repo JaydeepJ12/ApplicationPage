@@ -72,7 +72,7 @@ def getPastDueCount(userShortName):
 @bp.route('/getpeople', methods=['POST'])
 def getpeople():
    data = request.json
-   df = db.get_people(data['skipCount'], data['maxCount'])
+   df = db.get_people(data['skipCount'], data['maxCount'], data['searchText'])
 #    for i, row in df.iterrows():
 #         pastDueCount = getPastDueCount(f"{row['ShortUserName']}")
 #         if(json.loads(pastDueCount)):

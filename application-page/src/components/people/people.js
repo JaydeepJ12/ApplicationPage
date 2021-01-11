@@ -7,13 +7,14 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Typography
+  Typography, InputBase,fade
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as apiConfig from "../../components/api_base/api-config";
 import UserAutocomplete from "../autocomplete";
+import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,6 +41,35 @@ const useStyles = makeStyles((theme) => ({
   nextButton: {
     float: "right",
   },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    "&:hover": {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    // width: '100%'
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    // padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    // transition: theme.transitions.create('width'),
+    width: "100%",
+  },
 }));
 
 export default function Peoples() {
@@ -48,12 +78,36 @@ export default function Peoples() {
   const [componentLoader, setComponentLoader] = useState(false);
   const [maxCount, setMaxCount] = useState(16);
   const [recordLength, setRecordLength] = useState(0);
+  const [userId, setUserId] = useState(0);
+  const timeoutRef = useRef(null);
+  let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
+  const searchPeople = (searchText) => {
+    if (timeoutRef.current !== null) {
+      // IF THERE'S A RUNNING TIMEOUT
+      clearTimeout(timeoutRef.current); // THEN, CANCEL IT
+    }
+    if (searchText != "") {
+    }
 
-  const getPeople = async (skipCount = 0, isPrev = false) => {
+    timeoutRef.current = setTimeout(() => {
+      // SET A TIMEOUT
+      timeoutRef.current = null; // RESET REF TO NULL WHEN IT RUNS
+      if (searchText) {
+        getPeople(0, false, searchText, false);
+      } else {
+        setPeopleData([]);
+        setRecordLength(0);
+        getPeople(0, false, '', true);
+      }
+    }, timeoutVal);
+  };
+
+  const getPeople = async (skipCount = 0, isPrev = false, searchText = '', isReset = false) => {
     setComponentLoader(true);
     var jsonData = {
       maxCount: maxCount,
       skipCount: skipCount,
+      searchText: searchText
     };
     var config = {
       method: "post",
@@ -61,15 +115,20 @@ export default function Peoples() {
       data: jsonData,
     };
 
+    let recordLengthValue = maxCount;
+    if(!isReset){
+      if (isPrev) {
+        recordLengthValue = recordLength - maxCount;
+      } else {
+        recordLengthValue = recordLength + maxCount;
+      }
+    }
+
     await axios(config)
       .then(function (response) {
         setComponentLoader(false);
         setPeopleData(response.data);
-        if (isPrev) {
-          setRecordLength(recordLength - maxCount);
-        } else {
-          setRecordLength(recordLength + maxCount);
-        }
+        setRecordLength(recordLengthValue);
       })
       .catch(function (error) {
         console.log(error);
@@ -121,6 +180,14 @@ export default function Peoples() {
   };
 
   const handleAutocompleteChange = (userId) => {
+    setPeopleData([]);
+    setRecordLength(0);
+    setUserId(userId);
+    let isReset = false;
+    if(userId <= 0){
+      isReset = true;
+    }
+    getPeople(0, false, userId, isReset);
     console.log(userId);
   };
 
@@ -148,12 +215,26 @@ export default function Peoples() {
           </FormControl>
         </Grid>
         <Grid item lg={6} md={6} xs={6} sm={6}>
-          <UserAutocomplete
+        <div className={classes.search}>
+          <div className={classes.searchIcon}>
+            <SearchIcon />
+          </div>
+          <InputBase
+            placeholder="Search…"
+            classes={{
+              root: classes.inputRoot,
+              input: classes.inputInput,
+            }}
+            inputProps={{ "aria-label": "search" }}
+            onInput={(event) => searchPeople(event.target.value)}
+          />
+        </div>
+          {/* <UserAutocomplete
             className=""
             defaultHopper={""}
             defaultHopperId={0}
             handleAutocompleteChange={handleAutocompleteChange}
-          ></UserAutocomplete>
+          ></UserAutocomplete> */}
         </Grid>
         <Grid
           item
@@ -181,11 +262,7 @@ export default function Peoples() {
             peopleData.map((people) => (
               <Grid item lg={3} md={3} xs={3} sm={3}>
                 <Box>
-                  {/* <Avatar>{renderUserImage(people.shortUserName)}</Avatar> */}
-                  <Icon
-                    style={{ marginLeft: "1rem" }}
-                    className="s-option-auto-image"
-                  >
+                  <Icon className="s-option-auto-image">
                     {renderUserImage(people.ShortUserName)}
                   </Icon>
                   <Typography
@@ -217,7 +294,7 @@ export default function Peoples() {
           )}
         </Grid>
       </div>
-      <div>
+      { !userId > 0 ? <div>
         {peopleData.length && recordLength !== maxCount ? (
           <Button variant="contained" onClick={handlePrevClick}>
             Prev
@@ -236,7 +313,7 @@ export default function Peoples() {
         ) : (
           ""
         )}
-      </div>
+      </div> : "" }
 
       {/* </Slider> */}
     </Box>

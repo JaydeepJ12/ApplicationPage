@@ -85,7 +85,7 @@ class CasesSQL:
         except:
             return '[]'
 
-    def get_people(self, skipCount, maxCount):
+    def get_people(self, skipCount, maxCount, searchText = ''):
         query = f'''
            	SELECT
             c.SHORT_USER_NAME AS ShortUserName,
@@ -94,6 +94,7 @@ class CasesSQL:
             FROM [BOXER_CME].[dbo].[CME_USER_CACHE] AS c
             INNER JOIN [BOXER_CME].[dbo].[CASE_LIST] AS b ON b.LIST_CASE_ASSGN_TO_SAM = c.SHORT_USER_NAME
             WHERE IS_ACTIVE = 'Y' AND COALESCE(IS_EXTERNAL_USER,'N')='N'
+            AND FULL_NAME Like CASE WHEN '{searchText}' = '' THEN FULL_NAME ELSE '%' + '{searchText}' + '%' END
             GROUP BY c.FULL_NAME, c.SHORT_USER_NAME
             ORDER BY 1 ASC
             offset {skipCount} rows
