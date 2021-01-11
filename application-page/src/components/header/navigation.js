@@ -1,3 +1,5 @@
+// styles
+import useStyles from "./header_styles";
 import {
   Avatar,
   Drawer,
@@ -7,10 +9,11 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography
+  Typography,
 } from "@material-ui/core";
+import classnames from "classnames";
 import AppBar from "@material-ui/core/AppBar";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
 import {
   Assignment,
   ChevronLeft,
@@ -21,89 +24,22 @@ import {
   People,
   Streetview,
   Timeline,
-  ViewList
+  ViewList,
 } from "@material-ui/icons";
 import { Link, Router } from "@reach/router";
 import clsx from "clsx";
 import React, { useState } from "react";
-import * as pathConfig from "../components/api_base/path-config";
+import * as pathConfig from "../api_base/path-config";
 // components
-import CaseSelect from "./case_select.js";
-import CaseTypeForm from "./case_type_form/index";
-import Login from "./Login/index.js";
-import OverView from "./overview";
-import Test from "./test";
-import ViewCase from "./view-case";
+import CaseSelect from "../case_select.js";
+import CaseTypeForm from "../case_type_form/index";
+import HeaderRight from "../header/header_right";
 
-const drawerWidth = 240;
-// styles
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  appBar: {
-    background: "white",
-    color: "black",
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 25,
-  },
-  hide: {
-    display: "none",
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: "nowrap",
-  },
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: "hidden",
-    width: theme.spacing(7) + 1,
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9) + 1,
-    },
-  },
-  toolbar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: theme.spacing(0, 1),
-    borderBottom: "1px solid #eee",
-    ...theme.mixins.toolbar,
-  },
-  content: {
-    width: `calc(100%)`,
-    padding: theme.spacing(3),
-  },
-  avtar: {
-    marginRight: ".5em",
-    backgroundColor: "transparent",
-  },
-}));
+import Login from "../Login/index.js";
+import OverView from "..//overview";
+import Test from "../test";
+import ViewCase from "../view-case";
+
 export default function Navigation(props) {
   const classes = useStyles();
   const theme = useTheme();
@@ -194,7 +130,7 @@ export default function Navigation(props) {
   };
 
   return (
-    <div className="side-navigation">
+    <>
       {isLogin ? (
         <Login path="/login" />
       ) : (
@@ -231,6 +167,7 @@ export default function Navigation(props) {
               <Typography variant="h6" noWrap>
                 {currentPage}
               </Typography>
+              <HeaderRight />
             </Toolbar>
           </AppBar>
 
@@ -277,17 +214,20 @@ export default function Navigation(props) {
               ))}
             </List>
           </Drawer>
-          <main className={classes.content}>
+          <div className={classnames(classes.content)}>
+            <div className={classes.fakeToolbar} />
+
             <Router basepath={basePath}>
               <CaseSelect path="/case-select" />
               <OverView path="/overview" />
               <Test path="/test"></Test>
               <CaseTypeForm path="/case-type-form"></CaseTypeForm>
-              <ViewCase path="/viewcase"></ViewCase>
+              <ViewCase path="/tasks"></ViewCase>
+              <Login path="/login" />
             </Router>
-          </main>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

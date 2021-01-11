@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
-import loaderImage from "../../assets/images/component-loader.gif";
-
+import Box from '@material-ui/core/Box';
+import Skeleton from '@material-ui/lab/Skeleton';
 export default function ComponentLoader(props) {
-  const [componentLoader, setComponentLoader] = useState(props.componentLoader);
-
-  useEffect(() => {
-    setComponentLoader(props.componentLoader);
-  }, [props.componentLoader]);
-
   return (
-    <div className="">
-      {componentLoader ? (
-        <div class="component-loader-overlay">
-          <img className="loader-image" src={loaderImage}></img>
-          <div class="loader"></div>
-        </div>
-      ) : (
-        ""
-      )}
+    <div className="compoent-skeleton-loading">
+        <>
+        <Skeleton variant={props.type} width="100%" height={118} />
+          <Box pt={0.5}>
+            <Skeleton />
+            <Skeleton width="100%" />
+          </Box>
+        </>
     </div>
   );
 }
