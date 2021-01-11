@@ -120,7 +120,8 @@ export default function ViewCase() {
   const [componentLoader, setComponentLoader] = useState(false);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [caseTypeIdValue, setCaseTypeIdValue] = useState(0);
-  const [state, setState] = React.useState(0);
+  const [state, setState] = useState(0);
+  const [caseTypeId, setCaseTypeId] = useState(0);
   const [labelWidth, setLabelWidth] = React.useState(0);
 
   const inputLabel = React.useRef(null);
@@ -160,7 +161,7 @@ export default function ViewCase() {
       return false;
     }
     caseTypeId = caseTypeId ? caseTypeId : caseTypeIdValue;
-    setState(caseTypeId);
+    setCaseTypeId(caseTypeId);
     setComponentLoader(true);
     setCaseFilter(filter);
     caseList(
@@ -178,6 +179,7 @@ export default function ViewCase() {
     setComponentLoader(true);
     await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
       setCaseTypeData(resp.data);
+      setCaseTypeId(resp.data[0]?.CASE_TYPE_ID);
       caseList("", 0, false, 0, false, true, resp.data[0]?.CASE_TYPE_ID);
     });
   };
@@ -411,7 +413,6 @@ export default function ViewCase() {
                   >
                     <FormControl
                       style={{ width: "-webkit-fill-available" }}
-                      variant="outlined"
                       className={classes.formControl}
                     >
                       <InputLabel
@@ -422,8 +423,7 @@ export default function ViewCase() {
                         Case Types
                       </InputLabel>
                       <Select
-                        native
-                        value={state.caseTypeId}
+                        value={caseTypeId}
                         onChange={(event) =>
                           handleFilterCaseList(
                             0,
@@ -437,24 +437,16 @@ export default function ViewCase() {
                           caseTypeId: "caseTypeId",
                           id: "outlined-caseType-native-simple",
                         }}
-                        input={
-                          <OutlinedInput
-                            notched
-                            labelWidth={labelWidth}
-                            name="caseType"
-                            id="outlined-caseType-always-notched"
-                          />
-                        }
                         fullWidth={true}
                       >
                         {caseTypeData.length
                           ? caseTypeData.map((option) => (
-                              <option
+                              <MenuItem
                                 key={option.CASE_TYPE_ID}
                                 value={option.CASE_TYPE_ID}
                               >
                                 {option.NAME}
-                              </option>
+                              </MenuItem>
                             ))
                           : []}
                       </Select>

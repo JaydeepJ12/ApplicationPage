@@ -87,12 +87,27 @@ class CasesSQL:
 
     def get_people(self, skipCount, maxCount):
         query = f'''
-        SELECT CATS.CASE_ASSOC_TYPE_CASCADE_ID,CATS.CASE_ASSOC_TYPE_ID_PARENT,CATS.CASE_ASSOC_TYPE_ID_CHILD    
-            FROM [BOXER_CME].[dbo].[CASE_ASSOC_TYPE_CASCADE] CATS WITH (NOLOCK)      
-            INNER JOIN [BOXER_CME].[dbo].[ASSOC_TYPE] AT WITH (NOLOCK) ON AT.ASSOC_TYPE_ID = CATS.CASE_ASSOC_TYPE_ID_PARENT AND AT.IS_ACTIVE ='Y' AND CATS.IS_ACTIVE = 'Y'    
-            INNER JOIN [BOXER_CME].[dbo].[CASE_TYPE] CT WITH (NOLOCK) ON AT.CASE_TYPE_ID = CT.CASE_TYPE_ID AND CT.IS_ACTIVE= 'Y'    
-            WHERE CT.CASE_TYPE_ID = 19   
-            AND (AT.ASSOC_FIELD_TYPE = 'E' OR AT.ASSOC_FIELD_TYPE = 'O')  
+           	SELECT
+            c.SHORT_USER_NAME AS ShortUserName,
+            c.FULL_NAME AS FullName,
+            COUNT(*) AS TotalCount
+            FROM [BOXER_CME].[dbo].[CME_USER_CACHE] AS c
+            INNER JOIN [BOXER_CME].[dbo].[CASE_LIST] AS b ON b.LIST_CASE_ASSGN_TO_SAM = c.SHORT_USER_NAME
+            WHERE IS_ACTIVE = 'Y' AND COALESCE(IS_EXTERNAL_USER,'N')='N'
+            GROUP BY c.FULL_NAME, c.SHORT_USER_NAME
+            ORDER BY 1 ASC
+            offset {skipCount} rows
+            FETCH NEXT {maxCount} rows only
+        '''
+        return self.db.execQuery(query)
+
+    def get_past_due_count(self, userShortName):
+        query = f'''
+            SELECT COUNT(CLO.CASE_ID) CNT
+            FROM [BOXER_CME].[dbo].[CASE_LIST] CLO 
+            WHERE CLO.LIST_CASE_ASSGN_TO_SAM in ('{userShortName}')
+            AND COALESCE(CLO.LIST_CASE_DUE,'')!='' 
+            AND CAST(GETDATE() AS varchar(100)) > CLO.LIST_CASE_DUE
         '''
         return self.db.execQuery(query)
 

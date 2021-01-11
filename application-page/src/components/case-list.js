@@ -1,16 +1,16 @@
-import { FormControl, InputLabel, makeStyles, Select } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import CasePreview from "./case-preview.js";
-import ComponentLoader from "./common/component-loader.js";
-import Grid from "@material-ui/core/Grid";
+import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import React, { useEffect, useState } from "react";
 // styles
 import useStyles from "../assets/css/common_styles";
+import CasePreview from "./case-preview.js";
+import ComponentLoader from "./common/component-loader.js";
 
 export default function CaseList(props) {
   var classes = useStyles();
- 
+
   const [caseList, setCaseList] = useState(props.caseListData);
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
   const [componentLoader, setComponentLoader] = useState(props.componentLoader);
@@ -35,7 +35,6 @@ export default function CaseList(props) {
     setComponentLoader(props.componentLoader);
   }, [props.caseListData, props.caseLoaded, props.componentLoader]);
 
-
   return (
     <Box>
       <Grid container>
@@ -48,7 +47,8 @@ export default function CaseList(props) {
             Filter
           </InputLabel>
           <Select
-            native
+            labelId="filter-label"
+            id="filter-select"
             value={state.filter}
             onChange={handleFilterCaseList}
             label="Filter"
@@ -58,10 +58,10 @@ export default function CaseList(props) {
             }}
             fullWidth={true}
           >
-            <option value={0}>All Cases</option>
-            <option value={1}>Assigned To Me</option>
-            <option value={2}>Assigned To My Team</option>
-            <option value={3}>Created By Me</option>
+            <MenuItem value={0}>All Cases</MenuItem>
+            <MenuItem value={1}>Assigned To Me</MenuItem>
+            <MenuItem value={2}>Assigned To My Team</MenuItem>
+            <MenuItem value={3}>Created By Me</MenuItem>
           </Select>
         </FormControl>
 
@@ -80,9 +80,7 @@ export default function CaseList(props) {
                     caseLoaded={caseLoaded}
                   ></CasePreview>
                 ) : (
-                
-                   <ComponentLoader type="rect"/>
-                 
+                  <ComponentLoader type="rect" />
                 )}
               </Box>
             ))}
@@ -101,7 +99,7 @@ export default function CaseList(props) {
                           src={item.src}
                         />
                       ) : (
-                        <ComponentLoader type="rect"/>
+                        <ComponentLoader type="rect" />
                       )}
                     </Box>
                   )
@@ -109,9 +107,8 @@ export default function CaseList(props) {
               </>
             ) : (
               <Typography variant="h6" center>
-                 No Data Found
+                No Data Found
               </Typography>
-            
             )}
           </>
         )}

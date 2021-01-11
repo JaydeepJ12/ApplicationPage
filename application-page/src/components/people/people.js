@@ -12,6 +12,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import * as apiConfig from "../../components/api_base/api-config";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,25 +33,31 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
+  fontWeight: {
+    fontWeight: "bold",
+  },
 }));
 
 export default function Peoples() {
   const classes = useStyles();
   const [peopleData, setPeopleData] = useState([]);
+  const [componentLoader, setComponentLoader] = useState(false);
 
   const getPeople = async () => {
+    setComponentLoader(true);
     var jsonData = {
-      maxCount: 50,
+      maxCount: 16,
       skipCount: 0,
     };
     var config = {
       method: "post",
       url: "http://localhost:5000/cases/getpeople",
-      data: jsonData
+      data: jsonData,
     };
 
     await axios(config)
       .then(function (response) {
+        setComponentLoader(false);
         setPeopleData(response.data);
       })
       .catch(function (error) {
@@ -61,6 +68,34 @@ export default function Peoples() {
   useEffect(() => {
     getPeople();
   }, []);
+
+  const addDefaultSrc = (event) => {
+    let userDefaultImage = require("../../assets/images/default-userimage.png");
+    if (userDefaultImage) {
+      event.target.src = userDefaultImage;
+    }
+  };
+
+  const renderUserImage = (userName) => {
+    if (userName) {
+      return (
+        <img
+          onError={(event) => addDefaultSrc(event)}
+          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
+          height={50}
+          width={50}
+        />
+      );
+    } else {
+      return (
+        <img
+          src="../../assets/images/default-userimage.png"
+          height={50}
+          width={50}
+        />
+      );
+    }
+  };
 
   return (
     <Box boxShadow={0} className="card card-task-overview" borderRadius={35}>
@@ -107,87 +142,44 @@ export default function Peoples() {
       {/* <Slider {...SilderSetting}> */}
       <div className="people-image-list">
         <Grid container spacing={3}>
-          <Grid item lg={3} md={3} xs={3} sm={3}>
-            <Box>
-              <Icon className="s-option-auto-image">
-                <img
-                  src={"https://material-ui.com/static/images/avatar/1.jpg"}
-                  height={50}
-                  width={50}
-                />
-              </Icon>
-              <Typography variant="caption" display="block" gutterBottom>
-                Dixit Solanki
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (10)
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (50)
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item lg={3} md={3} xs={3} sm={3}>
-            <Box>
-              <Icon className="s-option-auto-image">
-                <img
-                  src={"https://material-ui.com/static/images/avatar/1.jpg"}
-                  height={50}
-                  width={50}
-                />
-              </Icon>
-              <Typography variant="caption" display="block" gutterBottom>
-                Dixit Solanki
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (10)
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (50)
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item lg={3} md={3} xs={3} sm={3}>
-            <Box>
-              <Icon className="s-option-auto-image">
-                <img
-                  src={"https://material-ui.com/static/images/avatar/1.jpg"}
-                  height={50}
-                  width={50}
-                />
-              </Icon>
-
-              <Typography variant="caption" display="block" gutterBottom>
-                Dixit Solanki
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (10)
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (50)
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item lg={3} md={3} xs={3} sm={3}>
-            <Box>
-              <Icon className="s-option-auto-image">
-                <img
-                  src={"https://material-ui.com/static/images/avatar/1.jpg"}
-                  height={50}
-                  width={50}
-                />
-              </Icon>
-              <Typography variant="caption" display="block" gutterBottom>
-                Dixit Solanki
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (10)
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                (50)
-              </Typography>
-            </Box>
-          </Grid>
+          {peopleData.length ? (
+            peopleData.map((people) => (
+              <Grid item lg={3} md={3} xs={3} sm={3}>
+                <Box>
+                  {/* <Avatar>{renderUserImage(people.shortUserName)}</Avatar> */}
+                  <Icon
+                    style={{ marginLeft: "1rem" }}
+                    className="s-option-auto-image"
+                  >
+                    {renderUserImage(people.ShortUserName)}
+                  </Icon>
+                  <Typography
+                    className={classes.fontWeight}
+                    variant="caption"
+                    display="block"
+                    gutterBottom
+                  >
+                    {people.FullName ? people.FullName : people.ShortUserName}
+                  </Typography>
+                  <Typography variant="caption" display="block" gutterBottom>
+                    TASK COUNT
+                  </Typography>
+                  <Typography
+                    className={classes.fontWeight}
+                    variant="caption"
+                    display="block"
+                    gutterBottom
+                  >
+                    {people.TotalCount}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))
+          ) : (
+            <div style={{ height: "2rem" }}>
+              {componentLoader ? "Loading please wait..!!" : "No Data Found"}
+            </div>
+          )}
         </Grid>
       </div>
       {/* </Slider> */}
