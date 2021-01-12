@@ -5,6 +5,7 @@ import React, { Fragment, useRef, useState } from "react";
 
 export default function ExternalLookup(props) {
   const [data, setData] = useState([]);
+  const [applicationId, setApplicationId] = useState(props.applicationId);
   const [typeId, setTypeId] = useState(props.typeId);
   const [fieldName, setFieldName] = useState(props.fieldName);
   const [fieldId, setFieldId] = useState(props.fieldId);
@@ -13,6 +14,7 @@ export default function ExternalLookup(props) {
   const [loading, setLoading] = useState(false);
   const timeoutRef = useRef(null);
   const [selectedData, setSelectedData] = useState("");
+
   let timeoutVal = 1000;
   const handleExternalLookupKeyUp = (searchText) => {
     if (searchText == "") {
@@ -64,7 +66,7 @@ export default function ExternalLookup(props) {
       searchText: searchText,
       maxCount: 0,
       skipCount: 0,
-      application: 1,
+      application: applicationId,
       typeID: typeId,
       fieldID: fieldId,
       parentValues: {

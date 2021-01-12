@@ -1,23 +1,17 @@
-import { Card } from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-import InputBase from "@material-ui/core/InputBase";
-import InputLabel from "@material-ui/core/InputLabel";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import Paper from "@material-ui/core/Paper";
-import Select from "@material-ui/core/Select";
-import { fade, makeStyles, withStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import MenuIcon from "@material-ui/icons/Menu";
-import SearchIcon from "@material-ui/icons/Search";
-import SendIcon from "@material-ui/icons/Send";
+import {
+  Card,
+  fade,
+  FormControl,
+  Grid,
+  InputLabel,
+  makeStyles,
+  Menu,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Toolbar,
+  withStyles
+} from "@material-ui/core";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
@@ -27,21 +21,6 @@ import CaseViewer from "./case_viewer";
 import Loading from "./Loader";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    // display: "flex",
-    // float: "left",
-    // marginLeft: "12rem",
-    // flexGrow: 1,
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    // flexGrow: 1,
-    // height: "100vh",
-  },
-  container: {
-    // paddingTop: theme.spacing(1),
-    // paddingBottom: theme.spacing(1),
-  },
   paper: {
     padding: theme.spacing(1),
     display: "flex",
@@ -52,22 +31,11 @@ const useStyles = makeStyles((theme) => ({
     height: "90vh",
     overflow: "auto",
   },
-  accordionSam: {
-    height: "80vh",
-    overflow: "auto",
-  },
   caseDetails: {
     padding: theme.spacing(2),
   },
   menuButton: {
     marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-    display: "none",
-    [theme.breakpoints.up("sm")]: {
-      display: "block",
-    },
   },
   search: {
     position: "relative",
@@ -148,12 +116,12 @@ export default function ViewCase() {
   const [documentList, setDocumentList] = useState([]);
   const [caseFilter, setCaseFilter] = useState(0);
   const timeoutRef = useRef(null);
-  const [caseFieldsLoaded, setCaseFieldsLoaded] = useState(false);
   const [caseListFiltered, setCaseListFiltered] = useState(false);
   const [componentLoader, setComponentLoader] = useState(false);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [caseTypeIdValue, setCaseTypeIdValue] = useState(0);
-  const [state, setState] = React.useState(0);
+  const [state, setState] = useState(0);
+  const [caseTypeId, setCaseTypeId] = useState(0);
   const [labelWidth, setLabelWidth] = React.useState(0);
 
   const inputLabel = React.useRef(null);
@@ -178,10 +146,6 @@ export default function ViewCase() {
     setCaseLoaded(value);
   };
 
-  const handleCaseFieldsLoaded = (value) => {
-    setCaseFieldsLoaded(value);
-  };
-
   const handleDocumentList = (documentList) => {
     setDocumentList(documentList);
   };
@@ -197,7 +161,7 @@ export default function ViewCase() {
       return false;
     }
     caseTypeId = caseTypeId ? caseTypeId : caseTypeIdValue;
-    setState(caseTypeId);
+    setCaseTypeId(caseTypeId);
     setComponentLoader(true);
     setCaseFilter(filter);
     caseList(
@@ -215,6 +179,7 @@ export default function ViewCase() {
     setComponentLoader(true);
     await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
       setCaseTypeData(resp.data);
+      setCaseTypeId(resp.data[0]?.CASE_TYPE_ID);
       caseList("", 0, false, 0, false, true, resp.data[0]?.CASE_TYPE_ID);
     });
   };
@@ -245,26 +210,23 @@ export default function ViewCase() {
       skipCount = 0;
     }
     var jsonData = {
-      Username: "bhaviks",
-      TypeId: caseTypeId > 0 ? caseTypeId : caseTypeIdValue,
-      PageSize: pageSize,
-      MaxCount: maxCount,
-      SkipCount: skipCount,
-      CurrentPage: 1,
-      Ascending: false,
-      SortColumn: null,
-      Filter: filter,
-      Filters: null,
-      TypeIdsForGrouping: null,
-    };
+      "username": "michaelaf",
+      "typeId": 19,
+      "pageSize": 11,
+      "skipCount": 0,
+      "currentPage": 1,
+      "ascending": true,
+      "sortColumn": "string",
+      "filter": 0,
+      "filters": [
+        {}
+      ]
+    } ;
 
-    var config = {
-      method: "post",
-      url: "http://localhost:5000/cases/GetCaseHeaders",
-      data: jsonData,
-    };
+    
+    console.log(jsonData)
 
-    await axios(config)
+    axios.post("http://localhost:5000/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
         setCaseListFiltered(true);
         setCaseListData([]);
@@ -305,7 +267,9 @@ export default function ViewCase() {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-  const createLoader = () => {
+  const createLoader = (jsonData) => {
+   
+  
     return <Loading />;
   };
 
@@ -376,13 +340,15 @@ export default function ViewCase() {
       }
     }
   };
-
   return (
     <div className="page" id="page-view-case">
       <Card>
+      <Grid container spacing={0}>
+      
         {loaded ? (
           <>
-            <AppBar position="static" className="inner-navigation bg-primary">
+          {/* dont remove this code its usefull for reference of work after confirm i will remove this */}
+            {/* <AppBar position="static" className="inner-navigation bg-primary">
               <Toolbar>
                 <IconButton
                   edge="start"
@@ -436,17 +402,15 @@ export default function ViewCase() {
                   </StyledMenu>
                 </div>
               </Toolbar>
-            </AppBar>
-            <Grid container item xs={12} spacing={1}>
-              <Grid item xs={12} sm={6} md={3} lg={3}>
-                <Paper>
+            </AppBar> */}
+           
+              <Grid item xs={12} sm={3} md={3} lg={3} className="panel-left">
                   <div
                     className={fixedHeightPaper}
                     onScroll={(event) => onScroll(caseListData, event)}
                   >
                     <FormControl
                       style={{ width: "-webkit-fill-available" }}
-                      variant="outlined"
                       className={classes.formControl}
                     >
                       <InputLabel
@@ -457,8 +421,7 @@ export default function ViewCase() {
                         Case Types
                       </InputLabel>
                       <Select
-                        native
-                        value={state.caseTypeId}
+                        value={caseTypeId}
                         onChange={(event) =>
                           handleFilterCaseList(
                             0,
@@ -472,24 +435,16 @@ export default function ViewCase() {
                           caseTypeId: "caseTypeId",
                           id: "outlined-caseType-native-simple",
                         }}
-                        input={
-                          <OutlinedInput
-                            notched
-                            labelWidth={labelWidth}
-                            name="caseType"
-                            id="outlined-caseType-always-notched"
-                          />
-                        }
                         fullWidth={true}
                       >
                         {caseTypeData.length
                           ? caseTypeData.map((option) => (
-                              <option
+                              <MenuItem
                                 key={option.CASE_TYPE_ID}
                                 value={option.CASE_TYPE_ID}
                               >
                                 {option.NAME}
-                              </option>
+                              </MenuItem>
                             ))
                           : []}
                       </Select>
@@ -504,31 +459,31 @@ export default function ViewCase() {
                       componentLoader={componentLoader}
                     ></CaseList>
                   </div>
-                </Paper>
               </Grid>
               {/* Recent Deposits */}
-              <Grid item xs={12} sm={12} md={9} lg={9} className="panel-center">
-                <Paper className={CaseDetailsPaper}>
+            
+               
                   {caseId > 0 ? (
                     <CaseViewer
                       caseId={caseId}
                       caseData={caseData}
                       handleCaseLoaded={handleCaseLoaded}
                       handleDocumentList={handleDocumentList}
-                      handleCaseFieldsLoaded={handleCaseFieldsLoaded}
                     ></CaseViewer>
                   ) : (
                     ""
                   )}
-                </Paper>
-              </Grid>
-            </Grid>
+              
+         
+         
           </>
         ) : (
           ""
         )}
         {!loaded ? createLoader() : []}
-      </Card>
+      
+        </Grid>
+        </Card>
     </div>
   );
 }
