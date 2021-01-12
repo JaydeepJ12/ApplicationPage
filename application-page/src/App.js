@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Navigation from "./components/navigation";
+import Navigation from "../src/components/header/navigation";
 
 //checksum change
 function App() {
