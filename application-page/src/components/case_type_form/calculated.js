@@ -9,6 +9,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import API from "../api_base/api";
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -220,6 +221,14 @@ export default function CaseTypeFieldForm(props) {
         ) : (
           ""
         )}
+        <br></br>
+        <Button
+          style={{ width: "150px", backgroundColor: "orange" }}
+          variant="contained"
+          color="primary"
+        >
+          Add
+        </Button>
       </form>
     </div>
   );

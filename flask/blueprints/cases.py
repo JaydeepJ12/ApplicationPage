@@ -8,11 +8,12 @@ import json
 import time
 import numpy as np
 from handlers.cases import CaseHandler
+from flask_cors import CORS, cross_origin
 
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
-mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2020')
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
@@ -129,12 +130,73 @@ def get_full_case_by_caseId():
     #     # y['systemPriority'] = 1
     return data
 
+
+@bp.route('/assigned/')
+def assigned_to():
+    case_type = request.args.get('case_type')
+    color_sequence = request.args.get('color_sequence')
+    if color_sequence is None:
+        color_sequence = ['goldenrod', 'darkgrey', 'black']
+    else:
+        color_sequence = color_sequence.split(',')
+    sub_query = db.assignee_case_types(case_type).values.tolist()
+    dataset = []
+    for data in sub_query:
+        dataset.append({"assigned_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
+    return json.dumps({"name":"Assign Case List API","status": 200, "data": dataset, })
+
+
+@bp.route('/assigned_supervisor/')
+def assigned_supervisor():
+    case_type = request.args.get('case_type')
+    color_sequence = request.args.get('color_sequence')
+    if color_sequence is None:
+        color_sequence = ['goldenrod', 'darkgrey', 'black']
+    else:
+        color_sequence = color_sequence.split(',')
+    sub_query = db.assigne_supervisor(case_type).values.tolist()
+    dataset = []
+    for data in sub_query:
+        dataset.append({"assigned_supervisor_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
+    return json.dumps({"name":"Assign Assignee Supervisor List API", "status": 200, "data": dataset})
+
+
+@bp.route('/status/')
+def status():
+    case_type = request.args.get('case_type')
+    color_sequence = request.args.get('color_sequence')
+    if color_sequence is None:
+        color_sequence = ['goldenrod', 'darkgrey', 'black']
+    else:
+        color_sequence = color_sequence.split(',')
+    sub_query = db.case_type_count_all(case_type).values.tolist()
+    dataset = []
+    for data in sub_query:
+        dataset.append({"past_due_case": data[0], "not_due": data[1], "no_due_date": data[2]})
+    return json.dumps({"name":"Status of Case", "status": 200, "data": dataset})
+
+
+@bp.route('/case_type/')
+def case_type():
+    case_type = request.args.get('case_type')
+    color_sequence = request.args.get('color_sequence')
+    if color_sequence is None:
+        color_sequence = ['goldenrod', 'darkgrey', 'black']
+    else:
+        color_sequence = color_sequence.split(',')
+    sub_query = db.case_type_count_dues(case_type).values.tolist()
+    dataset = []
+    for data in sub_query:
+        dataset.append({"case_type_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
+    return json.dumps({"name": "Case Type API List", "status": 200, "data": dataset})
+
+
 @bp.route('/assoc_type', methods=['GET'])
 def assoc_type_data():
     if request.method == 'GET':
         return CaseHandler().assoc_type_data()
 
-@bp.route('/case_type', methods=['GET'])
+@bp.route('/case_type_data', methods=['GET'])
 def case_type_data():
     if request.method == 'GET':
         return CaseHandler().case_type_data()
@@ -142,6 +204,7 @@ def case_type_data():
 @bp.route('/case_type_insert', methods=['POST'])
 def insert_case_type_data():
     data = json.loads(request.data)
+    print(data)
     if request.method == 'POST':
         try:
             return CaseHandler().case_type_insert(data)
@@ -149,6 +212,7 @@ def insert_case_type_data():
             return json.dumps({"error_stack": str(exe)})
 
 @bp.route('/assoc_type_insert', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def insert_assoc_type_data():
     data = json.loads(request.data)
     if request.method == 'POST':
