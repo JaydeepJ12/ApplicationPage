@@ -18,9 +18,11 @@ cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
 def t():
     return time.time()
+
 @bp.after_request
 def after_request(r):
     r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Access-Control-Allow-Headers'] = '*'
     return r
 
 @bp.route('/config')
@@ -57,6 +59,7 @@ def assocDecode(assoc_id = 0):
 def caseTypes():
    df = db.cases_types()
    df = df.sort_values(by='NAME')
+   #print(df)
    return df.to_json(orient='records') #
 
 @bp.route('/caseassoctypecascade')
@@ -106,9 +109,11 @@ def getUserFullName(userShortName):
     df = db.get_user_fullname(userShortName) #always returns dataframe
     return df.to_json(orient='records')
    
-@bp.route('/GetCaseNotes', methods=['POST'])
+@bp.route('/GetCaseNotes', methods=['POST','OPTIONS'])
 def get_case_notes():
     data = mobile.get_case_notes(request.json).json()
+    print(data)
+    print(data['responseContent'])
     for x in data['responseContent']: #can throw error with resp is empty
         userShortName = x.get('createdBy')
         userFullName = json.loads(getUserFullName(str(userShortName)))
@@ -119,6 +124,9 @@ def get_case_notes():
 
 @bp.route('/GetCaseHeaders', methods=['POST'])
 def get_case_headers():
+    print('trying')
+    print(request.data)
+    #print('Data from react', request.get_json())
     data = mobile.get_case_headers(request.json).json()
     return data
 

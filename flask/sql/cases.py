@@ -223,7 +223,7 @@ where a.IS_ACTIVE = 'Y'
 class AppSql:
     #need a call that gives application entity 0ds, name and icon urls
     def __init__(self):
-        self.db = app
+        self.db = Stemmons_Dash_App()
     
     def application_layout(self):
         pass
@@ -255,7 +255,7 @@ class AppSql:
                 and IS_ACTIVE='Y')
                 order by TITLE_METADATA_TEXT 
         '''
-        return app.execQuery(query)
+        return self.db.execQuery(query)
 
 
 class FieldHandler:

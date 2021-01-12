@@ -210,26 +210,23 @@ export default function ViewCase() {
       skipCount = 0;
     }
     var jsonData = {
-      Username: "bhaviks",
-      TypeId: caseTypeId > 0 ? caseTypeId : caseTypeIdValue,
-      PageSize: pageSize,
-      MaxCount: maxCount,
-      SkipCount: skipCount,
-      CurrentPage: 1,
-      Ascending: false,
-      SortColumn: null,
-      Filter: filter,
-      Filters: null,
-      TypeIdsForGrouping: null,
-    };
+      "username": "michaelaf",
+      "typeId": 19,
+      "pageSize": 11,
+      "skipCount": 0,
+      "currentPage": 1,
+      "ascending": true,
+      "sortColumn": "string",
+      "filter": 0,
+      "filters": [
+        {}
+      ]
+    } ;
 
-    var config = {
-      method: "post",
-      url: "http://localhost:5000/cases/GetCaseHeaders",
-      data: jsonData,
-    };
+    
+    console.log(jsonData)
 
-    await axios(config)
+    axios.post("http://localhost:5000/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
         setCaseListFiltered(true);
         setCaseListData([]);
@@ -270,7 +267,9 @@ export default function ViewCase() {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-  const createLoader = () => {
+  const createLoader = (jsonData) => {
+   
+  
     return <Loading />;
   };
 
@@ -341,7 +340,6 @@ export default function ViewCase() {
       }
     }
   };
-
   return (
     <div className="page" id="page-view-case">
       <Card>
