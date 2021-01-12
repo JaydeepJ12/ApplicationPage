@@ -72,10 +72,10 @@ def getPastDueCount(userShortName):
     df = db.get_past_due_count(userShortName) #always returns dataframe
     return df.to_json(orient='records')
 
-@bp.route('/getpeople', methods=['POST'])
-def getpeople():
+@bp.route('/getPeople', methods=['POST'])
+def getPeople():
    data = request.json
-   df = db.get_people(data['skipCount'], data['maxCount'])
+   df = db.get_people(data['skipCount'], data['maxCount'], data['searchText'])
 #    for i, row in df.iterrows():
 #         pastDueCount = getPastDueCount(f"{row['ShortUserName']}")
 #         if(json.loads(pastDueCount)):
@@ -174,3 +174,14 @@ def system_code_list():
             return CaseHandler().system_code_list()
         except Exception as exe:
             return json.dumps({"error_stack": str(exe)})
+
+@bp.route('/getRelatedCasesCountData', methods=['POST'])
+def get_related_cases_count_data():
+    data = mobile.get_related_cases_count_data(request.json).json()
+    return data
+
+@bp.route('/getUserInfo', methods=['POST'])
+def get_user_info():
+    data = request.json
+    df = db.get_user_info(data['userShortName'])
+    return df.to_json(orient='records')

@@ -137,12 +137,11 @@ export default function UserAutocomplete(props) {
   };
 
   return (
-    <div className="assign-to-div">
-      <label>Assign To :</label>
+    <div className="">
       <div style={{ width: "auto", marginTop: ".5em" }}>
         {" "}
         {
-          <Autocomplete 
+          <Autocomplete
             {...props}
             className="input-auto-complete"
             id="users"
@@ -188,7 +187,9 @@ export default function UserAutocomplete(props) {
                   label={
                     selectedUser
                       ? selectedUser
-                      : "Default Hopper- " + defaultHopper
+                      : defaultHopper
+                      ? "Default Hopper- " + defaultHopper
+                      : ""
                   }
                   placeholder="Search User"
                   variant="outlined"

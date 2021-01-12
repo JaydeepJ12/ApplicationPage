@@ -477,11 +477,12 @@ export default function CaseCreator(props) {
 
   const createAssignTo = () => {
     return (
+      <><label> Assign To :</label>
       <UserAutocomplete
         defaultHopper={defaultHopper}
         defaultHopperId={defaultHopperId}
         handleAutocompleteChange={handleAutocompleteChange}
-      ></UserAutocomplete>
+      ></UserAutocomplete></>
     );
   };
 
