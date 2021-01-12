@@ -223,6 +223,7 @@ body {background-color: #fff !important;
   }
   .people-image-list {
     text-align: center;
+    overflow-wrap: break-word;
 }
   /* ----------------------end---overview----------------------- */
   .panel-center {
