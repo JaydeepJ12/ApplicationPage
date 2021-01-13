@@ -30,16 +30,11 @@ import { Link, Router } from "@reach/router";
 import clsx from "clsx";
 import React, { useState } from "react";
 import * as pathConfig from "../api_base/path-config";
-// components
-import CaseSelect from "../case_select.js";
-import CaseTypeForm from "../case_type_form/index";
+
 import HeaderRight from "../header/header_right";
+import rootRoute from '../../system/route';
 
 import Login from "../Login/index.js";
-import OverView from "..//overview";
-import Test from "../test";
-import ViewCase from "../view-case";
-
 export default function Navigation(props) {
   const classes = useStyles();
   const theme = useTheme();
@@ -216,15 +211,7 @@ export default function Navigation(props) {
           </Drawer>
           <div className={classnames(classes.content)}>
             <div className={classes.fakeToolbar} />
-
-            <Router basepath={basePath}>
-              <CaseSelect path="/case-select" />
-              <OverView path="/overview" />
-              <Test path="/test"></Test>
-              <CaseTypeForm path="/case-type-form"></CaseTypeForm>
-              <ViewCase path="/tasks"></ViewCase>
-              <Login path="/login" />
-            </Router>
+            { rootRoute }
           </div>
         </div>
       )}
