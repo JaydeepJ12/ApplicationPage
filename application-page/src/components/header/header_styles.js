@@ -126,12 +126,7 @@ export default makeStyles((theme) => {
       marginRight: ".5em",
       backgroundColor: "transparent",
     },
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing(3),
-      width: `calc(100vw - 240px)`,
-      minHeight: "100vh",
-    },
+
     contentShift: {
       width: `calc(100vw - ${240 + theme.spacing(6)}px)`,
       transition: theme.transitions.create(["width", "margin"], {
