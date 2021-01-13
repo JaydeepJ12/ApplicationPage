@@ -12,43 +12,15 @@ import {
   Select,
   Tab,
   Tabs,
-  Typography
+  Typography,
 } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-// // icons
-import { Notifications, Settings } from "@material-ui/icons";
+import { useTheme } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import React from "react";
 import SwipeableViews from "react-swipeable-views";
 import Peoples from "./people/people";
-
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  },
-  root: {
-    flexGrow: 1,
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-  image_spacing: {
-    display: "flex",
-    "& > *": {
-      margin: theme.spacing(4),
-    },
-  },
-  root2: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+import { navigate } from "@reach/router";
+import GotoBackButton from "./common/BackButton";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -82,7 +54,6 @@ TabPanel.propTypes = {
 
 export default function OverView(props) {
   const theme = useTheme();
-  const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const [age, setAge] = React.useState("");
 
@@ -94,55 +65,14 @@ export default function OverView(props) {
   };
 
   const handleClick = (props) => {
-    props.navigate("/case-select");
-  };
-  var SilderSetting = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    infinite: false,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          initialSlide: 3,
-        },
-      },
-      {
-        breakpoint: 1150,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          initialSlide: 4,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          initialSlide: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
+    navigate("/react/case-select", {
+      state: { isParent: true, isChild: false },
+    });
   };
   return (
     <div className="page" id="page-overview">
       <Container>
         <Grid container spacing={3}>
-    
-          
           <Grid item lg={12} md={12} xs={12} sm={12}>
             <Box
               boxShadow={0}
@@ -160,27 +90,22 @@ export default function OverView(props) {
                   className="vertical-center"
                 >
                   <form>
-                    <div
-                      className=""
-                      style={{ cursor: "pointer" }}
+                    <Button
                       onClick={() => {
-                        handleClick(props);
+                        handleClick();
                       }}
+                      variant="contained"
+                      size="large"
+                      className="btn btn-create-button btn-primary rounded-pill"
+                      variant="contained"
+                      color="primary"
                     >
-                      <Button
-                        variant="contained"
-                        size="large"
-                        className="btn btn-create-button btn-primary rounded-pill"
-                        variant="contained"
-                        color="primary"
-                      >
-                        + Create
-                      </Button>
-                    </div>
+                      + Create
+                    </Button>
                   </form>
                 </Grid>
                 <Grid item lg={8} md={8} xs={12} sm={8}>
-                  <div className={classes.root2}>
+                  <div>
                     <Paper elevation={3}>
                       <AppBar position="static" elevation={3}>
                         <Tabs
@@ -241,10 +166,7 @@ export default function OverView(props) {
             >
               <Grid container spacing={3}>
                 <Grid item lg={9} md={9} xs={6} sm={6}>
-                  <FormControl
-                    variant="outlined"
-                    className={classes.formControl}
-                  >
+                  <FormControl variant="outlined">
                     <InputLabel id="demo-simple-select-outlined-label">
                       Items
                     </InputLabel>
