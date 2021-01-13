@@ -196,7 +196,7 @@ body {background-color: #fff !important;
     padding: 1rem ! important;
     background: rgba(196, 196, 196, 0.25);
   }
-  #page-overview .card {
+  #page-overview .card, #people-department .card {
     background-color: rgba(196, 196, 196, 0.25);
     box-shadow: none;
   }
