@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     height: 32,
     width: 32, // 16:9
   },
-}));
+}), {index: 1});
 
 function AppCard(props) {
   const classes = useStyles();

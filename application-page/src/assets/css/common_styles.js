@@ -10,4 +10,4 @@ export default makeStyles((theme) => {
       width: `calc(100%)`,
     },
   };
-});
+}, {index: 1});

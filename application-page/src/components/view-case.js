@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
-}));
+}), {index: 1});
 
 const StyledMenu = withStyles({
   paper: {

@@ -190,4 +190,4 @@ export default makeStyles((theme) => {
       fontSize: 28,
     },
   };
-});
+}, {index: 1});

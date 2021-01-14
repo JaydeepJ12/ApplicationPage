@@ -137,20 +137,19 @@ export default function UserAutocomplete(props) {
   };
 
   return (
-    <div className="">
+    <div>
       <div style={{ width: "auto", marginTop: ".5em" }}>
         {" "}
         {
           <Autocomplete
             {...props}
-            className="input-auto-complete"
             id="users"
             options={users}
             getOptionLabel={(option) => option.displayName}
             renderOption={(option) => {
               return (
                 <Fragment>
-                  <Icon className="s-option-auto-image">
+                  <Icon>
                     {renderUserImage(option?.username)}
                   </Icon>
                   {option?.displayName +

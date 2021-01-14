@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
     },
   },
-}));
+}), {index: 1});
 
 const styles = (theme) => ({
   root: {
