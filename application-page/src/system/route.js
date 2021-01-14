@@ -12,7 +12,7 @@ const rootRoute = (
   <div>
     <Router basepath={basePath}>
       <CaseSelect path="/case-select" />
-      <OverView path="/overview" />
+      <OverView path="/overview" default />
       <CaseTypeForm path="/case-type-form"></CaseTypeForm>
       <PeopleDepartment path="/people_dept" />
       <ViewCase path="/tasks"></ViewCase>
