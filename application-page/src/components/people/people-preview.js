@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "larger",
     fontWeight: "bold",
   },
-}));
+}), {index: 1});
 
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;

@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
     },
   },
-}));
+}), {index: 1});
 
 export default function CaseTypeFieldForm(props) {
   const classes = useStyles();

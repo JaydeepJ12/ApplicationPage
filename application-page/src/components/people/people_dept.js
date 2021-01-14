@@ -65,7 +65,7 @@ function TabPanel(props) {
     width: theme.spacing(7),
     height: theme.spacing(7),
   },
-}));
+}), {index: 1});
 export default function PeopleDepartment() {
     const theme = useTheme();
   var classes = useStyles();
