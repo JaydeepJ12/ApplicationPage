@@ -10,7 +10,6 @@ import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import * as apiConfig from "../../components/api_base/api-config";
 import ComponentLoader from "../common/component-loader";
 
 const styles = (theme) => ({
@@ -85,10 +84,11 @@ export default function PeoplePreview(props) {
     var jsonData = {
       userShortName: props.userName,
     };
-
+    
+  
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + apiConfig.GET_USER_INFO,
+      url: '/cases/getPeople',
       data: jsonData,
     };
 
@@ -129,7 +129,6 @@ export default function PeoplePreview(props) {
 
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + apiConfig.GET_RELATED_CASES_COUNT_DATA,
       data: jsonData,
     };
 
@@ -167,7 +166,7 @@ export default function PeoplePreview(props) {
           onError={(event) => addDefaultSrc(event)}
           className={classes.large}
           alt={userName}
-          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
+          src={process.env.REACT_APP_USER_ICON.concat(userName)}
         />
       );
     } else {

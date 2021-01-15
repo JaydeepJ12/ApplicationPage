@@ -16,7 +16,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
-import * as apiConfig from "../components/api_base/api-config";
 import * as notification from "../components/common/toast";
 import CaseBasicInformation from "./case-basic-information.js";
 import FileUpload from "./file-upload.js";
@@ -66,7 +65,7 @@ export default function CaseViewer(props) {
 
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetCaseNotes",
+      url: "/cases/GetCaseNotes",
       data: jsonData,
     };
 
@@ -107,7 +106,7 @@ export default function CaseViewer(props) {
 
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetFullCaseByCaseId",
+      url: "/cases/GetFullCaseByCaseId",
       data: jsonData,
       // cancelToken: new CancelToken(function executor(c) {
       //   // An executor function receives a cancel function as a parameter
@@ -162,7 +161,7 @@ export default function CaseViewer(props) {
       if (currentData[commentIndex]) {
         await axios
           .get(
-            "http://localhost:5000/cases/assocDecode?AssocId=".concat(
+            "/cases/assocDecode?AssocId=".concat(
               assocTypeIds[i]
             )
           )
@@ -193,7 +192,7 @@ export default function CaseViewer(props) {
 
       axios
         .get(
-          "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
+          "/cases/caseassoctypecascade?CaseTypeID=".concat(
             caseTypeId
           )
         )
@@ -307,7 +306,7 @@ export default function CaseViewer(props) {
         };
         var config = {
           method: "post",
-          url: "http://localhost:5000/cases/GetExternalDataValues",
+          url: "/cases/GetExternalDataValues",
           data: jsonData,
         };
 
@@ -421,7 +420,7 @@ export default function CaseViewer(props) {
 
       var config = {
         method: "post",
-        url: "http://localhost:5000/cases/GetExternalDataValues",
+        url: "/cases/GetExternalDataValues",
         data: jsonData,
       };
 
@@ -496,7 +495,7 @@ export default function CaseViewer(props) {
 
           var config = {
             method: "post",
-            url: "http://localhost:5000/cases/GetExternalDataValues",
+            url: "/cases/GetExternalDataValues",
             data: jsonData,
           };
           await axios(config)
@@ -730,7 +729,7 @@ export default function CaseViewer(props) {
       return (
         <img
           onError={(event) => addDefaultSrc(event)}
-          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
+          src={process.env.REACT_APP_USER_ICON.concat(userName)}
           height={50}
           width={50}
         />
@@ -759,7 +758,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isUrlContain) {
-        urlValue = apiConfig.BASE_CASES_URL + urlValue;
+        urlValue = urlValue;
       }
       if (urlValue) {
         imgSrcUrls[i].setAttribute("src", urlValue);
@@ -781,7 +780,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isHrefUrlContain) {
-        hrefUrlValue = apiConfig.BASE_CASES_URL + hrefUrlValue;
+        hrefUrlValue = hrefUrlValue;
       }
       if (hrefUrlValue) {
         hrefUrls[j].setAttribute("href", hrefUrlValue);

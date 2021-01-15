@@ -83,7 +83,7 @@ export default function UserAutocomplete(props) {
 
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetEmployeesBySearch",
+      url: "/cases/GetEmployeesBySearch",
       data: jsonData,
     };
 

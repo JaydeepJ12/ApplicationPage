@@ -177,7 +177,7 @@ export default function ViewCase() {
 
   const caseTypes = async () => {
     setComponentLoader(true);
-    await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
+    await axios.get("/cases/types").then((resp) => {
       setCaseTypeData(resp.data);
       setCaseTypeId(resp.data[0]?.CASE_TYPE_ID);
       caseList("", 0, false, 0, false, true, resp.data[0]?.CASE_TYPE_ID);
@@ -226,7 +226,7 @@ export default function ViewCase() {
     
     console.log(jsonData)
 
-    axios.post("http://localhost:5000/cases/GetCaseHeaders", jsonData)
+    axios.post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
         setCaseListFiltered(true);
         setCaseListData([]);

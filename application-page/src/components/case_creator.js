@@ -82,7 +82,7 @@ export default function CaseCreator(props) {
     }
     props.disableEnableCaseTypeDropDown(true);
     axios
-      .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
+      .get("/cases/config?CaseTypeID=".concat(caseTypeId))
       .then((resp) => {
         if (localFieldData !== JSON.stringify(resp.data)) {
           setData(resp.data);
@@ -94,7 +94,7 @@ export default function CaseCreator(props) {
         if (fieldData.length > 0) {
           axios
             .get(
-              "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
+              "/cases/caseassoctypecascade?CaseTypeID=".concat(
                 caseTypeId
               )
             )
@@ -153,7 +153,7 @@ export default function CaseCreator(props) {
 
         var config = {
           method: "post",
-          url: "http://localhost:5000/cases/GetExternalDataValues",
+          url: "/cases/GetExternalDataValues",
           data: jsonData,
         };
 
@@ -231,7 +231,7 @@ export default function CaseCreator(props) {
 
       var config = {
         method: "post",
-        url: "http://localhost:5000/cases/GetExternalDataValues",
+        url: "/cases/GetExternalDataValues",
         data: jsonData,
       };
 
@@ -296,7 +296,7 @@ export default function CaseCreator(props) {
 
           var config = {
             method: "post",
-            url: "http://localhost:5000/cases/GetExternalDataValues",
+            url: "/cases/GetExternalDataValues",
             data: jsonData,
           };
 

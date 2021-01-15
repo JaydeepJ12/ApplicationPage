@@ -76,7 +76,7 @@ export default function ExternalLookup(props) {
     };
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetEntityExternalDataValues",
+      url: "/cases/GetEntityExternalDataValues",
       data: jsonData,
     };
     await axios(config)

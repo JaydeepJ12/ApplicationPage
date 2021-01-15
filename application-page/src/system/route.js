@@ -6,11 +6,12 @@ import PeopleDepartment from "../components/people/people_dept";
 import CaseSelect from "../components/case_select";
 import CaseTypeForm from "../components/case_type_form/index";
 import Login from "../components/Login/index";
-import * as pathConfig from "../components/api_base/path-config";
-const basePath = pathConfig.BASE_ROUTE_PATH;
+
+const basePath = process.env.REACT_APP_BASE_PATH;
+
 const rootRoute = (
   <div>
-    <Router basepath={basePath}>
+    <Router basepath={process.env.REACT_APP_BASE_PATH}>
       <CaseSelect path="/case-select" />
       <OverView path="/overview" default />
       <CaseTypeForm path="/case-type-form"></CaseTypeForm>

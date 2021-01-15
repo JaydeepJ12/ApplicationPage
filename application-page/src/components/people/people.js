@@ -16,7 +16,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import * as apiConfig from "../../components/api_base/api-config";
 import ComponentLoader from "../common/component-loader";
 import PeoplePreview from "./people-preview";
 
@@ -136,7 +135,7 @@ export default function Peoples() {
     };
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + apiConfig.GET_PEOPLE,
+      url: '/cases/getPeople',
       data: jsonData,
     };
 
@@ -176,7 +175,7 @@ export default function Peoples() {
       return (
         <img
           onError={(event) => addDefaultSrc(event)}
-          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
+          src={process.env.REACT_APP_USER_ICON.concat(userName)}
           height={50}
           width={50}
           onClick={() => handleClickOpen(userName, fullName)}

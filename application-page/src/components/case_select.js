@@ -36,7 +36,7 @@ export default function CaseSelect(props) {
   };
 
   const caseTypes = async () => {
-    await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
+    await axios.get("/cases/types").then((resp) => {
       setCaseTypeData(resp.data);
     });
   };

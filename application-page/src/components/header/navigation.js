@@ -29,7 +29,6 @@ import {
 import { Link, Router } from "@reach/router";
 import clsx from "clsx";
 import React, { useState } from "react";
-import * as pathConfig from "../api_base/path-config";
 
 import HeaderRight from "../header/header_right";
 import rootRoute from '../../system/route';
@@ -42,7 +41,7 @@ export default function Navigation(props) {
   const [open, setOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [isLogin, setIsLogin] = React.useState(false);
-  const basePath = pathConfig.BASE_ROUTE_PATH;
+  const basePath = process.env.REACT_APP_BASE_PATH
 
   const menuItems = [
     {

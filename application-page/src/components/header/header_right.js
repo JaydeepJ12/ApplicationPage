@@ -15,8 +15,6 @@ import useStyles from "./header_styles";
 // components
 import { Badge, Typography } from "@material-ui/core";
 
-import * as pathConfig from "../../components/api_base/path-config";
-const basePath = pathConfig.BASE_ROUTE_PATH;
 
 const notifications = [
   {
@@ -186,7 +184,7 @@ export default function HeaderRight() {
         </MenuItem>
         <div className={classes.profileMenuUser}>
           <Typography className={classes.profileMenuLink} color="primary">
-            <Link to={basePath + "/login"}>Sign Out</Link>
+            <Link to={"/login"}>Sign Out</Link>
           </Typography>
         </div>
       </Menu>
