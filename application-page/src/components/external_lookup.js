@@ -62,6 +62,8 @@ export default function ExternalLookup(props) {
   };
 
   const getData = async (searchText) => {
+
+    
     var jsonData = {
       searchText: searchText,
       maxCount: 0,

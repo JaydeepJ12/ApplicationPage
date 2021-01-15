@@ -15,16 +15,9 @@ import classnames from "classnames";
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
 import {
-  Assignment,
   ChevronLeft,
   ChevronRight,
-  Create,
-  Dvr,
   Menu,
-  People,
-  Streetview,
-  Timeline,
-  ViewList,
 } from "@material-ui/icons";
 import { Link, Router } from "@reach/router";
 import clsx from "clsx";
@@ -34,6 +27,9 @@ import HeaderRight from "../header/header_right";
 import rootRoute from '../../system/route';
 
 import Login from "../Login/index.js";
+
+import menuItems  from '../header/menu_items'
+
 export default function Navigation(props) {
   const classes = useStyles();
   const theme = useTheme();
@@ -41,58 +37,6 @@ export default function Navigation(props) {
   const [open, setOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [isLogin, setIsLogin] = React.useState(false);
-  const basePath = process.env.REACT_APP_BASE_PATH
-
-  const menuItems = [
-    {
-      menuName: "Overview",
-      menuIcon: <Streetview />,
-      menuPath: basePath + "/overview",
-      pageTitle: "Overview",
-    },
-    {
-      menuName: "Tasks",
-      menuIcon: <Assignment />,
-      menuPath: basePath + "/tasks",
-      pageTitle: "Tasks",
-    },
-    {
-      menuName: "People",
-      menuIcon: <People />,
-      menuPath: basePath + "/people",
-      pageTitle: "People",
-    },
-    {
-      menuName: "Items",
-      menuIcon: <ViewList />,
-      menuPath: basePath + "/items",
-      pageTitle: "Items",
-    },
-    {
-      menuName: "Insights",
-      menuIcon: <Timeline />,
-      menuPath: basePath + "/insights",
-      pageTitle: "Insights",
-    },
-    {
-      menuName: "CaseCreator",
-      menuIcon: <Create />,
-      menuPath: basePath + "/case-select",
-      pageTitle: "Create Case",
-    },
-    {
-      menuName: "View Cases",
-      menuIcon: <ViewList />,
-      menuPath: basePath + "/viewcase",
-      pageTitle: "View Cases",
-    },
-    {
-      menuName: "Case Type Form",
-      menuIcon: <Dvr />,
-      menuPath: basePath + "/case-type-form",
-      pageTitle: "Case Type",
-    },
-  ];
 
   React.useEffect(() => setCurrentPageValue(), []);
 

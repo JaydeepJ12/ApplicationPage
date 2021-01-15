@@ -1,6 +1,6 @@
 import React from "react";
 import {  Router } from "@reach/router";
-import OverView from "../components/overview";
+import OverView from "../pages/overview/overview";
 import ViewCase from "../components/view-case";
 import PeopleDepartment from "../components/people/people_dept";
 import CaseSelect from "../components/case_select";

@@ -35,6 +35,8 @@ export default function CaseList(props) {
     setComponentLoader(props.componentLoader);
   }, [props.caseListData, props.caseLoaded, props.componentLoader]);
 
+  
+
   return (
     <Box>
       <Grid container>
