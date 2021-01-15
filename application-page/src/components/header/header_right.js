@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { IconButton, Menu, MenuItem, Avatar ,InputBase } from "@material-ui/core";
 
 import {
-  Settings,
   NotificationsNone as NotificationsIcon,
   Person as AccountIcon,
   Search as SearchIcon,
 } from "@material-ui/icons";
-
+import Settings from './settings'
 import classNames from "classnames";
 import { Link } from "@reach/router";
 // styles
@@ -82,9 +81,8 @@ export default function HeaderRight() {
           />
         </div>
 
-      <IconButton color="inherit" className={classes.headerMenuButton}>
         <Settings classes={{ root: classes.headerIcon }} />
-      </IconButton>
+      
 
       <IconButton
         color="inherit"
