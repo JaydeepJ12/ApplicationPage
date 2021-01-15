@@ -65,7 +65,7 @@ export default makeStyles((theme) => {
       overflowX: "hidden",
     },
     appBar: {
-      background: "white",
+      background:  theme.palette.primary.main,
       color: "black",
       zIndex: theme.zIndex.drawer + 1,
       transition: theme.transitions.create(["width", "margin"], {

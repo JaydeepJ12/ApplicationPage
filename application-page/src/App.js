@@ -1,8 +1,9 @@
 import React from "react";
 import "./App.css";
 import Navigation from "../src/components/header/navigation";
-import { StylesProvider } from '@material-ui/core/styles';
+import { StylesProvider,ThemeProvider } from '@material-ui/core/styles';
 import axios from 'axios'
+import {theme} from './components/common/settings/color_picker'
 axios.defaults.baseURL= process.env.REACT_APP_AXIOS_PREFIX
 
   {/* Your component tree.
@@ -10,9 +11,11 @@ axios.defaults.baseURL= process.env.REACT_APP_AXIOS_PREFIX
 
 function App() {
   return (
-    <StylesProvider injectFirst>
-      <Navigation />
+    <ThemeProvider theme={theme}>
+      <StylesProvider injectFirst>
+        <Navigation />
       </StylesProvider>
+    </ThemeProvider>
   );
 }
 
