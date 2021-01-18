@@ -1,13 +1,16 @@
 import { Card, Container, Grid, MenuItem, TextField } from "@material-ui/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import SecureLS from "secure-ls";
+import * as apiConfig from "../components/api_base/api-config";
 import CaseCreator from "./case_creator.js";
 
 export default function CaseSelect() {
   const [caseType, setCaseType] = useState(0);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [disableCaseType, setCaseTypeDisable] = useState(false);
+  const caseTypesByEntityData = useSelector((state) => state);
 
   const pageLoad = () => {
     var ls = new SecureLS({
@@ -31,16 +34,79 @@ export default function CaseSelect() {
     }
   };
 
-  const caseTypes = async () => {
-    await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
-      setCaseTypeData(resp.data);
-    });
+  // This API call is for get case types data
+
+  // const caseTypes = async () => {
+  //   await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
+  //     setCaseTypeData(resp.data);
+  //   });
+  // };
+
+  const entitiesByEntityId = async () => {
+    let path = window.location.pathname;
+    let entityId = 0;
+    if (path) {
+      entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
+    }
+
+    var jsonData = {
+      entityId: entityId,
+    };
+
+    var config = {
+      method: "post",
+      url: apiConfig.BASE_API_URL + "cases/getEntitiesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        var entityData = response.data.filter((x) => x.SYSTEM_CODE === "ASSCT");
+
+        if (entityData) {
+          let entityIds = entityData
+            .map(function (x) {
+              return x.EXID;
+            })
+            .join(",");
+          if (entityIds) {
+            caseTypesByEntityIds(entityIds);
+          }
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const caseTypesByEntityIds = async (entityIds) => {
+    var jsonData = {
+      entityIds: entityIds,
+    };
+
+    var config = {
+      method: "post",
+      url: apiConfig.BASE_API_URL + "cases/caseTypesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        // dispatch(data(response.data, 'CASE_TYPE'));
+        setCaseTypeData(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   useEffect(() => {
     pageLoad();
-    caseTypes();
-  }, []);
+    let data = caseTypesByEntityData.applicationData.caseTypes;
+    if (data && data.length) {
+      setCaseTypeData(data);
+    }
+  }, [caseTypesByEntityData.applicationData.caseTypes]);
 
   const disableEnableCaseTypeDropDown = (value) => {
     setCaseTypeDisable(value);
@@ -52,47 +118,47 @@ export default function CaseSelect() {
   };
 
   return (
-       <div id="page-case-select" className="page">
-            <Container className="">
-              <Grid item xs={12}>
-                <Card>
-                <form  className="st-p-2">
-                  <div  className="drp-select-case-type">
-                    <TextField
-                      id={"CaseType" + caseType}
-                      name="CaseType"
-                      select
-                      label="Case Type"
-                      value={caseType}
-                      onChange={(e) => handleCaseTypeChange(e)}
-                      fullWidth={true}
-                      required
-                      disabled={disableCaseType}
-                    >
-                    <MenuItem key="0" value="0">
-                      {"Please Select Case Type"}
-                    </MenuItem>
-                    {caseTypeData
-                      ? caseTypeData.map((option) => (
-                          <MenuItem
-                            key={option.CASE_TYPE_ID}
-                            value={option.CASE_TYPE_ID}
-                          >
-                            {option.NAME}
-                          </MenuItem>
-                        ))
-                      : []}
-                  </TextField>
+    <div id="page-case-select" className="page">
+      <Container className="">
+        <Grid item xs={12}>
+          <Card>
+            <form className="st-p-2">
+              <div className="drp-select-case-type">
+                <TextField
+                  id={"CaseType" + caseType}
+                  name="CaseType"
+                  select
+                  label="Case Type"
+                  value={caseType}
+                  onChange={(e) => handleCaseTypeChange(e)}
+                  fullWidth={true}
+                  required
+                  disabled={disableCaseType}
+                >
+                  <MenuItem key="0" value="0">
+                    {"Please Select Case Type"}
+                  </MenuItem>
+                  {caseTypeData
+                    ? caseTypeData.map((option) => (
+                        <MenuItem
+                          key={option.CASE_TYPE_ID}
+                          value={option.CASE_TYPE_ID}
+                        >
+                          {option.NAME}
+                        </MenuItem>
+                      ))
+                    : []}
+                </TextField>
               </div>
-                    <CaseCreator
-                      caseTypeId={caseType}
-                      caseTypeData={caseTypeData}
-                      disableEnableCaseTypeDropDown={disableEnableCaseTypeDropDown}
-                    ></CaseCreator>
-                </form>
-               </Card>
-               </Grid>
-            </Container>
+              <CaseCreator
+                caseTypeId={caseType}
+                caseTypeData={caseTypeData}
+                disableEnableCaseTypeDropDown={disableEnableCaseTypeDropDown}
+              ></CaseCreator>
+            </form>
+          </Card>
+        </Grid>
+      </Container>
     </div>
   );
 }

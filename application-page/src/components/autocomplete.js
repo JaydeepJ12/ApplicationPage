@@ -17,7 +17,9 @@ export default function UserAutocomplete(props) {
 
   useEffect(() => {
     setSelectedUser(props.selectedUser);
-  }, [props.selectedUser]);
+    setDefaultHopper(props.defaultHopper);
+    setDefaultHopperId(props.defaultHopperId);
+  }, [props.selectedUser, props.defaultHopper, props.defaultHopperId]);
 
   const handleAutocompleteKeyUp = (searchText) => {
     if (searchText == "") {
@@ -187,9 +189,7 @@ export default function UserAutocomplete(props) {
                   label={
                     selectedUser
                       ? selectedUser
-                      : defaultHopper
-                      ? "Default Hopper- " + defaultHopper
-                      : ""
+                      : "Default Hopper- " + defaultHopper
                   }
                   placeholder="Search User"
                   variant="outlined"

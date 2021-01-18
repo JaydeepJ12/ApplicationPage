@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  Container,
-  Fab,
-  Grid,
-  MenuItem,
-  TextField
-} from "@material-ui/core";
+import { Box, Fab, Grid, MenuItem, TextField } from "@material-ui/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
@@ -71,7 +63,7 @@ export default function CaseCreator(props) {
     }
 
     var localParentChildData = ls.get("ParentChildData-" + caseTypeId);
-
+    props.disableEnableCaseTypeDropDown(true);
     if (localParentChildData || localParentChildData != "") {
       setParentChildData(JSON.parse(localParentChildData));
       loadParentDropDown(
@@ -80,7 +72,7 @@ export default function CaseCreator(props) {
         caseTypeId
       );
     }
-    props.disableEnableCaseTypeDropDown(true);
+
     axios
       .get("http://localhost:5000/cases/config?CaseTypeID=".concat(caseTypeId))
       .then((resp) => {
@@ -105,6 +97,12 @@ export default function CaseCreator(props) {
                   "ParentChildData-" + caseTypeId,
                   JSON.stringify(resp.data)
                 );
+                // if (resp.data && resp.data.length) {
+                //   ls.set(
+                //     "ParentChildData-" + caseTypeId,
+                //     JSON.stringify(resp.data)
+                //   );
+                // }
                 loadParentDropDown(resp.data, fieldData, caseTypeId);
               }
             });
@@ -134,6 +132,10 @@ export default function CaseCreator(props) {
       });
     }
 
+    if (!superParentAssocTypeIds.length && fieldData.length) {
+      setData(fieldData);
+      setLoaded(true);
+    }
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
       var commentIndex = fieldData.findIndex(function (c) {
@@ -477,12 +479,14 @@ export default function CaseCreator(props) {
 
   const createAssignTo = () => {
     return (
-      <><label> Assign To :</label>
-      <UserAutocomplete
-        defaultHopper={defaultHopper}
-        defaultHopperId={defaultHopperId}
-        handleAutocompleteChange={handleAutocompleteChange}
-      ></UserAutocomplete></>
+      <>
+        <label> Assign To :</label>
+        <UserAutocomplete
+          defaultHopper={defaultHopper}
+          defaultHopperId={defaultHopperId}
+          handleAutocompleteChange={handleAutocompleteChange}
+        ></UserAutocomplete>
+      </>
     );
   };
 
@@ -504,22 +508,22 @@ export default function CaseCreator(props) {
   const loadFields = () => {
     return (
       <Box>
-          <Grid container spacing={3}>
-            <Grid item sm={12} xs={12} lg={6} md={6}>
-                {data
-                  ? data.map((item, index) => (
-                      <div key={index}>{fieldHandler(item, index)}</div>
-                    ))
-                  : []}
-                <Box>
-                  <Box>{data?.length > 0 ? createFileField() : ""}</Box>
-                  <Box>{data?.length > 0 ? createAssignTo() : ""}</Box>
-                </Box>
-            </Grid>
-            <Grid item sm={12} xs={12} lg={6} md={6}>
-              {data?.length > 0 ? createFroalaField() : ""}
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item sm={12} xs={12} lg={6} md={6}>
+            {data
+              ? data.map((item, index) => (
+                  <div key={index}>{fieldHandler(item, index)}</div>
+                ))
+              : []}
+            <Box>
+              <Box>{data?.length > 0 ? createFileField() : ""}</Box>
+              <Box>{data?.length > 0 ? createAssignTo() : ""}</Box>
+            </Box>
           </Grid>
+          <Grid item sm={12} xs={12} lg={6} md={6}>
+            {data?.length > 0 ? createFroalaField() : ""}
+          </Grid>
+        </Grid>
 
         {!loaded ? createLoader() : []}
       </Box>
@@ -527,13 +531,15 @@ export default function CaseCreator(props) {
   };
 
   return (
-        <form onSubmit={handleSubmit} className="st-form frm-case-create">
-            <Fab className="btn-create-case bg-primary" aria-label="add" type="submit">
-              +
-            </Fab>
-              {loadFields()}
-          </form>
-  
-    
+    <form onSubmit={handleSubmit} className="st-form frm-case-create">
+      <Fab
+        className="btn-create-case bg-primary"
+        aria-label="add"
+        type="submit"
+      >
+        +
+      </Fab>
+      {loadFields()}
+    </form>
   );
 }

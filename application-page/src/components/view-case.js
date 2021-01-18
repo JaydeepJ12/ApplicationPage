@@ -7,14 +7,14 @@ import {
   makeStyles,
   Menu,
   MenuItem,
-  OutlinedInput,
   Select,
-  Toolbar,
   withStyles
 } from "@material-ui/core";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import * as apiConfig from "../components/api_base/api-config";
 import * as notification from "../components/common/toast";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
@@ -123,6 +123,7 @@ export default function ViewCase() {
   const [state, setState] = useState(0);
   const [caseTypeId, setCaseTypeId] = useState(0);
   const [labelWidth, setLabelWidth] = React.useState(0);
+  const caseTypesByEntityData = useSelector((state) => state);
 
   const inputLabel = React.useRef(null);
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
@@ -182,6 +183,66 @@ export default function ViewCase() {
       setCaseTypeId(resp.data[0]?.CASE_TYPE_ID);
       caseList("", 0, false, 0, false, true, resp.data[0]?.CASE_TYPE_ID);
     });
+  };
+
+  const entitiesByEntityId = async () => {
+    setComponentLoader(true);
+    let path = window.location.pathname;
+    let entityId = 0;
+    if (path) {
+      entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
+    }
+
+    var jsonData = {
+      entityId: entityId,
+    };
+
+    var config = {
+      method: "post",
+      url: apiConfig.BASE_API_URL + "cases/getEntitiesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        var entityData = response.data.filter((x) => x.SYSTEM_CODE === "ASSCT");
+
+        if (entityData) {
+          let entityIds = entityData
+            .map(function (x) {
+              return x.EXID;
+            })
+            .join(",");
+          if (entityIds) {
+            caseTypesByEntityIds(entityIds);
+          }
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const caseTypesByEntityIds = async (entityIds) => {
+    var jsonData = {
+      entityIds: entityIds,
+    };
+
+    var config = {
+      method: "post",
+      url: apiConfig.BASE_API_URL + "cases/caseTypesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        setCaseTypeData(response.data);
+        setCaseTypeId(response.data[0]?.CASE_TYPE_ID);
+        caseList("", 0, false, 0, false, true, response.data[0]?.CASE_TYPE_ID);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const caseList = async (
@@ -266,9 +327,15 @@ export default function ViewCase() {
   };
 
   useEffect(() => {
-    caseTypes();
+    setComponentLoader(true);
+    let data = caseTypesByEntityData.applicationData.caseTypes;
+    if (data.length) {
+      setCaseTypeData(data);
+      setCaseTypeId(data[0]?.CASE_TYPE_ID);
+      caseList("", 0, false, 0, false, true, data[0]?.CASE_TYPE_ID);
+    }
     setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
+  }, [caseTypesByEntityData.applicationData.caseTypes]);
 
   const createLoader = () => {
     return <Loading />;
@@ -345,12 +412,11 @@ export default function ViewCase() {
   return (
     <div className="page" id="page-view-case">
       <Card>
-      <Grid container spacing={0}>
-      
-        {loaded ? (
-          <>
-          {/* dont remove this code its usefull for reference of work after confirm i will remove this */}
-            {/* <AppBar position="static" className="inner-navigation bg-primary">
+        <Grid container spacing={0}>
+          {loaded ? (
+            <>
+              {/* dont remove this code its usefull for reference of work after confirm i will remove this */}
+              {/* <AppBar position="static" className="inner-navigation bg-primary">
               <Toolbar>
                 <IconButton
                   edge="start"
@@ -405,87 +471,77 @@ export default function ViewCase() {
                 </div>
               </Toolbar>
             </AppBar> */}
-           
+
               <Grid item xs={12} sm={3} md={3} lg={3} className="panel-left">
-                  <div
-                    className={fixedHeightPaper}
-                    onScroll={(event) => onScroll(caseListData, event)}
+                <div
+                  className={fixedHeightPaper}
+                  onScroll={(event) => onScroll(caseListData, event)}
+                >
+                  <FormControl
+                    style={{ width: "-webkit-fill-available" }}
+                    className={classes.formControl}
                   >
-                    <FormControl
-                      style={{ width: "-webkit-fill-available" }}
-                      className={classes.formControl}
+                    <InputLabel
+                      htmlFor="outlined-caseType-native-simple"
+                      shrink
+                      ref={inputLabel}
                     >
-                      <InputLabel
-                        htmlFor="outlined-caseType-native-simple"
-                        shrink
-                        ref={inputLabel}
-                      >
-                        Case Types
-                      </InputLabel>
-                      <Select
-                        value={caseTypeId}
-                        onChange={(event) =>
-                          handleFilterCaseList(
-                            0,
-                            false,
-                            true,
-                            event.target.value
-                          )
-                        }
-                        label="Case Type"
-                        inputProps={{
-                          caseTypeId: "caseTypeId",
-                          id: "outlined-caseType-native-simple",
-                        }}
-                        fullWidth={true}
-                      >
-                        {caseTypeData.length
-                          ? caseTypeData.map((option) => (
-                              <MenuItem
-                                key={option.CASE_TYPE_ID}
-                                value={option.CASE_TYPE_ID}
-                              >
-                                {option.NAME}
-                              </MenuItem>
-                            ))
-                          : []}
-                      </Select>
-                    </FormControl>
-                    <CaseList
-                      handleCasePreviewClick={handleCasePreviewClick}
-                      handleFilterCaseList={handleFilterCaseList}
-                      caseListData={
-                        filteredCaseListData.length ? filteredCaseListData : []
+                      Case Types
+                    </InputLabel>
+                    <Select
+                      value={caseTypeId}
+                      onChange={(event) =>
+                        handleFilterCaseList(0, false, true, event.target.value)
                       }
-                      caseLoaded={caseLoaded}
-                      componentLoader={componentLoader}
-                    ></CaseList>
-                  </div>
+                      label="Case Type"
+                      inputProps={{
+                        caseTypeId: "caseTypeId",
+                        id: "outlined-caseType-native-simple",
+                      }}
+                      fullWidth={true}
+                    >
+                      {caseTypeData.length
+                        ? caseTypeData.map((option) => (
+                            <MenuItem
+                              key={option.CASE_TYPE_ID}
+                              value={option.CASE_TYPE_ID}
+                            >
+                              {option.NAME}
+                            </MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                  <CaseList
+                    handleCasePreviewClick={handleCasePreviewClick}
+                    handleFilterCaseList={handleFilterCaseList}
+                    caseListData={
+                      filteredCaseListData.length ? filteredCaseListData : []
+                    }
+                    caseLoaded={caseLoaded}
+                    componentLoader={componentLoader}
+                  ></CaseList>
+                </div>
               </Grid>
               {/* Recent Deposits */}
-            
-               
-                  {caseId > 0 ? (
-                    <CaseViewer
-                      caseId={caseId}
-                      caseData={caseData}
-                      handleCaseLoaded={handleCaseLoaded}
-                      handleDocumentList={handleDocumentList}
-                    ></CaseViewer>
-                  ) : (
-                    ""
-                  )}
-              
-         
-         
-          </>
-        ) : (
-          ""
-        )}
-        {!loaded ? createLoader() : []}
-      
+
+              {caseId > 0 ? (
+                <CaseViewer
+                  caseId={caseId}
+                  caseData={caseData}
+                  handleCaseLoaded={handleCaseLoaded}
+                  handleDocumentList={handleDocumentList}
+                ></CaseViewer>
+              ) : (
+                ""
+              )}
+            </>
+          ) : (
+            ""
+          )}
+          {!loaded ? createLoader() : []}
         </Grid>
-        </Card>
+      </Card>
     </div>
   );
 }
