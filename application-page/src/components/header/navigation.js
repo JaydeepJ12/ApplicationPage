@@ -15,30 +15,20 @@ import classnames from "classnames";
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
 import {
-  Assignment,
   ChevronLeft,
   ChevronRight,
-  Create,
-  Dvr,
   Menu,
-  People,
-  Streetview,
-  Timeline,
-  ViewList,
 } from "@material-ui/icons";
 import { Link, Router } from "@reach/router";
 import clsx from "clsx";
 import React, { useState } from "react";
-import * as pathConfig from "../api_base/path-config";
-// components
-import CaseSelect from "../case_select.js";
-import CaseTypeForm from "../case_type_form/index";
+
 import HeaderRight from "../header/header_right";
+import rootRoute from '../../system/route';
 
 import Login from "../Login/index.js";
-import OverView from "..//overview";
-import Test from "../test";
-import ViewCase from "../view-case";
+
+import menuItems  from '../header/menu_items'
 
 export default function Navigation(props) {
   const classes = useStyles();
@@ -47,58 +37,6 @@ export default function Navigation(props) {
   const [open, setOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [isLogin, setIsLogin] = React.useState(false);
-  const basePath = pathConfig.BASE_ROUTE_PATH;
-
-  const menuItems = [
-    {
-      menuName: "Overview",
-      menuIcon: <Streetview />,
-      menuPath: basePath + "/overview",
-      pageTitle: "Overview",
-    },
-    {
-      menuName: "Tasks",
-      menuIcon: <Assignment />,
-      menuPath: basePath + "/tasks",
-      pageTitle: "Tasks",
-    },
-    {
-      menuName: "People",
-      menuIcon: <People />,
-      menuPath: basePath + "/people",
-      pageTitle: "People",
-    },
-    {
-      menuName: "Items",
-      menuIcon: <ViewList />,
-      menuPath: basePath + "/items",
-      pageTitle: "Items",
-    },
-    {
-      menuName: "Insights",
-      menuIcon: <Timeline />,
-      menuPath: basePath + "/insights",
-      pageTitle: "Insights",
-    },
-    {
-      menuName: "CaseCreator",
-      menuIcon: <Create />,
-      menuPath: basePath + "/case-select",
-      pageTitle: "Create Case",
-    },
-    {
-      menuName: "View Cases",
-      menuIcon: <ViewList />,
-      menuPath: basePath + "/viewcase",
-      pageTitle: "View Cases",
-    },
-    {
-      menuName: "Case Type Form",
-      menuIcon: <Dvr />,
-      menuPath: basePath + "/case-type-form",
-      pageTitle: "Case Type",
-    },
-  ];
 
   React.useEffect(() => setCurrentPageValue(), []);
 
@@ -216,15 +154,7 @@ export default function Navigation(props) {
           </Drawer>
           <div className={classnames(classes.content)}>
             <div className={classes.fakeToolbar} />
-
-            <Router basepath={basePath}>
-              <CaseSelect path="/case-select" />
-              <OverView path="/overview" />
-              <Test path="/test"></Test>
-              <CaseTypeForm path="/case-type-form"></CaseTypeForm>
-              <ViewCase path="/tasks"></ViewCase>
-              <Login path="/login" />
-            </Router>
+            { rootRoute }
           </div>
         </div>
       )}

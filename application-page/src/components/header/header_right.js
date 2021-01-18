@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { IconButton, Menu, MenuItem, Avatar ,InputBase } from "@material-ui/core";
 
 import {
-  Settings,
   NotificationsNone as NotificationsIcon,
   Person as AccountIcon,
   Search as SearchIcon,
 } from "@material-ui/icons";
-
+import Settings from './settings'
 import classNames from "classnames";
 import { Link } from "@reach/router";
 // styles
@@ -15,8 +14,6 @@ import useStyles from "./header_styles";
 // components
 import { Badge, Typography } from "@material-ui/core";
 
-import * as pathConfig from "../../components/api_base/path-config";
-const basePath = pathConfig.BASE_ROUTE_PATH;
 
 const notifications = [
   {
@@ -84,9 +81,8 @@ export default function HeaderRight() {
           />
         </div>
 
-      <IconButton color="inherit" className={classes.headerMenuButton}>
         <Settings classes={{ root: classes.headerIcon }} />
-      </IconButton>
+      
 
       <IconButton
         color="inherit"
@@ -186,7 +182,7 @@ export default function HeaderRight() {
         </MenuItem>
         <div className={classes.profileMenuUser}>
           <Typography className={classes.profileMenuLink} color="primary">
-            <Link to={basePath + "/login"}>Sign Out</Link>
+            <Link to={"/login"}>Sign Out</Link>
           </Typography>
         </div>
       </Menu>

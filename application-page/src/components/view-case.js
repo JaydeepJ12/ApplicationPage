@@ -14,63 +14,65 @@ import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import * as apiConfig from "../components/api_base/api-config";
 import * as notification from "../components/common/toast";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
 import Loading from "./Loader";
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(1),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  fixedHeight: {
-    height: "90vh",
-    overflow: "auto",
-  },
-  caseDetails: {
-    padding: theme.spacing(2),
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
+const useStyles = makeStyles(
+  (theme) => ({
+    paper: {
+      padding: theme.spacing(1),
+      display: "flex",
+      overflow: "auto",
+      flexDirection: "column",
     },
-    marginLeft: 0,
-    // width: '100%'
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  inputRoot: {
-    color: "inherit",
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    // transition: theme.transitions.create('width'),
-    width: "100%",
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+    fixedHeight: {
+      height: "90vh",
+      overflow: "auto",
+    },
+    caseDetails: {
+      padding: theme.spacing(2),
+    },
+    menuButton: {
+      marginRight: theme.spacing(2),
+    },
+    search: {
+      position: "relative",
+      borderRadius: theme.shape.borderRadius,
+      backgroundColor: fade(theme.palette.common.white, 0.15),
+      "&:hover": {
+        backgroundColor: fade(theme.palette.common.white, 0.25),
+      },
+      marginLeft: 0,
+      // width: '100%'
+    },
+    searchIcon: {
+      padding: theme.spacing(0, 2),
+      height: "100%",
+      position: "absolute",
+      pointerEvents: "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    inputRoot: {
+      color: "inherit",
+    },
+    inputInput: {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+      // transition: theme.transitions.create('width'),
+      width: "100%",
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+  }),
+  { index: 1 }
+);
 
 const StyledMenu = withStyles({
   paper: {
@@ -178,7 +180,7 @@ export default function ViewCase() {
 
   const caseTypes = async () => {
     setComponentLoader(true);
-    await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
+    await axios.get("/cases/types").then((resp) => {
       setCaseTypeData(resp.data);
       setCaseTypeId(resp.data[0]?.CASE_TYPE_ID);
       caseList("", 0, false, 0, false, true, resp.data[0]?.CASE_TYPE_ID);
@@ -199,7 +201,7 @@ export default function ViewCase() {
 
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + "cases/getEntitiesByEntityId",
+      url: "/cases/getEntitiesByEntityId",
       data: jsonData,
     };
 
@@ -230,7 +232,7 @@ export default function ViewCase() {
 
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + "cases/caseTypesByEntityId",
+      url: "/cases/caseTypesByEntityId",
       data: jsonData,
     };
 
@@ -284,13 +286,8 @@ export default function ViewCase() {
       TypeIdsForGrouping: null,
     };
 
-    var config = {
-      method: "post",
-      url: "http://localhost:5000/cases/GetCaseHeaders",
-      data: jsonData,
-    };
-
-    await axios(config)
+    axios
+      .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
         setCaseListFiltered(true);
         setCaseListData([]);
@@ -337,7 +334,7 @@ export default function ViewCase() {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, [caseTypesByEntityData.applicationData.caseTypes]);
 
-  const createLoader = () => {
+  const createLoader = (jsonData) => {
     return <Loading />;
   };
 
@@ -408,7 +405,6 @@ export default function ViewCase() {
       }
     }
   };
-
   return (
     <div className="page" id="page-view-case">
       <Card>

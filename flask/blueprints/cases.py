@@ -18,9 +18,11 @@ cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
 def t():
     return time.time()
+
 @bp.after_request
 def after_request(r):
     r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Access-Control-Allow-Headers'] = '*'
     return r
 
 @bp.route('/config')
@@ -51,6 +53,7 @@ def assocDecode(assoc_id = 0):
 def caseTypes():
    df = db.cases_types()
    df = df.sort_values(by='NAME')
+   #print(df)
    return df.to_json(orient='records') #
 
 @bp.route('/getEntitiesByEntityId', methods=['POST'])

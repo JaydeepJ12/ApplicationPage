@@ -5,7 +5,7 @@ export default function ComponentLoader(props) {
   return (
     <div className="compoent-skeleton-loading">
         <>
-        <Skeleton variant={props.type} width="100%" height={118} />
+        <Skeleton variant="rect" width="100%" height={118} />
           <Box pt={0.5}>
             <Skeleton />
             <Skeleton width="100%" />

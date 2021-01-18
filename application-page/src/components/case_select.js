@@ -1,16 +1,19 @@
 import { Card, Container, Grid, MenuItem, TextField } from "@material-ui/core";
+import { createHistory } from "@reach/router";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SecureLS from "secure-ls";
-import * as apiConfig from "../components/api_base/api-config";
 import CaseCreator from "./case_creator.js";
+import GotoBackButton from "./common/BackButton";
+export default function CaseSelect(props) {
+  let history = createHistory(window);
 
-export default function CaseSelect() {
   const [caseType, setCaseType] = useState(0);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [disableCaseType, setCaseTypeDisable] = useState(false);
   const caseTypesByEntityData = useSelector((state) => state);
+  const isParent = props.location.state.isParent;
 
   const pageLoad = () => {
     var ls = new SecureLS({
@@ -55,7 +58,7 @@ export default function CaseSelect() {
 
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + "cases/getEntitiesByEntityId",
+      url: "/cases/getEntitiesByEntityId",
       data: jsonData,
     };
 
@@ -86,7 +89,7 @@ export default function CaseSelect() {
 
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + "cases/caseTypesByEntityId",
+      url: "/cases/caseTypesByEntityId",
       data: jsonData,
     };
 
@@ -119,6 +122,7 @@ export default function CaseSelect() {
 
   return (
     <div id="page-case-select" className="page">
+      {isParent ? <GotoBackButton /> : ""}
       <Container className="">
         <Grid item xs={12}>
           <Card>

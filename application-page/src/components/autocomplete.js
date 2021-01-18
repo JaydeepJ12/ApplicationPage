@@ -85,7 +85,7 @@ export default function UserAutocomplete(props) {
 
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetEmployeesBySearch",
+      url: "/cases/GetEmployeesBySearch",
       data: jsonData,
     };
 
@@ -139,22 +139,19 @@ export default function UserAutocomplete(props) {
   };
 
   return (
-    <div className="">
+    <div>
       <div style={{ width: "auto", marginTop: ".5em" }}>
         {" "}
         {
           <Autocomplete
             {...props}
-            className="input-auto-complete"
             id="users"
             options={users}
             getOptionLabel={(option) => option.displayName}
             renderOption={(option) => {
               return (
                 <Fragment>
-                  <Icon className="s-option-auto-image">
-                    {renderUserImage(option?.username)}
-                  </Icon>
+                  <Icon>{renderUserImage(option?.username)}</Icon>
                   {option?.displayName +
                     (option.primaryJobTitle
                       ? " (" + option.primaryJobTitle + ")"

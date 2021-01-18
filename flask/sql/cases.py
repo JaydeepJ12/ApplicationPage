@@ -44,7 +44,9 @@ class CasesSQL:
 
     def cases_types(self):
         query = f'''
-        SELECT CT.*, CH.[NAME] As HopperName  FROM [BOXER_CME].[dbo].[CASE_TYPE] AS CT
+        SELECT CT.CASE_TYPE_ID,CT.NAME,CASE_TYPE_OWNER, 
+        CH.[NAME] As HopperName 
+        FROM [BOXER_CME].[dbo].[CASE_TYPE] AS CT
         INNER JOIN [BOXER_CME].[dbo].[CASE_HOPPER] AS CH ON CT.DEFAULT_HOPPER_ID = CH.HOPPER_ID
         WHERE CT.IS_ACTIVE = 'Y'
         '''
@@ -298,7 +300,7 @@ where a.IS_ACTIVE = 'Y'
 class AppSql:
     #need a call that gives application entity 0ds, name and icon urls
     def __init__(self):
-        self.db = app
+        self.db = Stemmons_Dash_App()
     
     def application_layout(self):
         pass
@@ -330,7 +332,7 @@ class AppSql:
                 and IS_ACTIVE='Y')
                 order by TITLE_METADATA_TEXT 
         '''
-        return app.execQuery(query)
+        return self.db.execQuery(query)
 
 
 class FieldHandler:

@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import API from "../api_base/api";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
     },
   },
-}));
+}), {index: 1});
 
 export default function CaseTypeFieldForm(props) {
   const classes = useStyles();
@@ -67,7 +67,7 @@ export default function CaseTypeFieldForm(props) {
   };
 
   const getSystemCOde = async () => {
-    await API.get(`cases/system_code`)
+    await axios.get(`cases/system_code`)
       .then(function (response) {
         let data_cat = response.data.values;
         if (data_cat.length) {

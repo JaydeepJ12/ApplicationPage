@@ -62,6 +62,8 @@ export default function ExternalLookup(props) {
   };
 
   const getData = async (searchText) => {
+
+    
     var jsonData = {
       searchText: searchText,
       maxCount: 0,
@@ -76,7 +78,7 @@ export default function ExternalLookup(props) {
     };
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetEntityExternalDataValues",
+      url: "/cases/GetEntityExternalDataValues",
       data: jsonData,
     };
     await axios(config)

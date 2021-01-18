@@ -16,72 +16,74 @@ import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import * as apiConfig from "../../components/api_base/api-config";
 import ComponentLoader from "../common/component-loader";
 import PeoplePreview from "./people-preview";
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  },
-  searchPaper: {
-    padding: "5px 4px",
-    display: "flex",
-    alignItems: "center",
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  fontWeight: {
-    fontWeight: "bold",
-  },
-  nextButton: {
-    float: "right",
-  },
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: "lightgrey",
-    "&:hover": {
-      backgroundColor: "lightgrey",
+const useStyles = makeStyles(
+  (theme) => ({
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: "center",
+      color: theme.palette.text.secondary,
     },
-    marginLeft: 0,
-    // width: '100%'
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  inputRoot: {
-    color: "inherit",
-  },
-  inputInput: {
-    // padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    // transition: theme.transitions.create('width'),
-    width: "100%",
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    // flex: 1,
-  },
-  iconButton: {
-    padding: 10,
-  },
-  large: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
-}));
+    searchPaper: {
+      padding: "5px 4px",
+      display: "flex",
+      alignItems: "center",
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+    fontWeight: {
+      fontWeight: "bold",
+    },
+    nextButton: {
+      float: "right",
+    },
+    search: {
+      position: "relative",
+      borderRadius: theme.shape.borderRadius,
+      backgroundColor: "lightgrey",
+      "&:hover": {
+        backgroundColor: "lightgrey",
+      },
+      marginLeft: 0,
+      // width: '100%'
+    },
+    searchIcon: {
+      padding: theme.spacing(0, 2),
+      height: "100%",
+      position: "absolute",
+      pointerEvents: "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    inputRoot: {
+      color: "inherit",
+    },
+    inputInput: {
+      // padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+      // transition: theme.transitions.create('width'),
+      width: "100%",
+    },
+    input: {
+      marginLeft: theme.spacing(1),
+      // flex: 1,
+    },
+    iconButton: {
+      padding: 10,
+    },
+    large: {
+      width: theme.spacing(7),
+      height: theme.spacing(7),
+    },
+  }),
+  { index: 1 }
+);
 
 export default function Peoples() {
   const classes = useStyles();
@@ -136,7 +138,7 @@ export default function Peoples() {
     };
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + apiConfig.GET_PEOPLE,
+      url: "/cases/getPeople",
       data: jsonData,
     };
 
@@ -176,7 +178,7 @@ export default function Peoples() {
       return (
         <img
           onError={(event) => addDefaultSrc(event)}
-          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
+          src={process.env.REACT_APP_USER_ICON.concat(userName)}
           height={50}
           width={50}
           onClick={() => handleClickOpen(userName, fullName)}

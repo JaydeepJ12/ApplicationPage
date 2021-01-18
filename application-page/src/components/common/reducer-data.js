@@ -2,7 +2,6 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { data } from "../../redux/action.js";
-import * as apiConfig from "../api_base/api-config.js";
 
 export default function ReducerData() {
   const dispatch = useDispatch();
@@ -21,7 +20,7 @@ export default function ReducerData() {
 
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + "cases/getEntitiesByEntityId",
+      url: "/cases/getEntitiesByEntityId",
       data: jsonData,
     };
 
@@ -52,7 +51,7 @@ export default function ReducerData() {
 
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + "cases/caseTypesByEntityId",
+      url: "/cases/caseTypesByEntityId",
       data: jsonData,
     };
     await axios(config)
