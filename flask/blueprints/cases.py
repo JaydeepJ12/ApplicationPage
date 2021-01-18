@@ -32,15 +32,9 @@ def config():
     # r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={{user}}&caseType={ctid}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
     df = db.cases_type_form(int(ctid))
     # df = df.sort_values(by='NAME')
-    t1 = t()
-    print(f'Get Types by Type Id: {t1-t0}')
-
     df['assoc_decode']=[[] for i in df.index]
     for i, row in df.iterrows():
-        t0 = t()
         data1 = assocDecode(f"{row['AssocTypeId']}")
-        t1 = t()
-        print(f"{row['AssocTypeId']} took: {t1-t0}")
         df['assoc_decode'][i] = json.loads(data1)
     return df.to_json(orient='records') #
 
@@ -62,6 +56,20 @@ def caseTypes():
    #print(df)
    return df.to_json(orient='records') #
 
+@bp.route('/getEntitiesByEntityId', methods=['POST'])
+def getEntitiesByEntityId():
+   data = request.json
+   df = db.get_entities_by_entity_id(data['entityId'])
+   df = df.sort_values(by='NAME')
+   return df.to_json(orient='records')
+
+@bp.route('/caseTypesByEntityId', methods=['POST'])
+def caseTypesByEntityId():
+   data = request.json
+   df = db.case_types_by_entity_id(data['entityIds'])
+   df = df.sort_values(by='NAME')
+   return df.to_json(orient='records')
+
 @bp.route('/caseassoctypecascade')
 def caseassoctypecascade():
    caseTypeId = request.args.get('CaseTypeID')
@@ -76,10 +84,6 @@ def getPastDueCount(userShortName):
 def getPeople():
    data = request.json
    df = db.get_people(data['skipCount'], data['maxCount'], data['searchText'])
-#    for i, row in df.iterrows():
-#         pastDueCount = getPastDueCount(f"{row['ShortUserName']}")
-#         if(json.loads(pastDueCount)):
-#             df['PastDueCount'][i] = json.loads(pastDueCount)[0]['CNT']
    return df.to_json(orient='records') #
 
 @bp.route('/test')
@@ -109,11 +113,9 @@ def getUserFullName(userShortName):
     df = db.get_user_fullname(userShortName) #always returns dataframe
     return df.to_json(orient='records')
    
-@bp.route('/GetCaseNotes', methods=['POST','OPTIONS'])
+@bp.route('/GetCaseNotes', methods=['POST'])
 def get_case_notes():
     data = mobile.get_case_notes(request.json).json()
-    print(data)
-    print(data['responseContent'])
     for x in data['responseContent']: #can throw error with resp is empty
         userShortName = x.get('createdBy')
         userFullName = json.loads(getUserFullName(str(userShortName)))
@@ -124,9 +126,6 @@ def get_case_notes():
 
 @bp.route('/GetCaseHeaders', methods=['POST'])
 def get_case_headers():
-    print('trying')
-    print(request.data)
-    #print('Data from react', request.get_json())
     data = mobile.get_case_headers(request.json).json()
     return data
 

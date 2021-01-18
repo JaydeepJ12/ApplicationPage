@@ -25,16 +25,19 @@ const styles = (theme) => ({
   },
 });
 
-const useStyles = makeStyles((theme) => ({
-  large: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
-  fonts: {
-    fontSize: "larger",
-    fontWeight: "bold",
-  },
-}), {index: 1});
+const useStyles = makeStyles(
+  (theme) => ({
+    large: {
+      width: theme.spacing(7),
+      height: theme.spacing(7),
+    },
+    fonts: {
+      fontSize: "larger",
+      fontWeight: "bold",
+    },
+  }),
+  { index: 1 }
+);
 
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
@@ -84,11 +87,10 @@ export default function PeoplePreview(props) {
     var jsonData = {
       userShortName: props.userName,
     };
-    
-  
+
     var config = {
       method: "post",
-      url: '/cases/getPeople',
+      url: "/cases/getUserInfo",
       data: jsonData,
     };
 
@@ -129,6 +131,7 @@ export default function PeoplePreview(props) {
 
     var config = {
       method: "post",
+      url: "/cases/getRelatedCasesCountData",
       data: jsonData,
     };
 
