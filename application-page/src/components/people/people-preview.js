@@ -11,6 +11,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import { navigate } from "@reach/router";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import * as notification from "../../components/common/toast";
 import ComponentLoader from "../common/component-loader";
 
 const styles = (theme) => ({
@@ -151,6 +152,10 @@ export default function PeoplePreview(props) {
   };
 
   const handleTaskClick = (userName, filter, taskCount) => {
+    if (taskCount <= 0) {
+      notification.toast.warning("No task available...!!");
+      return false;
+    }
     navigate("tasks", {
       state: {
         userName: userName,
