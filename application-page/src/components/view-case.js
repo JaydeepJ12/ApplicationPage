@@ -10,6 +10,7 @@ import {
   Select,
   withStyles
 } from "@material-ui/core";
+import { navigate } from "@reach/router";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
@@ -105,7 +106,7 @@ const StyledMenuItem = withStyles((theme) => ({
   },
 }))(MenuItem);
 
-export default function ViewCase() {
+export default function ViewCase(props) {
   const [caseId, setCaseId] = useState(0);
   const [caseData, setCaseData] = useState([]);
   const [caseListData, setCaseListData] = useState([]);
@@ -131,6 +132,12 @@ export default function ViewCase() {
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const [userNameValue, setUserNameValue] = useState(
+    props.location?.state?.userName
+  );
+  const [filterValue, setFilterValue] = useState(props.location?.state?.filter);
+  const [taskCount, setTaskCount] = useState(props.location?.state?.taskCount);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -159,7 +166,7 @@ export default function ViewCase() {
     isCaseListFilterByCaseList = false,
     caseTypeId = 0
   ) => {
-    if (!caseListFiltered) {
+    if (!caseListFiltered && filterValue < 0) {
       notification.toast.warning("Please wait...!!");
       return false;
     }
@@ -256,6 +263,16 @@ export default function ViewCase() {
     isFilterByCaseType = false,
     caseTypeId = 0
   ) => {
+    let userName = userNameValue;
+    let caseListFilter = filterValue;
+
+    if (!loadMore && (isFilterByType || isFilterByCaseType)) {
+      userName = "";
+      caseListFilter = -1;
+      setUserNameValue("");
+      setFilterValue(-1);
+    }
+
     if (isFilterByCaseType) {
       caseTypeId = Number(caseTypeId);
       setCaseTypeIdValue(caseTypeId);
@@ -264,7 +281,11 @@ export default function ViewCase() {
     if (isFilterByType) {
       setCaseListFiltered(false);
     }
-    if (loadMore && caseFilter > 0) {
+    if (
+      loadMore &&
+      caseFilter > 0 &&
+      (taskCount <= 0 || taskCount === skipCount)
+    ) {
       return false;
     }
 
@@ -272,8 +293,9 @@ export default function ViewCase() {
       setLoaded(false);
       skipCount = 0;
     }
+
     var jsonData = {
-      Username: "bhaviks",
+      Username: userName ? userName : "bhaviks",
       TypeId: caseTypeId > 0 ? caseTypeId : caseTypeIdValue,
       PageSize: pageSize,
       MaxCount: maxCount,
@@ -281,7 +303,7 @@ export default function ViewCase() {
       CurrentPage: 1,
       Ascending: false,
       SortColumn: null,
-      Filter: filter,
+      Filter: caseListFilter < 0 ? filter : caseListFilter,
       Filters: null,
       TypeIdsForGrouping: null,
     };
@@ -317,6 +339,16 @@ export default function ViewCase() {
           setFilteredCaseListData(caseHeadersData);
         }
         setComponentLoader(false);
+        if (taskCount <= maxCount) {
+          setUserNameValue("");
+          setFilterValue(-1);
+        }
+
+        if (filterValue > 0) {
+          navigate("tasks", {
+            state: { userName: "", filter: -1, taskCount: 0 },
+          });
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -327,9 +359,16 @@ export default function ViewCase() {
     setComponentLoader(true);
     let data = caseTypesByEntityData.applicationData.caseTypes;
     if (data.length) {
+      if (filterValue >= 0 && userNameValue) {
+        handleFilterCaseList(filterValue, false);
+        setCaseListFiltered(true);
+      }
       setCaseTypeData(data);
-      setCaseTypeId(data[0]?.CASE_TYPE_ID);
-      caseList("", 0, false, 0, false, true, data[0]?.CASE_TYPE_ID);
+      setCaseTypeIdValue(data[0]?.CASE_TYPE_ID);
+      if (filterValue < 0) {
+        setCaseTypeId(data[0]?.CASE_TYPE_ID);
+        caseList("", 0, false, 0, false, true, data[0]?.CASE_TYPE_ID);
+      }
     }
     setLabelWidth(inputLabel.current.offsetWidth);
   }, [caseTypesByEntityData.applicationData.caseTypes]);
