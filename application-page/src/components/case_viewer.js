@@ -9,7 +9,7 @@ import {
   Grid,
   MenuItem,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import axios from "axios";
@@ -21,6 +21,7 @@ import CaseBasicInformation from "./case-basic-information.js";
 import FileUpload from "./file-upload.js";
 import Froala from "./froala.js";
 import Loading from "./Loader.js";
+const casesBaseURL = process.env.BASE_CASES_URL;
 
 export default function CaseViewer(props) {
   const [state, setState] = useState({});
@@ -160,11 +161,7 @@ export default function CaseViewer(props) {
 
       if (currentData[commentIndex]) {
         await axios
-          .get(
-            "/cases/assocDecode?AssocId=".concat(
-              assocTypeIds[i]
-            )
-          )
+          .get("/cases/assocDecode?AssocId=".concat(assocTypeIds[i]))
           .then((resp) => {
             if (resp.data.length) {
               currentData[commentIndex].assoc_decode = resp.data;
@@ -191,11 +188,7 @@ export default function CaseViewer(props) {
       }
 
       axios
-        .get(
-          "/cases/caseassoctypecascade?CaseTypeID=".concat(
-            caseTypeId
-          )
-        )
+        .get("/cases/caseassoctypecascade?CaseTypeID=".concat(caseTypeId))
         .then((resp) => {
           if (localParentChildData !== JSON.stringify(resp.data)) {
             setParentChildData(resp.data);
@@ -758,7 +751,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isUrlContain) {
-        urlValue = urlValue;
+        urlValue = casesBaseURL + urlValue;
       }
       if (urlValue) {
         imgSrcUrls[i].setAttribute("src", urlValue);
@@ -780,7 +773,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isHrefUrlContain) {
-        hrefUrlValue = hrefUrlValue;
+        hrefUrlValue = casesBaseURL + hrefUrlValue;
       }
       if (hrefUrlValue) {
         hrefUrls[j].setAttribute("href", hrefUrlValue);
