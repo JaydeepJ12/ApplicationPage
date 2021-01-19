@@ -134,10 +134,14 @@ export default function ViewCase(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const [userNameValue, setUserNameValue] = useState(
-    props.location?.state?.userName
+    props.location?.state?.userName ? props.location?.state?.userName : ""
   );
-  const [filterValue, setFilterValue] = useState(props.location?.state?.filter);
-  const [taskCount, setTaskCount] = useState(props.location?.state?.taskCount);
+  const [filterValue, setFilterValue] = useState(
+    props.location?.state?.filter ? props.location?.state?.filter : -1
+  );
+  const [taskCount, setTaskCount] = useState(
+    props.location?.state?.taskCount ? props.location?.state?.taskCount : 0
+  );
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -365,7 +369,7 @@ export default function ViewCase(props) {
       }
       setCaseTypeData(data);
       setCaseTypeIdValue(data[0]?.CASE_TYPE_ID);
-      if (filterValue < 0) {
+      if (filterValue && filterValue < 0) {
         setCaseTypeId(data[0]?.CASE_TYPE_ID);
         caseList("", 0, false, 0, false, true, data[0]?.CASE_TYPE_ID);
       }
