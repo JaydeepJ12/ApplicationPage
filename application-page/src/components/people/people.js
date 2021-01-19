@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   FormControl,
@@ -12,76 +13,12 @@ import {
   Select,
   Typography
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import * as apiConfig from "../../components/api_base/api-config";
+import useStyles from "../../assets/css/common_styles";
 import ComponentLoader from "../common/component-loader";
 import PeoplePreview from "./people-preview";
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  },
-  searchPaper: {
-    padding: "5px 4px",
-    display: "flex",
-    alignItems: "center",
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  fontWeight: {
-    fontWeight: "bold",
-  },
-  nextButton: {
-    float: "right",
-  },
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: "lightgrey",
-    "&:hover": {
-      backgroundColor: "lightgrey",
-    },
-    marginLeft: 0,
-    // width: '100%'
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  inputRoot: {
-    color: "inherit",
-  },
-  inputInput: {
-    // padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    // transition: theme.transitions.create('width'),
-    width: "100%",
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    // flex: 1,
-  },
-  iconButton: {
-    padding: 10,
-  },
-  large: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
-}), {index: 1});
 
 export default function Peoples() {
   const classes = useStyles();
@@ -136,7 +73,7 @@ export default function Peoples() {
     };
     var config = {
       method: "post",
-      url: apiConfig.BASE_API_URL + apiConfig.GET_PEOPLE,
+      url: "/cases/getPeople",
       data: jsonData,
     };
 
@@ -174,20 +111,20 @@ export default function Peoples() {
   const renderUserImage = (userName, fullName) => {
     if (userName) {
       return (
-        <img
-          onError={(event) => addDefaultSrc(event)}
-          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
-          height={50}
-          width={50}
+        <Avatar
+          style={{ cursor: "pointer" }}
           onClick={() => handleClickOpen(userName, fullName)}
+          onError={(event) => addDefaultSrc(event)}
+          src={process.env.REACT_APP_USER_ICON.concat(userName)}
+          className={classes.avt_large}
         />
       );
     } else {
       return (
-        <img
+        <Avatar
+          style={{ cursor: "pointer" }}
           src="../../assets/images/default-userimage.png"
-          height={50}
-          width={50}
+          className={classes.avt_large}
         />
       );
     }
@@ -218,14 +155,14 @@ export default function Peoples() {
   };
 
   return (
-    <div>
+    <>
       <PeoplePreview
         open={open}
         userName={userName}
         userFullName={userFullName}
         handleClose={handleClose}
       ></PeoplePreview>
-      <Box boxShadow={0} className="card card-task-overview" borderRadius={35}>
+      <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
         <Grid item xs={12} container spacing={3}>
           <Grid item lg={3} md={3} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
@@ -249,7 +186,7 @@ export default function Peoples() {
           </Grid>
           <Grid item lg={6} md={6} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
-              <Paper component="form" className={classes.searchPaper}>
+              <Paper component="form">
                 <InputBase
                   className={classes.input}
                   placeholder="Search People…"
@@ -354,6 +291,6 @@ export default function Peoples() {
         )}
         {/* </Slider> */}
       </Box>
-    </div>
+    </>
   );
 }

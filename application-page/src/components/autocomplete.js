@@ -17,7 +17,9 @@ export default function UserAutocomplete(props) {
 
   useEffect(() => {
     setSelectedUser(props.selectedUser);
-  }, [props.selectedUser]);
+    setDefaultHopper(props.defaultHopper);
+    setDefaultHopperId(props.defaultHopperId);
+  }, [props.selectedUser, props.defaultHopper, props.defaultHopperId]);
 
   const handleAutocompleteKeyUp = (searchText) => {
     if (searchText == "") {
@@ -83,7 +85,7 @@ export default function UserAutocomplete(props) {
 
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetEmployeesBySearch",
+      url: "/cases/GetEmployeesBySearch",
       data: jsonData,
     };
 
@@ -149,9 +151,7 @@ export default function UserAutocomplete(props) {
             renderOption={(option) => {
               return (
                 <Fragment>
-                  <Icon>
-                    {renderUserImage(option?.username)}
-                  </Icon>
+                  <Icon>{renderUserImage(option?.username)}</Icon>
                   {option?.displayName +
                     (option.primaryJobTitle
                       ? " (" + option.primaryJobTitle + ")"
@@ -186,9 +186,7 @@ export default function UserAutocomplete(props) {
                   label={
                     selectedUser
                       ? selectedUser
-                      : defaultHopper
-                      ? "Default Hopper- " + defaultHopper
-                      : ""
+                      : "Default Hopper- " + defaultHopper
                   }
                   placeholder="Search User"
                   variant="outlined"

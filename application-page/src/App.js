@@ -1,17 +1,31 @@
+import {
+  createGenerateClassName, StylesProvider
+} from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/styles";
+import axios from "axios";
 import React from "react";
-import "./App.css";
 import Navigation from "../src/components/header/navigation";
-import { StylesProvider } from '@material-ui/core/styles';
+import theme from "../src/components/theme";
+import ReducerData from "./components/common/reducer-data.js";
 
+const generateClassName = createGenerateClassName({
+  productionPrefix: "c",
+});
+axios.defaults.baseURL = process.env.REACT_APP_AXIOS_PREFIX;
 
-  {/* Your component tree.
-      Now, you can override Material-UI's styles. */}
+{
+  /* Your component tree.
+      Now, you can override Material-UI's styles. */
+}
 
 function App() {
   return (
-    <StylesProvider injectFirst>
-      <Navigation />
+    <ThemeProvider theme={theme}>
+      <StylesProvider generateClassName={generateClassName} injectFirst>
+        <Navigation />
+        <ReducerData></ReducerData>
       </StylesProvider>
+    </ThemeProvider>
   );
 }
 

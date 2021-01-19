@@ -1,22 +1,26 @@
-import React, { useState } from "react";
-import { IconButton, Menu, MenuItem, Avatar ,InputBase } from "@material-ui/core";
-
 import {
-  Settings,
+  Avatar,
+  Badge,
+  IconButton,
+  InputBase,
+  Menu,
+  MenuItem,
+  Typography
+} from "@material-ui/core";
+import {
   NotificationsNone as NotificationsIcon,
   Person as AccountIcon,
-  Search as SearchIcon,
+  Search as SearchIcon
 } from "@material-ui/icons";
-
-import classNames from "classnames";
 import { Link } from "@reach/router";
+import classNames from "classnames";
+import React, { useState } from "react";
+import theme from "../theme";
 // styles
 import useStyles from "./header_styles";
-// components
-import { Badge, Typography } from "@material-ui/core";
+import Settings from "./settings";
 
-import * as pathConfig from "../../components/api_base/path-config";
-const basePath = pathConfig.BASE_ROUTE_PATH;
+console.log("-----theme.secondary", theme.palette.primary.light);
 
 const notifications = [
   {
@@ -54,42 +58,34 @@ export default function HeaderRight() {
   var [isNotification, setNotificationMenu] = useState(null);
   var [isNotificationUnread, setNotificationUnread] = useState(true);
   var [profileMenu, setProfileMenu] = useState(null);
-   var [isSearchOpen, setSearchOpen] = useState(false);
+  var [isSearchOpen, setSearchOpen] = useState(false);
   return (
     <>
       <div className={classes.grow} />
 
       <div
-          className={classNames(classes.search, {
-            [classes.searchFocused]: isSearchOpen,
-          })}
-        >
-          <div
-            className={'header-icon-search_'+classNames(classes.searchIcon, {
+        className={classNames(classes.search, {
+          [classes.searchFocused]: isSearchOpen,
+        })}
+      >
+        <div
+          className={
+            "header-icon-search_" +
+            classNames(classes.searchIcon, {
               [classes.searchIconOpened]: isSearchOpen,
-            })}
-            onClick={() => setSearchOpen(!isSearchOpen)}
-          >
-             <IconButton color="inherit" className={classes.headerMenuButton}>
-                <SearchIcon color="inherit" classes={{ root: classes.headerIcon }} />
-            </IconButton>
-         
-          </div>
-          <InputBase
-            placeholder="Search…"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-          />
+            })
+          }
+          onClick={() => setSearchOpen(!isSearchOpen)}
+        >
+          <IconButton className={classes.headerMenuButton}>
+            <SearchIcon className={classes.headerIcon} />
+          </IconButton>
         </div>
-
-      <IconButton color="inherit" className={classes.headerMenuButton}>
-        <Settings classes={{ root: classes.headerIcon }} />
-      </IconButton>
+        <InputBase placeholder="Search…" />
+      </div>
+      <Settings className={classes.headerIcon} />
 
       <IconButton
-        color="inherit"
         onClick={(e) => {
           setNotificationMenu(e.currentTarget);
           setNotificationUnread(false);
@@ -98,9 +94,9 @@ export default function HeaderRight() {
       >
         <Badge
           badgeContent={isNotificationUnread ? notifications.length : null}
-          color="secondary"
+          color={"primary"}
         >
-          <NotificationsIcon classes={{ root: classes.headerIcon }} />
+          <NotificationsIcon className={classes.headerIcon} />
         </Badge>
       </IconButton>
 
@@ -128,7 +124,7 @@ export default function HeaderRight() {
           <Typography
             className={classes.profileMenuLink}
             component="a"
-            color="secondary"
+            color={"secondary"}
           >
             {notifications.length} New Notifications
           </Typography>
@@ -186,7 +182,7 @@ export default function HeaderRight() {
         </MenuItem>
         <div className={classes.profileMenuUser}>
           <Typography className={classes.profileMenuLink} color="primary">
-            <Link to={basePath + "/login"}>Sign Out</Link>
+            <Link to={"/login"}>Sign Out</Link>
           </Typography>
         </div>
       </Menu>
