@@ -1,6 +1,6 @@
 import { Box } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import UserAutocomplete from "./autocomplete.js";
+import UserAutocomplete from "../../components/autocomplete.js";
 
 export default function CaseBasicInformation(props) {
   const [caseData, setCaseData] = useState(props.caseData);

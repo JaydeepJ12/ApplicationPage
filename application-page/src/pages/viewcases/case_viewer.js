@@ -1,4 +1,3 @@
-import useStyles from "../assets/css/common_styles";
 import {
   Accordion,
   AccordionDetails,
@@ -17,12 +16,14 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
-import * as notification from "../components/common/toast";
+import useStyles from "../../assets/css/common_styles";
+import * as notification from "../../components/common/toast";
+import FileUpload from "../../components/file-upload.js";
+import Froala from "../../components/froala.js";
+import Loading from "../../components/Loader.js";
 import CaseBasicInformation from "./case-basic-information.js";
-import FileUpload from "./file-upload.js";
-import Froala from "./froala.js";
-import Loading from "./Loader.js";
-const casesBaseURL = process.env.BASE_CASES_URL;
+
+const casesBaseURL = process.env.REACT_APP_BASE_CASES_URL;
 
 export default function CaseViewer(props) {
   const [state, setState] = useState({});
@@ -610,7 +611,8 @@ export default function CaseViewer(props) {
 
   const createDropDownField = (data, index) => {
     return (
-      <div className={classes.form+' '+'card-page-wrap'}
+      <div
+        className={classes.form + " " + "card-page-wrap"}
         id="card-page-wrap"
         onScroll={(event) => onScroll(data, event)}
       >
@@ -691,20 +693,16 @@ export default function CaseViewer(props) {
   const loadFields = () => {
     return (
       <Box>
-   
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              
-                {caseFields.length
-                  ? caseFields.map((item, index) => (
-                      <div key={index}>{fieldHandler(item, index)}</div>
-                    ))
-                  : []}
-                <Box></Box>
-           
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            {caseFields.length
+              ? caseFields.map((item, index) => (
+                  <div key={index}>{fieldHandler(item, index)}</div>
+                ))
+              : []}
+            <Box></Box>
           </Grid>
-       
+        </Grid>
 
         {!loaded ? createLoader() : []}
       </Box>
@@ -712,7 +710,7 @@ export default function CaseViewer(props) {
   };
 
   const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../assets/images/default-userimage.png");
+    let userDefaultImage = require("../../assets/images/default-userimage.png");
     if (userDefaultImage) {
       event.target.src = userDefaultImage;
     }
@@ -884,7 +882,10 @@ export default function CaseViewer(props) {
                   </Typography>
                 </AccordionSummary>
                 {caseFields?.length ? (
-                  <AccordionDetails className="case-fields" style={{display:'block'}}>
+                  <AccordionDetails
+                    className="case-fields"
+                    style={{ display: "block" }}
+                  >
                     <form onSubmit={handleSubmit} className="case-create-form">
                       <Button type="submit" variant="contained" color="primary">
                         Save

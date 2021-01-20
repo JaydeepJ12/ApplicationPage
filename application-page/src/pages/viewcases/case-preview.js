@@ -1,19 +1,17 @@
 import {
+  Avatar,
   Card,
   CardActions,
   CardContent,
-  CardHeader,
   IconButton,
-  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  makeStyles,
   Typography
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import * as notification from "../components/common/toast";
-import useStyles from '../assets/css/common_styles';
+import useStyles from "../../assets/css/common_styles";
+import * as notification from "../../components/common/toast";
 
 export default function CasePreview(props) {
   const classes = useStyles();
@@ -38,7 +36,7 @@ export default function CasePreview(props) {
   }, [props.caseId, props.caseData, props.caseLoaded]);
 
   const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../assets/images/default-userimage.png");
+    let userDefaultImage = require("../../assets/images/default-userimage.png");
     if (userDefaultImage) {
       event.target.src = userDefaultImage;
     }
@@ -48,7 +46,7 @@ export default function CasePreview(props) {
     if (userName) {
       return (
         <Avatar
-        className={classes.large}
+          className={classes.large}
           onError={(event) => addDefaultSrc(event)}
           src={
             "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=" +
@@ -57,18 +55,13 @@ export default function CasePreview(props) {
         />
       );
     } else {
-      return (
-        <Avatar
-          src="../assets/images/default-userimage.png"
-        />
-      );
+      return <Avatar src="../assets/images/default-userimage.png" />;
     }
   };
 
   return (
-
-
-    <Card padding={0.5} 
+    <Card
+      padding={0.5}
       style={{ cursor: "pointer" }}
       className={"card-user-case"}
       key={caseData.caseID}
@@ -76,32 +69,27 @@ export default function CasePreview(props) {
         handleCasePreviewClick(caseId, caseData);
       }}
     >
-
       <CardContent className="st-pb-0">
         <Typography variant="subtitle2">{caseData.title}</Typography>
 
-      <CardActions disableSpacing  padding={0} className="st-pt-0"> 
-        <Typography   color="textSecondary">
-          {caseData.typeName}
-        </Typography>
-        <ListItem  className={"st-pt-0"}>
-          <ListItemAvatar></ListItemAvatar>
-          <ListItemText
-            className={classes.listItem}
-            primary={
-              caseData.assignedToFullName
-                ? caseData.assignedToFullName
-                : caseData.assignedTo
-            }
-          />
-          <IconButton  style={{ marginLeft: "1rem" }}  className="st-pt-0">
-            {renderUserImage(caseData.assignedTo)}
-          </IconButton>
-        </ListItem>
-      </CardActions>
+        <CardActions disableSpacing padding={0} className="st-pt-0">
+          <Typography color="textSecondary">{caseData.typeName}</Typography>
+          <ListItem className={"st-pt-0"}>
+            <ListItemAvatar></ListItemAvatar>
+            <ListItemText
+              className={classes.listItem}
+              primary={
+                caseData.assignedToFullName
+                  ? caseData.assignedToFullName
+                  : caseData.assignedTo
+              }
+            />
+            <IconButton style={{ marginLeft: "1rem" }} className="st-pt-0">
+              {renderUserImage(caseData.assignedTo)}
+            </IconButton>
+          </ListItem>
+        </CardActions>
       </CardContent>
     </Card>
-
-    
   );
 }

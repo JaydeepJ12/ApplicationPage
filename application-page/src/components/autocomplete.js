@@ -130,7 +130,7 @@ export default function UserAutocomplete(props) {
     } else {
       return (
         <img
-          src="../assets/images/default-userimage.png"
+          src="../../assets/images/default-userimage.png"
           height={50}
           width={50}
         />

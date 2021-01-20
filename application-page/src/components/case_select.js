@@ -13,7 +13,7 @@ export default function CaseSelect(props) {
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [disableCaseType, setCaseTypeDisable] = useState(false);
   const caseTypesByEntityData = useSelector((state) => state);
-  const isParent = props.location.state.isParent;
+  const isParent = props.location?.state?.isParent;
 
   const pageLoad = () => {
     var ls = new SecureLS({

@@ -1,6 +1,5 @@
 import {
   Card,
-  fade,
   FormControl,
   Grid,
   InputLabel,
@@ -15,12 +14,12 @@ import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import * as notification from "../components/common/toast";
+import useStylesBase from "../../assets/css/common_styles";
+import GotoBackButton from "../../components/common/BackButton";
+import * as notification from "../../components/common/toast";
+import Loading from "../../components/Loader";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
-import Loading from "./Loader";
-import GotoBackButton from "./common/BackButton";
-import useStylesBase from "../assets/css/common_styles";
 const useStyles = makeStyles(
   (theme) => ({
     paper: {
@@ -114,7 +113,6 @@ export default function ViewCase(props) {
   const [taskCount, setTaskCount] = useState(
     props.location?.state?.taskCount ? props.location?.state?.taskCount : 0
   );
-  const isParent = props.location.state.isParent;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -323,7 +321,7 @@ export default function ViewCase(props) {
 
         if (filterValue > 0) {
           navigate("tasks", {
-            state: { userName: "", filter: -1, taskCount: 0 },
+            state: { userName: "", filter: -1, taskCount: 0, isParent: false },
           });
         }
       })
@@ -424,14 +422,11 @@ export default function ViewCase(props) {
   };
   return (
     <div className="page" id="page-view-case">
-      {isParent ? <GotoBackButton /> : ""}
+      {taskCount ? <GotoBackButton navigateCount={-2} /> : ""}
       <Card>
         <Grid container spacing={0}>
           {loaded ? (
             <>
-            
-             
-
               <Grid item xs={12} sm={3} md={3} lg={3} className="panel-left">
                 <div
                   className={fixedHeightPaper}
@@ -440,9 +435,10 @@ export default function ViewCase(props) {
                   <FormControl
                     variant="outlined"
                     style={{ width: "-webkit-fill-available" }}
-                    className={classesBase.mt_one+' '+classesBase.mb_one}
+                    className={classesBase.mt_one + " " + classesBase.mb_one}
                   >
-                   <InputLabel htmlFor="outlined-filter-native-simple"
+                    <InputLabel
+                      htmlFor="outlined-filter-native-simple"
                       shrink
                       ref={inputLabel}
                     >
