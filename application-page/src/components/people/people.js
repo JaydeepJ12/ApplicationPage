@@ -114,7 +114,7 @@ export default function Peoples() {
     if (userName) {
       return (
         <Avatar
-          style={{ cursor: "pointer" }}
+         
           onClick={() => handleClickOpen(userName, fullName)}
           onError={(event) => addDefaultSrc(event)}
           src={process.env.REACT_APP_USER_ICON.concat(userName)}
@@ -124,7 +124,7 @@ export default function Peoples() {
     } else {
       return (
         <Avatar
-          style={{ cursor: "pointer" }}
+        
           src="../../assets/images/default-userimage.png"
           className={classes.avt_large}
         />
@@ -235,14 +235,14 @@ export default function Peoples() {
             <Grid container spacing={3}>
               {peopleData.length ? (
                 peopleData.map((people) => (
-                  <Grid item lg={3} md={3} xs={3} sm={3}>
-                    <Box>
+                  <Grid item lg={3} md={3} xs={3} sm={3} style={{textAlign:'center'}}>
+                    <Box  >
                       <Icon className="s-option-auto-image">
                         {renderUserImage(people.ShortUserName, people.FullName)}
                       </Icon>
                       <Typography
-                        className={classes.fontWeight}
-                        variant="caption"
+                        className={classes.fontWeight}  
+                        variant="subtitle2"
                         display="block"
                         gutterBottom
                       >
@@ -255,14 +255,16 @@ export default function Peoples() {
                         display="block"
                         gutterBottom
                       >
+                        
                         TASK COUNT
                       </Typography>
                       <Typography
                         className={classes.fontWeight}
-                        variant="caption"
+                        variant="subtitle2"
                         display="block"
                         gutterBottom
                       >
+                        
                         {people.TotalCount}
                       </Typography>
                     </Box>
@@ -285,7 +287,7 @@ export default function Peoples() {
                         Prev
                       </Button>
                   </Grid>
-            ) : (-
+            ) : (
               ""
             )}
             {peopleData.length ? (
