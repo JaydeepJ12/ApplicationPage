@@ -37,11 +37,11 @@ export default function CaseList(props) {
 
   return (
     <Box>
-      <Grid container>
+     
         <FormControl
           style={{ width: "-webkit-fill-available" }}
           variant="outlined"
-          className={classes.formControl}
+          className={classes.mb_one}
         >
           <InputLabel htmlFor="outlined-filter-native-simple">
             Filter
@@ -71,7 +71,7 @@ export default function CaseList(props) {
               ? Array.from(new Array(caseList.length))
               : caseList
             ).map((caseData, index) => (
-              <Box key={index} width="100%" padding={0.5}>
+              <Box key={index} width="100%">
                 {caseData ? (
                   <CasePreview
                     handleCasePreviewClick={handleCasePreviewClick}
@@ -112,7 +112,7 @@ export default function CaseList(props) {
             )}
           </>
         )}
-      </Grid>
+
     </Box>
   );
 }

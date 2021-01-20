@@ -20,8 +20,6 @@ import theme from "../theme";
 import useStyles from "./header_styles";
 import Settings from "./settings";
 
-console.log("-----theme.secondary", theme.palette.primary.light);
-
 const notifications = [
   {
     id: 0,

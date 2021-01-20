@@ -11,17 +11,19 @@ import {
   MenuItem,
   Paper,
   Select,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import useStyles from "../../assets/css/common_styles";
+import headerStyles from "../header/header_styles";
 import ComponentLoader from "../common/component-loader";
 import PeoplePreview from "./people-preview";
-
 export default function Peoples() {
   const classes = useStyles();
+  const sharedClasses = headerStyles();
+
   const [open, setOpen] = React.useState(false);
   const [userName, setUserName] = React.useState("");
   const [userFullName, setUserFullName] = React.useState("");
@@ -163,7 +165,7 @@ export default function Peoples() {
         handleClose={handleClose}
       ></PeoplePreview>
       <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
-        <Grid item xs={12} container spacing={3}>
+        <Grid item xs={12} container spacing={2}>
           <Grid item lg={3} md={3} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id="demo-simple-select-outlined-label">
@@ -186,17 +188,21 @@ export default function Peoples() {
           </Grid>
           <Grid item lg={6} md={6} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
-              <Paper component="form">
+              <div
+                className={
+                  sharedClasses.search + " " + sharedClasses.searchFocused
+                }
+              >
+                <div className={sharedClasses.searchIconOpened}>
+                  <IconButton className={sharedClasses.headerMenuButton}>
+                    <SearchIcon className={sharedClasses.headerIcon} />
+                  </IconButton>
+                </div>
                 <InputBase
-                  className={classes.input}
-                  placeholder="Search People…"
-                  inputProps={{ "aria-label": "search people…" }}
                   onInput={(event) => searchPeople(event.target.value)}
+                  placeholder="Search…"
                 />
-                <IconButton className={classes.iconButton} aria-label="search">
-                  <SearchIcon />
-                </IconButton>
-              </Paper>
+              </div>
             </FormControl>
           </Grid>
           <Grid
@@ -220,9 +226,12 @@ export default function Peoples() {
         </Grid>
         {/* <Slider {...SilderSetting}> */}
         {componentLoader ? (
-          <ComponentLoader type="rect" />
+            <div className={classes.mt_one}>
+             <ComponentLoader type="rect" />
+           </div>
+        
         ) : (
-          <div className="people-image-list">
+          <div className={classes.mt_one}>
             <Grid container spacing={3}>
               {peopleData.length ? (
                 peopleData.map((people) => (
@@ -265,27 +274,34 @@ export default function Peoples() {
             </Grid>
           </div>
         )}
+       
+
+        
         {peopleData.length >= maxCount ? (
-          <div>
+            <Grid container spacing={3}>
             {peopleData.length && recordLength !== maxCount ? (
-              <Button variant="contained" onClick={handlePrevClick}>
-                Prev
-              </Button>
-            ) : (
+                <Grid item lg={6} md={6} xs={6} sm={6} style={{textAlign:'right'}}>
+                      <Button variant="contained" onClick={handlePrevClick}>
+                        Prev
+                      </Button>
+                  </Grid>
+            ) : (-
               ""
             )}
             {peopleData.length ? (
-              <Button
-                variant="contained"
-                className={recordLength !== maxCount ? classes.nextButton : ""}
-                onClick={handleNextClick}
-              >
-                Next
-              </Button>
+               <Grid item lg={6} md={6} xs={6} sm={6} style={{textAlign:'left'}}>
+                    <Button
+                      variant="contained"
+                      className={recordLength !== maxCount ? classes.nextButton : ""}
+                      onClick={handleNextClick}
+                    >
+                      Next
+                    </Button>
+              </Grid>
             ) : (
               ""
             )}
-          </div>
+          </Grid>
         ) : (
           ""
         )}
