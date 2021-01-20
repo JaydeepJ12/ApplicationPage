@@ -3,9 +3,14 @@ import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import { navigate } from "@reach/router";
 import React from "react";
 export default function GotoBackButton(props) {
+  const [navigateCount, setNavigateCount] = React.useState(
+    props.navigateCount ? props.navigateCount : -1
+  );
+
   const handleRedirect = () => {
-    navigate(-1);
+    navigate(navigateCount);
   };
+
   return (
     <div className="btn-back st-p-2">
       <Button
