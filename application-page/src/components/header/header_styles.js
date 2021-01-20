@@ -162,7 +162,7 @@ export default makeStyles(
         backgroundColor: fade(theme.palette.common.black, 0.08),
         width: "100%",
         [theme.breakpoints.up("md")]: {
-          width: 250,
+          width: 280,
         },
       },
       searchIcon: {
@@ -191,6 +191,10 @@ export default makeStyles(
       },
       headerIcon: {
         fontSize: 28,
+      },
+      headerMenuButton: {
+        marginLeft: theme.spacing(2),
+        padding: theme.spacing(1),
       },
     };
   },

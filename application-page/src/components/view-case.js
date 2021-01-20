@@ -19,7 +19,8 @@ import * as notification from "../components/common/toast";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
 import Loading from "./Loader";
-
+import GotoBackButton from "./common/BackButton";
+import useStylesBase from "../assets/css/common_styles";
 const useStyles = makeStyles(
   (theme) => ({
     paper: {
@@ -37,35 +38,6 @@ const useStyles = makeStyles(
     },
     menuButton: {
       marginRight: theme.spacing(2),
-    },
-    search: {
-      position: "relative",
-      borderRadius: theme.shape.borderRadius,
-      backgroundColor: fade(theme.palette.common.white, 0.15),
-      "&:hover": {
-        backgroundColor: fade(theme.palette.common.white, 0.25),
-      },
-      marginLeft: 0,
-      // width: '100%'
-    },
-    searchIcon: {
-      padding: theme.spacing(0, 2),
-      height: "100%",
-      position: "absolute",
-      pointerEvents: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    inputRoot: {
-      color: "inherit",
-    },
-    inputInput: {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-      // transition: theme.transitions.create('width'),
-      width: "100%",
     },
     formControl: {
       margin: theme.spacing(1),
@@ -142,6 +114,7 @@ export default function ViewCase(props) {
   const [taskCount, setTaskCount] = useState(
     props.location?.state?.taskCount ? props.location?.state?.taskCount : 0
   );
+  const isParent = props.location.state.isParent;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -392,6 +365,7 @@ export default function ViewCase(props) {
   };
 
   const classes = useStyles();
+  const classesBase = useStylesBase();
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const CaseDetailsPaper = clsx(
@@ -450,66 +424,13 @@ export default function ViewCase(props) {
   };
   return (
     <div className="page" id="page-view-case">
+      {isParent ? <GotoBackButton /> : ""}
       <Card>
         <Grid container spacing={0}>
           {loaded ? (
             <>
-              {/* dont remove this code its usefull for reference of work after confirm i will remove this */}
-              {/* <AppBar position="static" className="inner-navigation bg-primary">
-              <Toolbar>
-                <IconButton
-                  edge="start"
-                  className={classes.menuButton}
-                  color="inherit"
-                  aria-label="open drawer"
-                >
-                  <MenuIcon />
-                </IconButton>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    placeholder="Search…"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                    onInput={(event) => searchCase(event.target.value, event)}
-                  />
-                </div>
-                <div>
-                  <Button
-                    aria-controls="customized-menu"
-                    aria-haspopup="true"
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClick}
-                  >
-                    Document List
-                  </Button>
-                  <StyledMenu
-                    id="customized-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                  >
-                    {documentList.length
-                      ? documentList.map((option) => (
-                          <StyledMenuItem>
-                            <ListItemIcon>
-                              <SendIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary="Sent mail" />
-                          </StyledMenuItem>
-                        ))
-                      : "Documents not uploaded..!!"}
-                  </StyledMenu>
-                </div>
-              </Toolbar>
-            </AppBar> */}
+            
+             
 
               <Grid item xs={12} sm={3} md={3} lg={3} className="panel-left">
                 <div
@@ -517,11 +438,11 @@ export default function ViewCase(props) {
                   onScroll={(event) => onScroll(caseListData, event)}
                 >
                   <FormControl
+                    variant="outlined"
                     style={{ width: "-webkit-fill-available" }}
-                    className={classes.formControl}
+                    className={classesBase.mt_one+' '+classesBase.mb_one}
                   >
-                    <InputLabel
-                      htmlFor="outlined-caseType-native-simple"
+                   <InputLabel htmlFor="outlined-filter-native-simple"
                       shrink
                       ref={inputLabel}
                     >

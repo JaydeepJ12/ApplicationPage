@@ -2,7 +2,9 @@ import {
   Card,
   CardActions,
   CardContent,
-  Icon,
+  CardHeader,
+  IconButton,
+  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -11,19 +13,7 @@ import {
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import * as notification from "../components/common/toast";
-
-const useStyles = makeStyles({
-  title: {
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  card: {
-    margin: 10,
-  },
-  listItem: {
-    textAlign: "right",
-  },
-});
+import useStyles from '../assets/css/common_styles';
 
 export default function CasePreview(props) {
   const classes = useStyles();
@@ -57,29 +47,28 @@ export default function CasePreview(props) {
   const renderUserImage = (userName) => {
     if (userName) {
       return (
-        <img
+        <Avatar
+        className={classes.large}
           onError={(event) => addDefaultSrc(event)}
           src={
             "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=" +
             userName
           }
-          height={50}
-          width={50}
         />
       );
     } else {
       return (
-        <img
+        <Avatar
           src="../assets/images/default-userimage.png"
-          height={50}
-          width={50}
         />
       );
     }
   };
 
   return (
-    <Card
+
+
+    <Card padding={0.5} 
       style={{ cursor: "pointer" }}
       className={"card-user-case"}
       key={caseData.caseID}
@@ -87,14 +76,15 @@ export default function CasePreview(props) {
         handleCasePreviewClick(caseId, caseData);
       }}
     >
-      <CardContent>
-        <Typography>{caseData.title}</Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <Typography className={classes.title} color="textSecondary">
+
+      <CardContent className="st-pb-0">
+        <Typography variant="subtitle2">{caseData.title}</Typography>
+
+      <CardActions disableSpacing  padding={0} className="st-pt-0"> 
+        <Typography   color="textSecondary">
           {caseData.typeName}
         </Typography>
-        <ListItem className={classes.list}>
+        <ListItem  className={"st-pt-0"}>
           <ListItemAvatar></ListItemAvatar>
           <ListItemText
             className={classes.listItem}
@@ -104,11 +94,14 @@ export default function CasePreview(props) {
                 : caseData.assignedTo
             }
           />
-          <Icon style={{ marginLeft: "1rem" }} className="s-option-auto-image">
+          <IconButton  style={{ marginLeft: "1rem" }}  className="st-pt-0">
             {renderUserImage(caseData.assignedTo)}
-          </Icon>
+          </IconButton>
         </ListItem>
       </CardActions>
+      </CardContent>
     </Card>
+
+    
   );
 }
