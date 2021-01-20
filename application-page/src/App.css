@@ -227,9 +227,9 @@ header.MuiPaper-elevation4 {
 .panel-center {
   padding: 1rem;
 }
-.MuiOutlinedInput-input {
+#page-overview .MuiOutlinedInput-input {
   padding: 12px 10px !important;
 }
-.MuiFormLabel-root {
+#page-overview .MuiFormLabel-root {
   line-height: 0.4 !important;
 }

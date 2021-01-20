@@ -122,8 +122,9 @@ export default function CaseSelect(props) {
 
   return (
     <div id="page-case-select" className="page">
-      {isParent ? <GotoBackButton /> : ""}
+     
       <Container className="">
+      {isParent ? <GotoBackButton /> : ""}
         <Grid item xs={12}>
           <Card>
             <form className="st-p-2">
