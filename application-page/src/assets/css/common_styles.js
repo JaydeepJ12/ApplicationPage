@@ -23,12 +23,11 @@ export default makeStyles(
         width: theme.spacing(7),
         height: theme.spacing(7),
       },
-
-      formControl: {
-        minWidth: `calc(100%)`,
-      },
-      formControl: {
-        minWidth: `calc(100%)`,
+      form: {
+        "& .MuiTextField-root": {
+          marginBottom: theme.spacing(1),
+          minWidth: `calc(100%)`,
+        }
       },
       formControl: {
         minWidth: `calc(100%)`,

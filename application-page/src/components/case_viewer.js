@@ -1,3 +1,4 @@
+import useStyles from "../assets/css/common_styles";
 import {
   Accordion,
   AccordionDetails,
@@ -40,6 +41,7 @@ export default function CaseViewer(props) {
   const [caseFields, setCaseFields] = useState([]);
   const [parentDropDownloaded, setParentDropDownloaded] = useState(false);
 
+  var classes = useStyles();
   const handleFieldAccordionChange = (isFieldExpanded) => {
     setFieldExpanded(!isFieldExpanded);
   };
@@ -608,8 +610,7 @@ export default function CaseViewer(props) {
 
   const createDropDownField = (data, index) => {
     return (
-      <div
-        className="card-page-wrap"
+      <div className={classes.form+' '+'card-page-wrap'}
         id="card-page-wrap"
         onScroll={(event) => onScroll(data, event)}
       >
@@ -690,20 +691,20 @@ export default function CaseViewer(props) {
   const loadFields = () => {
     return (
       <Box>
-        <div>
+   
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <div>
+              
                 {caseFields.length
                   ? caseFields.map((item, index) => (
                       <div key={index}>{fieldHandler(item, index)}</div>
                     ))
                   : []}
                 <Box></Box>
-              </div>
+           
             </Grid>
           </Grid>
-        </div>
+       
 
         {!loaded ? createLoader() : []}
       </Box>
@@ -883,7 +884,7 @@ export default function CaseViewer(props) {
                   </Typography>
                 </AccordionSummary>
                 {caseFields?.length ? (
-                  <AccordionDetails className="case-fields">
+                  <AccordionDetails className="case-fields" style={{display:'block'}}>
                     <form onSubmit={handleSubmit} className="case-create-form">
                       <Button type="submit" variant="contained" color="primary">
                         Save
