@@ -23,6 +23,11 @@ export default makeStyles(
         width: theme.spacing(7),
         height: theme.spacing(7),
       },
+      ex_large: {
+        width: theme.spacing(15),
+        height: theme.spacing(15),
+      },
+      
       form: {
         "& .MuiTextField-root": {
           marginBottom: theme.spacing(1),
