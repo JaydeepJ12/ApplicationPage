@@ -38,6 +38,7 @@ export default function CaseTypeFieldForm(props) {
   const [open, setOpen] = React.useState(false);
   const [system_code, setSystemCode] = React.useState("");
 
+
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
@@ -98,13 +99,12 @@ export default function CaseTypeFieldForm(props) {
   };
 
   return (
-    <div style={{ height: "480px", marginLeft: "20px", width: "350px" }}>
-      <form className={classes.root} noValidate autoComplete="off">
+    <>
+      <form  noValidate autoComplete="off">
         {props.props == "calculated" ? (
           <div>
             <Typography
-              variant="h4"
-              style={{ marginLeft: "60px" }}
+              variant="h5"
               gutterBottom
             >
               Calculated
@@ -123,8 +123,7 @@ export default function CaseTypeFieldForm(props) {
         ) : props.props == "datefield" ? (
           <div>
             <Typography
-              variant="h4"
-              style={{ marginBottom: "50px", marginLeft: "70px" }}
+              variant="h5"
               gutterBottom
             >
               Date Field
@@ -133,8 +132,7 @@ export default function CaseTypeFieldForm(props) {
         ) : props.props == "textfield" ? (
           <div>
             <Typography
-              variant="h4"
-              style={{ marginBottom: "50px", marginLeft: "70px" }}
+              variant="h5"
               gutterBottom
             >
               Text Field
@@ -152,18 +150,16 @@ export default function CaseTypeFieldForm(props) {
           onChange={(e) => descriptValue(e.target.value)}
         />
         <label>User to control output</label>
-        <br></br>
-        <br></br>
         <div>
-          <FormControl
+          <FormControl  variant="outlined"
             style={{ float: "right", marginRight: "100px", marginTop: "-14px" }}
           >
-            <InputLabel id="demo-controlled-open-select-label">
+           <InputLabel id="demo-simple-select-outlined-label">
               System Code
             </InputLabel>
             <Select
-              labelId="demo-controlled-open-select-label"
-              id="demo-controlled-open-select"
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
               open={open}
               onClose={handleClose}
               onOpen={handleOpen}
@@ -221,6 +217,6 @@ export default function CaseTypeFieldForm(props) {
           ""
         )}
       </form>
-    </div>
+    </>
   );
 }
