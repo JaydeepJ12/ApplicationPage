@@ -140,6 +140,210 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
+    def assignee_case_types(self, case_type_ids):
+        if case_type_ids is None:
+            case_type_ids = 19
+        query = f"""
+        Declare @case_type_id as nvarchar(max)='19,6'
+        Select Assigned_to_Display_Name
+        ,MAX(A.Past_due_case) AS Past_due_case
+        ,MAX(A.Not_Due) As  Not_Due
+        ,MAX(A.No_due_date) As No_due_date
+
+        from
+        (
+        SELECT Assigned_to_Display_Name
+         ,count (CL.Case_id)  As Past_due_case
+        , NULL as Not_Due
+        , Null as No_due_date
+        FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+        And IS_active='Y'and Case_Type_ID in (19,6)
+        Group By [Assigned_to_Display_Name]
+
+
+        UNION
+
+        SELECT Assigned_to_Display_Name
+        ,NULL As Past_due_case
+        ,Count(CL.Case_id) as Not_Due
+        ,NULL as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  And Case_Type_ID In (19,6)
+        Group By [Assigned_to_Display_Name]
+
+        Union
+        SELECT Assigned_to_Display_Name
+        ,NUll As Past_due_case
+        ,NULL as Not_Due
+        ,Count(CL.Case_id) as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')=''
+        And IS_active='Y'   and Case_Type_ID In (19,6)
+        Group By [Assigned_to_Display_Name]
+
+        )A
+
+        Group BY Assigned_to_Display_Name
+        """
+        return self.db.execQuery(query)
+
+    def case_type_count_dues(self, case_type_ids):
+        if case_type_ids is None:
+            case_type_ids = 19
+        query = f"""
+                Select [Case_Type_Name]
+        ,MAX(A.Past_due_case) AS Past_due_case
+        ,MAX(A.Not_Due) As  Not_Due
+        ,MAX(A.No_due_date) As No_due_date
+
+        from
+        (
+        SELECT [Case_Type_Name]
+        ,Count(CL.Case_id)  As Past_due_case
+        , NULL as Not_Due
+        , Null as No_due_date
+        FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+        UNION
+
+        SELECT [Case_Type_Name]
+        ,NULL As Past_due_case
+        ,Count(CL.Case_id) as Not_Due
+        ,NULL as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+
+        Union
+
+        SELECT [Case_Type_Name]
+        ,NUll As Past_due_case
+        ,NULL as Not_Due, Count(CL.Case_id) as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+        ) A
+
+        Group BY [Case_Type_Name]
+        """
+        return self.db.execQuery(query)
+
+    def assigne_supervisor(self, case_type_ids):
+        if case_type_ids is None:
+            case_type_ids = 20
+        query = f"""
+            Declare @case_type_id as nvarchar(max)='19,6'
+
+            Select By_Assignee_Supervisor
+            ,MAX(A.Past_due_case) AS Past_due_case
+            ,MAX(A.Not_Due) As  Not_Due
+            ,MAX(A.No_due_date) As No_due_date
+
+            from
+            (
+            SELECT By_Assignee_Supervisor
+             ,count (CL.Case_id)  As Past_due_case
+            , NULL as Not_Due
+            , Null as No_due_date
+            FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+            Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+             And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+            And IS_active='Y'and Case_Type_ID in ({case_type_ids})
+            Group By [By_Assignee_Supervisor]
+
+
+            UNION
+
+            SELECT By_Assignee_Supervisor
+            ,NULL As Past_due_case
+            ,Count(CL.Case_id) as Not_Due
+            ,NULL as No_due_date
+            FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+            Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+             And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+            And IS_active='Y'  And Case_Type_ID In ({case_type_ids})
+            Group By [By_Assignee_Supervisor]
+
+            Union
+            SELECT By_Assignee_Supervisor
+            ,NUll As Past_due_case
+            ,NULL as Not_Due
+            ,Count(CL.Case_id) as No_due_date
+            FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+            Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')=''
+            And IS_active='Y'   and Case_Type_ID In ({case_type_ids})
+            Group By [By_Assignee_Supervisor]
+
+            )A
+
+            Group BY By_Assignee_Supervisor
+            """
+        print(self.db.execQuery(query))
+        return self.db.execQuery(query)
+
+    def case_type_count_all(self, case_type_ids):
+        print(case_type_ids)
+        if case_type_ids is None:
+            case_type_ids = 19
+        query = f'''
+        Select 
+        MAX(A.Past_due_case) AS Past_due_case
+        ,MAX(A.Not_Due) As  Not_Due
+        ,MAX(A.No_due_date) As No_due_date
+
+        from
+        (
+
+
+        SELECT 
+        count (CL.Case_id)  As Past_due_case
+        , NULL as Not_Due
+        , Null as No_due_date
+        FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+        And IS_active='Y'and Case_Type_ID in ({case_type_ids})
+
+
+        UNION
+
+        SELECT 
+        NULL As Past_due_case
+        ,Count(CL.Case_id) as Not_Due
+        ,NULL as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  And Case_Type_ID in ({case_type_ids})
+        Group By [Case_Type_Name]
+
+        Union
+        SELECT 
+        NUll As Past_due_case
+        ,NULL as Not_Due
+        ,Count(CL.Case_id) as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+        And IS_active='Y'   and Case_Type_ID in ({case_type_ids}) 
+        Group By [Case_Type_Name]
+
+        )A '''
+
+        return self.db.execQuery(query)
+
     def get_user_fullname(self, userShortName):
         query = f'''
         SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ('{userShortName}') ORDER BY 1 DESC
