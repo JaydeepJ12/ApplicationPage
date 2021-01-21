@@ -10,7 +10,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
@@ -113,7 +113,6 @@ export default function Peoples() {
     if (userName) {
       return (
         <Avatar
-          style={{ cursor: "pointer" }}
           onClick={() => handleClickOpen(userName, fullName)}
           onError={(event) => addDefaultSrc(event)}
           src={process.env.REACT_APP_USER_ICON.concat(userName)}
@@ -123,7 +122,6 @@ export default function Peoples() {
     } else {
       return (
         <Avatar
-          style={{ cursor: "pointer" }}
           src="../../assets/images/default-userimage.png"
           className={classes.avt_large}
         />
@@ -233,14 +231,21 @@ export default function Peoples() {
             <Grid container spacing={3}>
               {peopleData.length ? (
                 peopleData.map((people) => (
-                  <Grid item lg={3} md={3} xs={3} sm={3}>
+                  <Grid
+                    item
+                    lg={3}
+                    md={3}
+                    xs={3}
+                    sm={3}
+                    style={{ textAlign: "center" }}
+                  >
                     <Box>
                       <Icon className="s-option-auto-image">
                         {renderUserImage(people.ShortUserName, people.FullName)}
                       </Icon>
                       <Typography
                         className={classes.fontWeight}
-                        variant="caption"
+                        variant="subtitle2"
                         display="block"
                         gutterBottom
                       >
@@ -257,7 +262,7 @@ export default function Peoples() {
                       </Typography>
                       <Typography
                         className={classes.fontWeight}
-                        variant="caption"
+                        variant="subtitle2"
                         display="block"
                         gutterBottom
                       >
