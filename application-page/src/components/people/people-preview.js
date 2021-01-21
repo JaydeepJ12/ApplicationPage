@@ -162,6 +162,7 @@ export default function PeoplePreview(props) {
         filter: filter,
         taskCount: taskCount,
         replace: true,
+        isParent: true,
       },
     });
   };

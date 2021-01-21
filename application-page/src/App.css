@@ -54,6 +54,9 @@ a {
 .st-pt-0 {
   padding: 0 !important;
 }
+.st-pb-0 {
+  padding-bottom: 0 ;
+}
 .st-p-2 {
   padding: 1.5rem !important;
 }
@@ -115,7 +118,7 @@ header.MuiPaper-elevation4 {
 .card-user-case {
   background: rgba(196, 196, 196, 0.25) !important;
   box-shadow: none !important;
-  margin-bottom: 4px;
+  margin-bottom: .5em;
 }
 .card-user-comment {
   background: #f1f1f1;
@@ -201,7 +204,7 @@ header.MuiPaper-elevation4 {
 
 #page-overview .input-dropdown {
   background-color: #fff;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   border: 0;
 }
 #page-overview .MuiTabs-indicator {
@@ -223,4 +226,10 @@ header.MuiPaper-elevation4 {
 /* ----------------------end---overview----------------------- */
 .panel-center {
   padding: 1rem;
+}
+#page-overview .MuiOutlinedInput-input {
+  padding: 12px 10px !important;
+}
+#page-overview .MuiFormLabel-root {
+  line-height: 0.4 !important;
 }

@@ -3,7 +3,7 @@ import Box from '@material-ui/core/Box';
 import Skeleton from '@material-ui/lab/Skeleton';
 export default function ComponentLoader(props) {
   return (
-    <div className="compoent-skeleton-loading">
+    <div className="compoent-skeleton-loading" style={{}}>
         <>
         <Skeleton variant="rect" width="100%" height={118} />
           <Box pt={0.5}>

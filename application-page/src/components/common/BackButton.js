@@ -1,13 +1,21 @@
+
 import { Button } from "@material-ui/core";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import { navigate } from "@reach/router";
 import React from "react";
+import useStyles from "../../assets/css/common_styles";
 export default function GotoBackButton(props) {
+  var classes = useStyles();
+  const [navigateCount, setNavigateCount] = React.useState(
+    props.navigateCount ? props.navigateCount : -1
+  );
+
   const handleRedirect = () => {
-    navigate(-1);
+    navigate(navigateCount);
   };
+
   return (
-    <div className="btn-back st-p-2">
+    <div className={classes.mb_one}>
       <Button
         onClick={() => {
           handleRedirect();
