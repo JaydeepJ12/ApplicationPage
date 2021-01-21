@@ -6,6 +6,8 @@ from operator import itemgetter
 import pandas as pd
 import json 
 import time
+import math
+import plotly.express as px
 import numpy as np
 from handlers.cases import CaseHandler
 from flask_cors import CORS, cross_origin
@@ -142,6 +144,12 @@ def assigned_to():
     sub_query = db.assignee_case_types(case_type).values.tolist()
     dataset = []
     for data in sub_query:
+        if math.isnan(data[1]):
+            data[1] = 0
+        if math.isnan(data[2]):
+            data[2] = 0
+        if math.isnan(data[3]):
+            data[3] = 0
         dataset.append({"assigned_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
     return json.dumps({"name":"Assign Case List API","status": 200, "data": dataset, })
 
@@ -157,6 +165,12 @@ def assigned_supervisor():
     sub_query = db.assigne_supervisor(case_type).values.tolist()
     dataset = []
     for data in sub_query:
+        if math.isnan(data[1]):
+            data[1] = 0
+        if math.isnan(data[2]):
+            data[2] = 0
+        if math.isnan(data[3]):
+            data[3] = 0
         dataset.append({"assigned_supervisor_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
     return json.dumps({"name":"Assign Assignee Supervisor List API", "status": 200, "data": dataset})
 
@@ -166,13 +180,14 @@ def status():
     case_type = request.args.get('case_type')
     color_sequence = request.args.get('color_sequence')
     if color_sequence is None:
-        color_sequence = ['goldenrod', 'darkgrey', 'black']
+        color_sequence = 'black'
     else:
-        color_sequence = color_sequence.split(',')
+        color_sequence = request.args.get('color_sequence')
     sub_query = db.case_type_count_all(case_type).values.tolist()
     dataset = []
     for data in sub_query:
-        dataset.append({"past_due_case": data[0], "not_due": data[1], "no_due_date": data[2]})
+        dataset.append({"past_due_case":data[0],"not_due":data[1],
+                        "no_due_date":data[2]})
     return json.dumps({"name":"Status of Case", "status": 200, "data": dataset})
 
 
@@ -187,7 +202,14 @@ def case_type():
     sub_query = db.case_type_count_dues(case_type).values.tolist()
     dataset = []
     for data in sub_query:
-        dataset.append({"case_type_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
+        if math.isnan(data[1]):
+            data[1] = 0
+        if math.isnan(data[2]):
+            data[2] = 0
+        if math.isnan(data[3]):
+            data[3] = 0
+        dataset.append({"case_type_name": data[0], "past_due_case": data[1], "not_due": data[2],
+                        "no_due_date": data[3]})
     return json.dumps({"name": "Case Type API List", "status": 200, "data": dataset})
 
 

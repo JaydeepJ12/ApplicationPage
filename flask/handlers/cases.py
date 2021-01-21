@@ -121,7 +121,8 @@ class CaseHandler(Response):
             "count": [],
             "requestMethod": "POST",
             "customData": [],
-            "values": []})
+            "values": [],
+            "method":200})
 
     def assoc_type_insert(self,data):
         """

@@ -9,7 +9,7 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -23,7 +23,7 @@ import {
   People,
   Streetview,
   Timeline,
-  ViewList
+  ViewList,
 } from "@material-ui/icons";
 import { Link, Router } from "@reach/router";
 import clsx from "clsx";
@@ -35,6 +35,7 @@ import Login from "./Login/index.js";
 import OverView from "./overview";
 import Test from "./test";
 import ViewCase from "./view-case";
+import Example from "./react_graph/common_graph";
 
 const drawerWidth = 240;
 // styles
@@ -162,6 +163,12 @@ export default function Navigation(props) {
       menuPath: "case-type-form",
       pageTitle: "Case Type",
     },
+    {
+      menuName: "Graph",
+      menuIcon: <Dvr />,
+      menuPath: "graph",
+      pageTitle: "Case Graph",
+    },
   ];
 
   React.useEffect(() => setCurrentPageValue(), []);
@@ -227,7 +234,7 @@ export default function Navigation(props) {
               </Typography>
             </Toolbar>
           </AppBar>
-     
+
           <Drawer
             variant="permanent"
             className={clsx(classes.drawer, {
@@ -242,7 +249,7 @@ export default function Navigation(props) {
             }}
           >
             <div className={classes.toolbar + " side-click"}>
-            {/*-------note:----code for dropdownlist(future development)
+              {/*-------note:----code for dropdownlist(future development)
               {/*{open ? (
                 <ListItem>
                   <AppIcon src={app_icon} name={name}></AppIcon>
@@ -258,30 +265,27 @@ export default function Navigation(props) {
             </div>
             <List className="sidebar-navigation-block">
               {menuItems.map((item, index) => (
-                   <Link to={item.menuPath} style={{ color: "black" }}>
-                      <ListItem
-                        onClick={() => {
-                          setCurrentPage(item.pageTitle);
-                        }}
-                      >
-                        <ListItemIcon>{item.menuIcon}</ListItemIcon>
-                        <ListItemText>
-                      
-                            {item.menuName}
-                        
-                        </ListItemText>
-                      </ListItem>
-                  </Link>
+                <Link to={item.menuPath} style={{ color: "black" }}>
+                  <ListItem
+                    onClick={() => {
+                      setCurrentPage(item.pageTitle);
+                    }}
+                  >
+                    <ListItemIcon>{item.menuIcon}</ListItemIcon>
+                    <ListItemText>{item.menuName}</ListItemText>
+                  </ListItem>
+                </Link>
               ))}
             </List>
           </Drawer>
           <main className={classes.content}>
-            <Router basepath='/react'>
+            <Router basepath="/react">
               <CaseSelect path="/case-select" />
               <OverView path="/overview" />
               <Test path="/test"></Test>
               <CaseTypeForm path="/case-type-form"></CaseTypeForm>
               <ViewCase path="/viewcase"></ViewCase>
+              <Example path="/graph"></Example>
             </Router>
           </main>
         </div>

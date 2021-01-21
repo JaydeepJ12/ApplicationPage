@@ -173,7 +173,7 @@ class CasesSQL:
 
     def assigne_supervisor(self, case_type_ids):
         if case_type_ids is None:
-            case_type_ids = 19
+            case_type_ids = 20
         query = f"""
             Declare @case_type_id as nvarchar(max)='19,6'
 
@@ -221,6 +221,7 @@ class CasesSQL:
 
             Group BY By_Assignee_Supervisor
             """
+        print(self.db.execQuery(query))
         return self.db.execQuery(query)
 
     def case_type_count_all(self, case_type_ids):

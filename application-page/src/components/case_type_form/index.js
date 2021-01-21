@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import SettingsIcon from "@material-ui/icons/Settings";
 import CancelIcon from "@material-ui/icons/Cancel";
 import AddBoxIcon from "@material-ui/icons/AddBox";
@@ -8,23 +7,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import { orange } from "@material-ui/core/colors";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import Dialog from "@material-ui/core/Dialog";
 import Popover from "@material-ui/core/Popover";
 import CaseTypeFieldForm from "./calculated";
 import Button from "@material-ui/core/Button";
 import API from "../api_base/api";
 import Drawer from "@material-ui/core/Drawer";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 
 const drawerWidth = 340;
 
@@ -77,16 +68,21 @@ const styles = (theme) => ({
 
 export default function CaseTypeForm(props) {
   const classes = useStyles();
-  const [inputFields, setInputFields] = useState([{ name: "", fieldtype: "" }]);
+  const [inputFields, setInputFields] = useState([
+    { index: 0, name: "", fieldtype: "" },
+  ]);
   const [fieldType, setFieldType] = useState("");
   // const [open, setOpen] = React.useState(false);
   const [events, setEvents] = useState("");
+  const [fieldIndex, setFieldIndex] = useState(0);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [casetype, setCaseType] = React.useState(null);
   const [casetypename, setCaseTypeName] = React.useState([]);
 
   const handleAddFields = () => {
-    setInputFields([...inputFields, { name: "" }]);
+    const fields = [...inputFields];
+    const index = fields.length;
+    setInputFields([...inputFields, { index: index, name: "" }]);
     console.log("inputFields", inputFields);
   };
 
@@ -100,10 +96,12 @@ export default function CaseTypeForm(props) {
     setFieldType(event.target.value);
   };
 
-  const handleClickOpen = (value, event) => {
+  const handleClickOpen = (value, index, event) => {
     setAnchorEl(event.target);
     setEvents(value);
+    setFieldIndex(index);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -174,6 +172,10 @@ export default function CaseTypeForm(props) {
     const values = [...inputFields];
     values[index][event.target.name] = event.target.value;
     setInputFields(values);
+  };
+
+  const handleCaseTypeFieldForm = (inputFieldsData) => {
+    setInputFields(inputFieldsData);
   };
 
   return (
@@ -261,21 +263,27 @@ export default function CaseTypeForm(props) {
                   <MenuItem
                     value="calculated"
                     aria-describedby={id}
-                    onClick={(event) => handleClickOpen("calculated", event)}
+                    onClick={(event) =>
+                      handleClickOpen("calculated", index, event)
+                    }
                     value="calculated"
                   >
                     Calculated
                   </MenuItem>
                   <MenuItem
                     aria-describedby={id}
-                    onClick={(event) => handleClickOpen("datefield", event)}
+                    onClick={(event) =>
+                      handleClickOpen("datefield", index, event)
+                    }
                     value="datefield"
                   >
                     Date Field
                   </MenuItem>
                   <MenuItem
                     aria-describedby={id}
-                    onClick={(event) => handleClickOpen("textfield", event)}
+                    onClick={(event) =>
+                      handleClickOpen("textfield", index, event)
+                    }
                     value="textfield"
                   >
                     Text Field
@@ -350,7 +358,17 @@ export default function CaseTypeForm(props) {
           horizontal: "left",
         }}
       >
-        <CaseTypeFieldForm props={events} />
+        <CaseTypeFieldForm
+          props={events}
+          fieldIndex={fieldIndex}
+          caseTypeField={
+            inputFields
+              ? inputFields.find((x) => x.index === fieldIndex)?.caseTypeField
+              : []
+          }
+          inputFields={inputFields}
+          handleCaseTypeFieldForm={handleCaseTypeFieldForm}
+        ></CaseTypeFieldForm>
       </Popover>
     </div>
   );
