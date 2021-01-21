@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -7,27 +8,23 @@ import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      "& > *": {
-        margin: theme.spacing(1),
-        width: "50ch",
-      },
-      formControl: {
-        margin: theme.spacing(1),
-        minWidth: 90,
-      },
-      selectEmpty: {
-        marginTop: theme.spacing(2),
-      },
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& > *": {
+      margin: theme.spacing(1),
+      width: "50ch",
     },
-  }),
-  { index: 1 }
-);
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 90,
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2),
+    },
+  },
+}), {index: 1});
 
 export default function CaseTypeFieldForm(props) {
   const classes = useStyles();
@@ -40,11 +37,7 @@ export default function CaseTypeFieldForm(props) {
   const [age, setAge] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [system_code, setSystemCode] = React.useState("");
-  const [fieldType, setFieldType] = React.useState([]);
-  const [inputFields, setInputFields] = React.useState([]);
-  const [caseTypeFields, setCaseTypeFields] = React.useState([]);
-  const [fieldIndex, setFieldIndex] = React.useState(0);
-  const [caseTypeField, setCaseTypeField] = React.useState(props.caseTypeField);
+
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -75,8 +68,7 @@ export default function CaseTypeFieldForm(props) {
   };
 
   const getSystemCOde = async () => {
-    await axios
-      .get(`cases/system_code`)
+    await axios.get(`cases/system_code`)
       .then(function (response) {
         let data_cat = response.data.values;
         if (data_cat.length) {
@@ -89,41 +81,10 @@ export default function CaseTypeFieldForm(props) {
       });
   };
 
-  const handleCaseTypeFieldForm = (event) => {
-    event.preventDefault();
-    inputFields[fieldIndex].caseTypeField = caseTypeFields;
-    let fields = {};
-    var submitted = true;
-    Object.entries(event.target.elements).forEach(([name, input]) => {
-      if (input.type != "submit") {
-        if (input.name != "" && input.value != "") {
-          submitted = true;
-          fields[input.name] = input.value;
-        }
-      }
-    });
-    fields["active"] = checked;
-    fields["required"] = checkedactive;
-    fields["showOnList"] = checkedlist;
-    fields["expandable"] = checkedlistExpen;
-
-    inputFields[fieldIndex].caseTypeField = fields;
-    console.log(fields);
-    props.handleCaseTypeFieldForm(inputFields);
-  };
-
-  const handle_data = (data) => {};
-
-  useEffect(() => {
-    setFieldType(props.props);
-    setInputFields(props.inputFields);
-    setFieldIndex(props.fieldIndex);
-    setCaseTypeField(props.caseTypeField);
-    setChecked(props.caseTypeField?.active);
-    setCheckedActive(props.caseTypeField?.required);
-    setCheckedList(props.caseTypeField?.showOnList);
-    setCheckedListExpandable(props.caseTypeField?.expandable);
-  }, [props.props, props.inputFields, props.fieldIndex, props.caseTypeField]);
+  // useEffect(() => {
+  //   pageLoad();
+  //   caseTypes();
+  // }, []);
 
   // useEffect(() => {
   //   console.log("use effect==>");
@@ -138,40 +99,42 @@ export default function CaseTypeFieldForm(props) {
   };
 
   return (
-    <div style={{ height: "480px", marginLeft: "20px", width: "350px" }}>
-      <form
-        className={classes.root}
-        noValidate
-        autoComplete="off"
-        onSubmit={handleCaseTypeFieldForm}
-      >
-        {fieldType == "calculated" ? (
+    <>
+      <form  noValidate autoComplete="off">
+        {props.props == "calculated" ? (
           <div>
-            <Typography variant="h5" gutterBottom>
+            <Typography
+              variant="h5"
+              gutterBottom
+            >
               Calculated
             </Typography>
             <br></br>
             <TextField
               style={{ width: "300px" }}
-              name="calculated_formula"
-              defaultValue={caseTypeField?.calculated_formula}
               id="outlined-basic"
               label="Calculated Formula"
               variant="outlined"
-              // onChange={(e) => calculateValue(e.target.value)}
+              onChange={(e) => calculateValue(e.target.value)}
             />
             <br></br>
             <label>User to control output</label>
           </div>
-        ) : fieldType == "datefield" ? (
+        ) : props.props == "datefield" ? (
           <div>
-            <Typography variant="h5" gutterBottom>
+            <Typography
+              variant="h5"
+              gutterBottom
+            >
               Date Field
             </Typography>
           </div>
-        ) : fieldType == "textfield" ? (
+        ) : props.props == "textfield" ? (
           <div>
-            <Typography variant="h5" gutterBottom>
+            <Typography
+              variant="h5"
+              gutterBottom
+            >
               Text Field
             </Typography>
           </div>
@@ -181,28 +144,23 @@ export default function CaseTypeFieldForm(props) {
         <br></br>
         <TextField
           style={{ width: "300px" }}
-          name="description"
-          defaultValue={caseTypeField?.description}
-          id="outlined-basic-description"
+          id="outlined-basic"
           label="Description"
           variant="outlined"
-          // onChange={(e) => descriptValue(e.target.value)}
+          onChange={(e) => descriptValue(e.target.value)}
         />
         <label>User to control output</label>
         <div>
-          <FormControl
-            variant="outlined"
+          <FormControl  variant="outlined"
             style={{ float: "right", marginRight: "100px", marginTop: "-14px" }}
           >
-            <InputLabel id="demo-simple-select-outlined-label">
+           <InputLabel id="demo-simple-select-outlined-label">
               System Code
             </InputLabel>
             <Select
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
               open={open}
-              defaultValue={caseTypeField?.systemCode}
-              name="systemCode"
               onClose={handleClose}
               onOpen={handleOpen}
               value={age}
@@ -245,7 +203,7 @@ export default function CaseTypeFieldForm(props) {
           />
           <label>Show on List</label>
         </div>
-        {fieldType == "textfield" ? (
+        {props.props == "textfield" ? (
           <div>
             <Checkbox
               checked={checkedlistExpen}
@@ -258,16 +216,7 @@ export default function CaseTypeFieldForm(props) {
         ) : (
           ""
         )}
-        <br></br>
-        <Button
-          type="submit"
-          style={{ width: "150px", backgroundColor: "orange" }}
-          variant="contained"
-          color="primary"
-        >
-          Add
-        </Button>
       </form>
-    </div>
+    </>
   );
 }
