@@ -7,7 +7,6 @@ import {
   Button,
   Divider,
   Grid,
-  makeStyles,
   MenuItem,
   TextField,
   Typography
@@ -17,28 +16,16 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
-import * as apiConfig from "../components/api_base/api-config";
-import * as notification from "../components/common/toast";
+import useStyles from "../../assets/css/common_styles";
+import Froala from "../../components/common/froala.js";
+import * as notification from "../../components/common/toast";
+import FileUpload from "../../components/file-upload.js";
+import Loading from "../../components/Loader.js";
 import CaseBasicInformation from "./case-basic-information.js";
-import FileUpload from "./file-upload.js";
-import Froala from "./froala.js";
-import Loading from "./Loader.js";
 
-const useStyles = makeStyles((theme) => ({
-  title: {
-    fontSize: 16,
-  },
-  dividersty: {
-    marginBottom: "1rem",
-  },
-  fixedHeight: {
-    height: "60vh",
-    overflow: "auto",
-  },
-}));
+const casesBaseURL = process.env.REACT_APP_BASE_CASES_URL;
 
 export default function CaseViewer(props) {
-  const classes = useStyles();
   const [state, setState] = useState({});
   const [loaded, setLoaded] = useState(true);
   const [notes, setNotes] = useState([]);
@@ -55,6 +42,7 @@ export default function CaseViewer(props) {
   const [caseFields, setCaseFields] = useState([]);
   const [parentDropDownloaded, setParentDropDownloaded] = useState(false);
 
+  var classes = useStyles();
   const handleFieldAccordionChange = (isFieldExpanded) => {
     setFieldExpanded(!isFieldExpanded);
   };
@@ -63,7 +51,6 @@ export default function CaseViewer(props) {
     const caseTypeId = caseData.typeId;
     setNotesLoaded(false);
     props.handleCaseLoaded(false);
-    props.handleCaseFieldsLoaded(false);
     setNotes([]);
     setCaseFields([]);
     setCaseData([]);
@@ -82,7 +69,7 @@ export default function CaseViewer(props) {
 
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetCaseNotes",
+      url: "/cases/GetCaseNotes",
       data: jsonData,
     };
 
@@ -123,7 +110,7 @@ export default function CaseViewer(props) {
 
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetFullCaseByCaseId",
+      url: "/cases/GetFullCaseByCaseId",
       data: jsonData,
       // cancelToken: new CancelToken(function executor(c) {
       //   // An executor function receives a cancel function as a parameter
@@ -142,7 +129,6 @@ export default function CaseViewer(props) {
         }
 
         setCaseFields(caseDetailsData?.details);
-        props.handleCaseFieldsLoaded(true);
         loadAssocDecodeData(caseDetailsData?.details, caseTypeId);
       })
       .catch(function (error) {
@@ -178,11 +164,7 @@ export default function CaseViewer(props) {
 
       if (currentData[commentIndex]) {
         await axios
-          .get(
-            "http://localhost:5000/cases/assocDecode?AssocId=".concat(
-              assocTypeIds[i]
-            )
-          )
+          .get("/cases/assocDecode?AssocId=".concat(assocTypeIds[i]))
           .then((resp) => {
             if (resp.data.length) {
               currentData[commentIndex].assoc_decode = resp.data;
@@ -209,11 +191,7 @@ export default function CaseViewer(props) {
       }
 
       axios
-        .get(
-          "http://localhost:5000/cases/caseassoctypecascade?CaseTypeID=".concat(
-            caseTypeId
-          )
-        )
+        .get("/cases/caseassoctypecascade?CaseTypeID=".concat(caseTypeId))
         .then((resp) => {
           if (localParentChildData !== JSON.stringify(resp.data)) {
             setParentChildData(resp.data);
@@ -247,6 +225,9 @@ export default function CaseViewer(props) {
     });
 
     let isLastDropdown = false;
+    if (!superParentAssocTypeIds.length) {
+      isLastDropdown = true;
+    }
     for (var i = 0; i < superParentAssocTypeIds.length; i++) {
       const currentData = [...fieldData];
 
@@ -321,7 +302,7 @@ export default function CaseViewer(props) {
         };
         var config = {
           method: "post",
-          url: "http://localhost:5000/cases/GetExternalDataValues",
+          url: "/cases/GetExternalDataValues",
           data: jsonData,
         };
 
@@ -435,7 +416,7 @@ export default function CaseViewer(props) {
 
       var config = {
         method: "post",
-        url: "http://localhost:5000/cases/GetExternalDataValues",
+        url: "/cases/GetExternalDataValues",
         data: jsonData,
       };
 
@@ -510,7 +491,7 @@ export default function CaseViewer(props) {
 
           var config = {
             method: "post",
-            url: "http://localhost:5000/cases/GetExternalDataValues",
+            url: "/cases/GetExternalDataValues",
             data: jsonData,
           };
           await axios(config)
@@ -631,7 +612,7 @@ export default function CaseViewer(props) {
   const createDropDownField = (data, index) => {
     return (
       <div
-        className="card-page-wrap"
+        className={classes.form + " " + "card-page-wrap"}
         id="card-page-wrap"
         onScroll={(event) => onScroll(data, event)}
       >
@@ -712,20 +693,16 @@ export default function CaseViewer(props) {
   const loadFields = () => {
     return (
       <Box>
-        <div>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <div>
-                {caseFields.length
-                  ? caseFields.map((item, index) => (
-                      <div key={index}>{fieldHandler(item, index)}</div>
-                    ))
-                  : []}
-                <Box></Box>
-              </div>
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            {caseFields.length
+              ? caseFields.map((item, index) => (
+                  <div key={index}>{fieldHandler(item, index)}</div>
+                ))
+              : []}
+            <Box></Box>
           </Grid>
-        </div>
+        </Grid>
 
         {!loaded ? createLoader() : []}
       </Box>
@@ -733,7 +710,7 @@ export default function CaseViewer(props) {
   };
 
   const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../assets/images/default-userimage.png");
+    let userDefaultImage = require("../../assets/images/default-userimage.png");
     if (userDefaultImage) {
       event.target.src = userDefaultImage;
     }
@@ -744,7 +721,7 @@ export default function CaseViewer(props) {
       return (
         <img
           onError={(event) => addDefaultSrc(event)}
-          src={apiConfig.BASE_USER_IMAGE_URL.concat(userName)}
+          src={process.env.REACT_APP_USER_ICON.concat(userName)}
           height={50}
           width={50}
         />
@@ -773,7 +750,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isUrlContain) {
-        urlValue = apiConfig.BASE_CASES_URL + urlValue;
+        urlValue = casesBaseURL + urlValue;
       }
       if (urlValue) {
         imgSrcUrls[i].setAttribute("src", urlValue);
@@ -795,7 +772,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isHrefUrlContain) {
-        hrefUrlValue = apiConfig.BASE_CASES_URL + hrefUrlValue;
+        hrefUrlValue = casesBaseURL + hrefUrlValue;
       }
       if (hrefUrlValue) {
         hrefUrls[j].setAttribute("href", hrefUrlValue);
@@ -838,12 +815,11 @@ export default function CaseViewer(props) {
 
   const loadNotes = () => {
     return (
-      <Grid item item xs={12} sm={12} md={8} lg={8}>
+      <Grid item item xs={12} sm={12} md={12} lg={12}>
         <h1>Comments</h1>
-
         {notes.length
           ? notes.map((item, index) => (
-              <div key={index}>{notesHandler(item, index)}</div>
+              <span key={index}>{notesHandler(item, index)}</span>
             ))
           : "No Comments Available...!!!"}
       </Grid>
@@ -851,13 +827,9 @@ export default function CaseViewer(props) {
   };
 
   return (
-    <Grid container item xs={12} spacing={1} className="panel-center st-p-1">
-      <Grid item xs={12} sm={12} md={8} lg={8} className="st-p-1">
-        <Typography
-          className={classes.title}
-          color="textSecondary"
-          gutterBottom
-        >
+    <>
+      <Grid item lg={6} md={6} xs={12} sm={12} className="panel-center">
+        <Typography color="textSecondary" gutterBottom>
           {caseData.typeName}
         </Typography>
         <Typography variant="h4" component="h3">
@@ -867,7 +839,7 @@ export default function CaseViewer(props) {
         <Box>{createFileField()}</Box>
         <span>Description</span>
         {createFroalaField()}
-        <div className={classes.fixedHeight}>
+        <div>
           {notesLoaded ? (
             <div className="comment-list">{loadNotes()}</div>
           ) : (
@@ -879,8 +851,8 @@ export default function CaseViewer(props) {
         item
         xs={12}
         sm={12}
-        md={4}
-        lg={4}
+        md={3}
+        lg={3}
         className="panel-right st-p-1 side-bar-case-create"
       >
         {/* <CaseDetailBasicInfo /> */}
@@ -910,7 +882,10 @@ export default function CaseViewer(props) {
                   </Typography>
                 </AccordionSummary>
                 {caseFields?.length ? (
-                  <AccordionDetails className="case-fields">
+                  <AccordionDetails
+                    className="case-fields"
+                    style={{ display: "block" }}
+                  >
                     <form onSubmit={handleSubmit} className="case-create-form">
                       <Button type="submit" variant="contained" color="primary">
                         Save
@@ -934,6 +909,6 @@ export default function CaseViewer(props) {
           </div>
         </Box>
       </Grid>
-    </Grid>
+    </>
   );
 }

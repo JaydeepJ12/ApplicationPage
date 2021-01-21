@@ -1,17 +1,12 @@
 body {
   background-color: #fff !important;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  overflow-x: hidden;
 }
 a {
   text-decoration: none !important;
 }
 /* use for common page on deshboard */
-main {
-  padding-left: 3.3rem;
-  margin-top: 5rem;
-  padding-right: 1rem;
-  margin-bottom: 0.5rem;
-}
 .ul li:hover {
   color: #444 !important;
   background-color: #e0f3ff !important;
@@ -47,13 +42,10 @@ main {
 }
 /* -------------end-----common center------------------- */
 /* common color */
-.bg-primary {
-  background-color: orange !important;
-  color: #fff !important;
-}
-.btn-primary {
-  background-color: #03dac5 !important;
-  color: #444 !important;
+
+/* bg color */
+.bg-secondary {
+  background: rgba(196, 196, 196, 0.25);
 }
 /* -------------start commonn padding------------------- */
 .st-p-1 {
@@ -61,6 +53,9 @@ main {
 }
 .st-pt-0 {
   padding: 0 !important;
+}
+.st-pb-0 {
+  padding-bottom: 0;
 }
 .st-p-2 {
   padding: 1.5rem !important;
@@ -73,9 +68,6 @@ main {
 /* input form  */
 .MuiInput-underline:before {
   border-bottom: 1px solid #cccccc !important;
-}
-.MuiFormControl-fullWidth {
-  width: 94% !important;
 }
 .MuiInput-underline:after {
   border-bottom: 2px solid orange !important;
@@ -125,8 +117,7 @@ header.MuiPaper-elevation4 {
 .card-user-case {
   background: rgba(196, 196, 196, 0.25) !important;
   box-shadow: none !important;
-  margin: 0.5rem;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.8em;
 }
 .card-user-comment {
   background: #f1f1f1;
@@ -205,23 +196,14 @@ header.MuiPaper-elevation4 {
   margin-top: 0.1em;
   display: inline-flex;
 }
-.card-task-overview {
+.card {
   border: 1px solid #eee;
   padding: 1rem !important;
-  background: rgba(196, 196, 196, 0.25);
 }
-#page-overview .card {
-  background-color: rgba(196, 196, 196, 0.25);
-  box-shadow: none;
-  height: 32rem;
-}
-#page-overview .nav-tab {
-  background-color: #777575;
-  color: #fff;
-}
+
 #page-overview .input-dropdown {
   background-color: #fff;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   border: 0;
 }
 #page-overview .MuiTabs-indicator {
@@ -238,27 +220,15 @@ header.MuiPaper-elevation4 {
 }
 .people-image-list {
   text-align: center;
+  overflow-wrap: break-word;
 }
 /* ----------------------end---overview----------------------- */
-
-/*-----------------start------Graph CSS (12 January 2021)----------*/
-.grpah line {
-  stroke: #e6e6e9;
+.panel-center {
+  padding: 1rem;
 }
-.rv-xy-plot__axis__tick {
-  font-size: 4px;
-  margin-top: 4rem !important;
-  position: unset;
-  writing-mode: tb-rl;
-  overflow-wrap: break-word !important;
+#page-overview .MuiOutlinedInput-input {
+  padding: 12px 10px !important;
 }
-.rv-xy-plot__axis rv-xy-plot__axis--horizontal {
-  margin-top: 4rem !important;
-}
-/*-----------------end------Graph CSS (12 January 2021)----------*/
-
-.recharts-surface,
-.recharts-wrapper,
-.recharts-legend-wrapper {
-  width: 100% !important;
+#page-overview .MuiFormLabel-root {
+  line-height: 0.4 !important;
 }

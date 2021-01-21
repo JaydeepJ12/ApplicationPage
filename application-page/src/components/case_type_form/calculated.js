@@ -7,24 +7,27 @@ import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import API from "../api_base/api";
 import Button from "@material-ui/core/Button";
+import axios from "axios";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "50ch",
+const useStyles = makeStyles(
+  (theme) => ({
+    root: {
+      "& > *": {
+        margin: theme.spacing(1),
+        width: "50ch",
+      },
+      formControl: {
+        margin: theme.spacing(1),
+        minWidth: 90,
+      },
+      selectEmpty: {
+        marginTop: theme.spacing(2),
+      },
     },
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 90,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  },
-}));
+  }),
+  { index: 1 }
+);
 
 export default function CaseTypeFieldForm(props) {
   const classes = useStyles();
@@ -72,7 +75,8 @@ export default function CaseTypeFieldForm(props) {
   };
 
   const getSystemCOde = async () => {
-    await API.get(`cases/system_code`)
+    await axios
+      .get(`cases/system_code`)
       .then(function (response) {
         let data_cat = response.data.values;
         if (data_cat.length) {
@@ -143,11 +147,7 @@ export default function CaseTypeFieldForm(props) {
       >
         {fieldType == "calculated" ? (
           <div>
-            <Typography
-              variant="h4"
-              style={{ marginLeft: "60px" }}
-              gutterBottom
-            >
+            <Typography variant="h5" gutterBottom>
               Calculated
             </Typography>
             <br></br>
@@ -165,21 +165,13 @@ export default function CaseTypeFieldForm(props) {
           </div>
         ) : fieldType == "datefield" ? (
           <div>
-            <Typography
-              variant="h4"
-              style={{ marginBottom: "50px", marginLeft: "70px" }}
-              gutterBottom
-            >
+            <Typography variant="h5" gutterBottom>
               Date Field
             </Typography>
           </div>
         ) : fieldType == "textfield" ? (
           <div>
-            <Typography
-              variant="h4"
-              style={{ marginBottom: "50px", marginLeft: "70px" }}
-              gutterBottom
-            >
+            <Typography variant="h5" gutterBottom>
               Text Field
             </Typography>
           </div>
@@ -197,18 +189,17 @@ export default function CaseTypeFieldForm(props) {
           // onChange={(e) => descriptValue(e.target.value)}
         />
         <label>User to control output</label>
-        <br></br>
-        <br></br>
         <div>
           <FormControl
+            variant="outlined"
             style={{ float: "right", marginRight: "100px", marginTop: "-14px" }}
           >
-            <InputLabel id="demo-controlled-open-select-label">
+            <InputLabel id="demo-simple-select-outlined-label">
               System Code
             </InputLabel>
             <Select
-              labelId="demo-controlled-open-select-label"
-              id="demo-controlled-open-select"
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
               open={open}
               defaultValue={caseTypeField?.systemCode}
               name="systemCode"

@@ -44,9 +44,79 @@ class CasesSQL:
 
     def cases_types(self):
         query = f'''
-        SELECT CT.*, CH.[NAME] As HopperName  FROM [BOXER_CME].[dbo].[CASE_TYPE] AS CT
+        SELECT CT.CASE_TYPE_ID,CT.NAME,CASE_TYPE_OWNER, 
+        CH.[NAME] As HopperName 
+        FROM [BOXER_CME].[dbo].[CASE_TYPE] AS CT
         INNER JOIN [BOXER_CME].[dbo].[CASE_HOPPER] AS CH ON CT.DEFAULT_HOPPER_ID = CH.HOPPER_ID
         WHERE CT.IS_ACTIVE = 'Y'
+        '''
+        return self.db.execQuery(query)
+
+    def get_entities_by_entity_id(self, entityId):
+        query = f'''
+        SELECT a.[ENTITY_ID] ,
+        [FIELD_VALUE] AS [NAME] ,
+        [EXTERNAL_DATASOURCE_OBJECT_ID] AS [EXID] ,
+        b.[SYSTEM_CODE]
+        FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] a
+        JOIN 
+            (SELECT [ENTITY_ASSOC_TYPE_ID],
+                [SYSTEM_CODE]
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE]
+            WHERE ENTITY_TYPE_ID = 
+                (SELECT top 1 [ENTITY_TYPE_ID]
+                FROM [BOXER_ENTITIES].[dbo].[ENTITY_TYPE]
+                WHERE SYSTEM_CODE = 'USCSE')
+                        AND is_active = 'Y'
+                        AND SYSTEM_CODE IN ( 'TITLE', 'DESC', 'ASSCT', 'ASSET', 'ASSQF', 'ASSJB', 'ASSSD', 'ASSRP', 'DPTLV', 'DPTBN', 'DPTSD', 'DPTJF', 'DPTJT', 'SICON', 'APPPT', 'USCAL' ))b
+                ON a.ENTITY_ASSOC_TYPE_ID = b.ENTITY_ASSOC_TYPE_ID
+        LEFT JOIN [BOXER_ENTITIES].[dbo].ENTITY e
+            ON a.ENTITY_ID = e.ENTITY_ID
+        WHERE a.IS_ACTIVE = 'Y'
+                AND e.IS_ACTIVE = 'Y'
+                AND EXTERNAL_DATASOURCE_OBJECT_ID is NOT null
+                AND a.[ENTITY_ID] = {entityId}
+        UNION
+        SELECT [ENTITY_ID] ,
+                [TEXT] AS [NAME] ,
+                [ENTITY_FILE_ID] AS [EXID] ,
+                b.SYSTEM_CODE
+        FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT] a
+        JOIN 
+            (SELECT [ENTITY_ASSOC_TYPE_ID],
+                [SYSTEM_CODE]
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE]
+            WHERE ENTITY_TYPE_ID = 
+                (SELECT top 1 [ENTITY_TYPE_ID]
+                FROM [BOXER_ENTITIES].[dbo].[ENTITY_TYPE]
+                WHERE SYSTEM_CODE = 'USCSE')
+                        AND is_active = 'Y'
+                        AND SYSTEM_CODE IN ('APICN')) b
+                ON a.ENTITY_ASSOC_TYPE_ID = b.ENTITY_ASSOC_TYPE_ID
+                AND a.[ENTITY_ID] = {entityId}
+        ORDER BY  b.[SYSTEM_CODE] 
+        '''
+        return self.db.execQuery(query)
+
+    def case_types_by_entity_id(self, entityIds):
+        query = f'''
+        SELECT CH.[NAME] As HopperName, CT.* FROM [BOXER_CME].[dbo].[CASE_TYPE] AS CT 
+        INNER JOIN [BOXER_CME].[dbo].[CASE_HOPPER] AS CH ON CT.DEFAULT_HOPPER_ID = CH.HOPPER_ID
+        WHERE CT.IS_ACTIVE = 'Y' AND CASE_TYPE_ID IN
+            (SELECT [TEXT] AS ID
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT] a
+            LEFT JOIN [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type] b
+                ON a.[ENTITY_ASSOC_TYPE_ID] = b.[ENTITY_ASSOC_TYPE_ID]
+            WHERE entity_id IN ({entityIds})
+                    AND a.is_active = 'Y'
+                    AND a.[ENTITY_ASSOC_TYPE_ID] IN 
+                (SELECT ENTITY_ASSOC_TYPE_ID
+                FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type]
+                WHERE entity_type_id IN 
+                    (SELECT top 1 ENTITY_TYPE_ID
+                    FROM [BOXER_ENTITIES].[dbo].entity_list
+                    WHERE entity_id IN ({entityIds}) )
+                            AND ( SYSTEM_CODE IN ( 'EXTPK' , 'QSAID', 'URL', 'SBTTL' ) ) ) )
         '''
         return self.db.execQuery(query)
 
@@ -289,6 +359,39 @@ class CasesSQL:
         except:
             return '[]'
 
+    def get_people(self, skipCount, maxCount, searchText = ''):
+        query = f'''
+           	SELECT
+            c.SHORT_USER_NAME AS ShortUserName,
+            c.FULL_NAME AS FullName,
+            COUNT(*) AS TotalCount
+            FROM [BOXER_CME].[dbo].[CME_USER_CACHE] AS c
+            INNER JOIN [BOXER_CME].[dbo].[CASE_LIST] AS b ON b.LIST_CASE_ASSGN_TO_SAM = c.SHORT_USER_NAME
+            WHERE IS_ACTIVE = 'Y' AND COALESCE(IS_EXTERNAL_USER,'N')='N'
+            AND FULL_NAME Like CASE WHEN '{searchText}' = '' THEN FULL_NAME ELSE '%' + '{searchText}' + '%' END
+            GROUP BY c.FULL_NAME, c.SHORT_USER_NAME
+            ORDER BY 1 ASC
+            offset {skipCount} rows
+            FETCH NEXT {maxCount} rows only
+        '''
+        return self.db.execQuery(query)
+
+    def get_past_due_count(self, userShortName):
+        query = f'''
+            SELECT COUNT(CLO.CASE_ID) CNT
+            FROM [BOXER_CME].[dbo].[CASE_LIST] CLO 
+            WHERE CLO.LIST_CASE_ASSGN_TO_SAM in ('{userShortName}')
+            AND COALESCE(CLO.LIST_CASE_DUE,'')!='' 
+            AND CAST(GETDATE() AS varchar(100)) > CLO.LIST_CASE_DUE
+        '''
+        return self.db.execQuery(query)
+
+    def get_user_info(self, userShortName):
+        query = f'''
+           	SELECT * FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME = '{userShortName}'
+        '''
+        return self.db.execQuery(query)
+
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
         return the exid for that
@@ -401,7 +504,7 @@ where a.IS_ACTIVE = 'Y'
 class AppSql:
     #need a call that gives application entity 0ds, name and icon urls
     def __init__(self):
-        self.db = app
+        self.db = Stemmons_Dash_App()
     
     def application_layout(self):
         pass
@@ -433,7 +536,7 @@ class AppSql:
                 and IS_ACTIVE='Y')
                 order by TITLE_METADATA_TEXT 
         '''
-        return app.execQuery(query)
+        return self.db.execQuery(query)
 
 
 class FieldHandler:

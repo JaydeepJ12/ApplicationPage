@@ -1,29 +1,17 @@
 import {
+  Avatar,
   Card,
   CardActions,
   CardContent,
-  Icon,
+  IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  makeStyles,
   Typography
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import * as notification from "../components/common/toast";
-
-const useStyles = makeStyles({
-  title: {
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  card: {
-    margin: 10,
-  },
-  listItem: {
-    textAlign: "right",
-  },
-});
+import useStyles from "../../assets/css/common_styles";
+import * as notification from "../../components/common/toast";
 
 export default function CasePreview(props) {
   const classes = useStyles();
@@ -48,7 +36,7 @@ export default function CasePreview(props) {
   }, [props.caseId, props.caseData, props.caseLoaded]);
 
   const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../assets/images/default-userimage.png");
+    let userDefaultImage = require("../../assets/images/default-userimage.png");
     if (userDefaultImage) {
       event.target.src = userDefaultImage;
     }
@@ -57,29 +45,23 @@ export default function CasePreview(props) {
   const renderUserImage = (userName) => {
     if (userName) {
       return (
-        <img
+        <Avatar
+          className={classes.large}
           onError={(event) => addDefaultSrc(event)}
           src={
             "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=" +
             userName
           }
-          height={50}
-          width={50}
         />
       );
     } else {
-      return (
-        <img
-          src="../assets/images/default-userimage.png"
-          height={50}
-          width={50}
-        />
-      );
+      return <Avatar src="../assets/images/default-userimage.png" />;
     }
   };
 
   return (
     <Card
+      padding={0.5}
       style={{ cursor: "pointer" }}
       className={"card-user-case"}
       key={caseData.caseID}
@@ -87,28 +69,27 @@ export default function CasePreview(props) {
         handleCasePreviewClick(caseId, caseData);
       }}
     >
-      <CardContent>
-        <Typography>{caseData.title}</Typography>
+      <CardContent className="st-pb-0">
+        <Typography variant="subtitle2">{caseData.title}</Typography>
+
+        <CardActions disableSpacing padding={0} className="st-pt-0">
+          <Typography color="textSecondary">{caseData.typeName}</Typography>
+          <ListItem className={"st-pt-0"}>
+            <ListItemAvatar></ListItemAvatar>
+            <ListItemText
+              className={classes.listItem}
+              primary={
+                caseData.assignedToFullName
+                  ? caseData.assignedToFullName
+                  : caseData.assignedTo
+              }
+            />
+            <IconButton style={{ marginLeft: "1rem" }} className="st-pt-0">
+              {renderUserImage(caseData.assignedTo)}
+            </IconButton>
+          </ListItem>
+        </CardActions>
       </CardContent>
-      <CardActions disableSpacing>
-        <Typography className={classes.title} color="textSecondary">
-          {caseData.typeName}
-        </Typography>
-        <ListItem className={classes.list}>
-          <ListItemAvatar></ListItemAvatar>
-          <ListItemText
-            className={classes.listItem}
-            primary={
-              caseData.assignedToFullName
-                ? caseData.assignedToFullName
-                : caseData.assignedTo
-            }
-          />
-          <Icon style={{ marginLeft: "1rem" }} className="s-option-auto-image">
-            {renderUserImage(caseData.assignedTo)}
-          </Icon>
-        </ListItem>
-      </CardActions>
     </Card>
   );
 }

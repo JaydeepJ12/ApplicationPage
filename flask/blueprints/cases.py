@@ -15,15 +15,21 @@ from flask_cors import CORS, cross_origin
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
+<<<<<<< HEAD
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
+=======
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
+>>>>>>> ee1c9333331dd2a4fdb47b80f7b7275c4f37c89a
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
 def t():
     return time.time()
+
 @bp.after_request
 def after_request(r):
     r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Access-Control-Allow-Headers'] = '*'
     return r
 
 @bp.route('/config')
@@ -33,15 +39,9 @@ def config():
     # r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={{user}}&caseType={ctid}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
     df = db.cases_type_form(int(ctid))
     # df = df.sort_values(by='NAME')
-    t1 = t()
-    print(f'Get Types by Type Id: {t1-t0}')
-
     df['assoc_decode']=[[] for i in df.index]
     for i, row in df.iterrows():
-        t0 = t()
         data1 = assocDecode(f"{row['AssocTypeId']}")
-        t1 = t()
-        print(f"{row['AssocTypeId']} took: {t1-t0}")
         df['assoc_decode'][i] = json.loads(data1)
     return df.to_json(orient='records') #
 
@@ -60,12 +60,37 @@ def assocDecode(assoc_id = 0):
 def caseTypes():
    df = db.cases_types()
    df = df.sort_values(by='NAME')
+   #print(df)
    return df.to_json(orient='records') #
+
+@bp.route('/getEntitiesByEntityId', methods=['POST'])
+def getEntitiesByEntityId():
+   data = request.json
+   df = db.get_entities_by_entity_id(data['entityId'])
+   df = df.sort_values(by='NAME')
+   return df.to_json(orient='records')
+
+@bp.route('/caseTypesByEntityId', methods=['POST'])
+def caseTypesByEntityId():
+   data = request.json
+   df = db.case_types_by_entity_id(data['entityIds'])
+   df = df.sort_values(by='NAME')
+   return df.to_json(orient='records')
 
 @bp.route('/caseassoctypecascade')
 def caseassoctypecascade():
    caseTypeId = request.args.get('CaseTypeID')
    df = db.caseassoctypecascade(int(caseTypeId))
+   return df.to_json(orient='records') #
+
+def getPastDueCount(userShortName):
+    df = db.get_past_due_count(userShortName) #always returns dataframe
+    return df.to_json(orient='records')
+
+@bp.route('/getPeople', methods=['POST'])
+def getPeople():
+   data = request.json
+   df = db.get_people(data['skipCount'], data['maxCount'], data['searchText'])
    return df.to_json(orient='records') #
 
 @bp.route('/test')
@@ -118,18 +143,6 @@ def getSystemPriority(assocTypeId):
 @bp.route('/GetFullCaseByCaseId', methods=['POST'])
 def get_full_case_by_caseId():
     data = mobile.get_full_case_by_caseId(request.json).json()
-    # for x in data['responseContent']['notes']: #can throw error with resp is empty
-    #     userShortName = x['createdBy']
-    #     print('userShortName --- ' , userShortName)
-    #     userFullName = json.loads(getUserFullName(str(userShortName)))
-    #     print('userFullName-----', userFullName)
-    #     if userFullName:
-    #         x['fullName'] = userFullName[0]['FULL_NAME']
-    # for y in data['responseContent']['details']: #can throw error with resp is empty
-    #     systemPriority = json.loads(getSystemPriority(y['controlId']))
-    #     y['systemPriority'] = systemPriority[0]['SYSTEM_PRIORITY']
-    #     # y['assoc_decode'] = []
-    #     # y['systemPriority'] = 1
     return data
 
 
@@ -250,3 +263,14 @@ def system_code_list():
             return CaseHandler().system_code_list()
         except Exception as exe:
             return json.dumps({"error_stack": str(exe)})
+
+@bp.route('/getRelatedCasesCountData', methods=['POST'])
+def get_related_cases_count_data():
+    data = mobile.get_related_cases_count_data(request.json).json()
+    return data
+
+@bp.route('/getUserInfo', methods=['POST'])
+def get_user_info():
+    data = request.json
+    df = db.get_user_info(data['userShortName'])
+    return df.to_json(orient='records')

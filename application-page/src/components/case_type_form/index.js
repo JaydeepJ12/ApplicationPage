@@ -1,58 +1,52 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Settings, Cancel, AddBox } from "@material-ui/icons";
+import { withStyles } from "@material-ui/core/styles";
+import {
+  TextField,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Dialog,
+  IconButton,
+} from "@material-ui/core";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import MuiDialogContent from "@material-ui/core/DialogTitle";
+import { Close } from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles";
+import { orange } from "@material-ui/core/colors";
+import CaseTypeFieldForm from "./calculated";
+import useCommonStyles from "../../assets/css/common_styles";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import Drawer from "@material-ui/core/Drawer";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 import SettingsIcon from "@material-ui/icons/Settings";
 import CancelIcon from "@material-ui/icons/Cancel";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-import { TextField, MenuItem, FormControl } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { orange } from "@material-ui/core/colors";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 import Popover from "@material-ui/core/Popover";
-import CaseTypeFieldForm from "./calculated";
-import Button from "@material-ui/core/Button";
-import API from "../api_base/api";
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 
-const drawerWidth = 340;
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "65ch",
+const useStyles = makeStyles(
+  (theme) => ({
+    root: {
+      "& > *": {
+        margin: theme.spacing(1),
+        width: "65ch",
+      },
+      formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+      },
+      selectEmpty: {
+        marginTop: theme.spacing(2),
+      },
     },
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-    appBar: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
-    },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
-    },
-    // necessary for content to be below app bar
-    toolbar: theme.mixins.toolbar,
-    content: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.default,
-      padding: theme.spacing(5),
-    },
-  },
-}));
-
+  }),
+  { index: 1 }
+);
 const styles = (theme) => ({
   root: {
     margin: 0,
@@ -65,20 +59,44 @@ const styles = (theme) => ({
     color: theme.palette.grey[500],
   },
 });
+const DialogTitle = withStyles(styles)((props) => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={onClose}
+        >
+          <Close />
+        </IconButton>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
+const DialogContent = withStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2),
+  },
+}))(MuiDialogContent);
 
 export default function CaseTypeForm(props) {
+  const Commonclasses = useCommonStyles();
   const classes = useStyles();
   const [inputFields, setInputFields] = useState([
     { index: 0, name: "", fieldtype: "" },
   ]);
   const [fieldType, setFieldType] = useState("");
-  // const [open, setOpen] = React.useState(false);
   const [events, setEvents] = useState("");
   const [fieldIndex, setFieldIndex] = useState(0);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [casetype, setCaseType] = React.useState(null);
   const [casetypename, setCaseTypeName] = React.useState([]);
 
+  const [fullWidth, setFullWidth] = React.useState(true);
+  const [maxWidth, setMaxWidth] = React.useState("sm");
   const handleAddFields = () => {
     const fields = [...inputFields];
     const index = fields.length;
@@ -119,9 +137,10 @@ export default function CaseTypeForm(props) {
       modified_by: "testu",
     };
     console.log("inputFields success===>", inputFields);
-    API.post("cases/case_type_insert", data, {
-      headers: headers,
-    })
+    axios
+      .post("cases/case_type_insert", data, {
+        headers: headers,
+      })
       .then((response) => {
         // swal("Good job!", response.data.message, "success");
         // setTimeout(() => {
@@ -142,7 +161,8 @@ export default function CaseTypeForm(props) {
   useEffect(() => {
     console.log("use effect==>");
     setTimeout(() => {
-      API.get("cases/case_type_data")
+      axios
+        .get("cases/case_type_data")
         .then((response) => {
           console.log("---->", response);
           // swal("Good job!", response.data.message, "success");
@@ -345,18 +365,8 @@ export default function CaseTypeForm(props) {
       <Popover
         id={id}
         open={open}
-        anchorEl={anchorEl}
         onClose={handleClose}
-        anchorReference="anchorPosition"
-        anchorPosition={{ top: 15, left: 900 }}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
+        aria-labelledby="max-width-dialog-title"
       >
         <CaseTypeFieldForm
           props={events}
