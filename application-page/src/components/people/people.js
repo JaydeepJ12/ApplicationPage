@@ -9,7 +9,6 @@ import {
   InputBase,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Typography,
 } from "@material-ui/core";
@@ -17,8 +16,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import useStyles from "../../assets/css/common_styles";
-import headerStyles from "../header/header_styles";
 import ComponentLoader from "../common/component-loader";
+import headerStyles from "../header/header_styles";
 import PeoplePreview from "./people-preview";
 export default function Peoples() {
   const classes = useStyles();
@@ -226,10 +225,9 @@ export default function Peoples() {
         </Grid>
         {/* <Slider {...SilderSetting}> */}
         {componentLoader ? (
-            <div className={classes.mt_one}>
-             <ComponentLoader type="rect" />
-           </div>
-        
+          <div className={classes.mt_one}>
+            <ComponentLoader type="rect" />
+          </div>
         ) : (
           <div className={classes.mt_one}>
             <Grid container spacing={3}>
@@ -274,29 +272,45 @@ export default function Peoples() {
             </Grid>
           </div>
         )}
-       
 
-        
-        {peopleData.length >= maxCount ? (
-            <Grid container spacing={3}>
-            {peopleData.length && recordLength !== maxCount ? (
-                <Grid item lg={6} md={6} xs={6} sm={6} style={{textAlign:'right'}}>
-                      <Button variant="contained" onClick={handlePrevClick}>
-                        Prev
-                      </Button>
-                  </Grid>
-            ) : (-
+        {peopleData.length ? (
+          <Grid container spacing={3}>
+            {recordLength !== maxCount ? (
+              <Grid
+                item
+                lg={6}
+                md={6}
+                xs={6}
+                sm={6}
+                style={{
+                  textAlign: peopleData.length >= maxCount ? "right" : "",
+                }}
+              >
+                <Button variant="contained" onClick={handlePrevClick}>
+                  Prev
+                </Button>
+              </Grid>
+            ) : (
               ""
             )}
-            {peopleData.length ? (
-               <Grid item lg={6} md={6} xs={6} sm={6} style={{textAlign:'left'}}>
-                    <Button
-                      variant="contained"
-                      className={recordLength !== maxCount ? classes.nextButton : ""}
-                      onClick={handleNextClick}
-                    >
-                      Next
-                    </Button>
+            {peopleData.length >= maxCount ? (
+              <Grid
+                item
+                lg={6}
+                md={6}
+                xs={6}
+                sm={6}
+                style={{ textAlign: "left" }}
+              >
+                <Button
+                  variant="contained"
+                  className={
+                    recordLength !== maxCount ? classes.nextButton : ""
+                  }
+                  onClick={handleNextClick}
+                >
+                  Next
+                </Button>
               </Grid>
             ) : (
               ""

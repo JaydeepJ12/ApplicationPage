@@ -4,8 +4,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SecureLS from "secure-ls";
+import GotoBackButton from "../../components/common/BackButton.js";
 import CaseCreator from "./case_creator.js";
-import GotoBackButton from "./common/BackButton";
 export default function CaseSelect(props) {
   let history = createHistory(window);
 

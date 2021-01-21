@@ -3,10 +3,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
-import UserAutocomplete from "./autocomplete.js";
-import FileUpload from "./file-upload.js";
-import Froala from "./froala.js";
-import Loading from "./Loader.js";
+import UserAutocomplete from "../../components/autocomplete.js";
+import Froala from "../../components/common/froala.js";
+import FileUpload from "../../components/file-upload.js";
+import Loading from "../../components/Loader.js";
 
 export default function CaseCreator(props) {
   const [data, setData] = useState([]);
@@ -73,41 +73,35 @@ export default function CaseCreator(props) {
       );
     }
 
-    axios
-      .get("/cases/config?CaseTypeID=".concat(caseTypeId))
-      .then((resp) => {
-        if (localFieldData !== JSON.stringify(resp.data)) {
-          setData(resp.data);
-          setLoaded(true);
-          ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
-          fieldData = resp.data;
-        }
+    axios.get("/cases/config?CaseTypeID=".concat(caseTypeId)).then((resp) => {
+      if (localFieldData !== JSON.stringify(resp.data)) {
+        setData(resp.data);
+        setLoaded(true);
+        ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
+        fieldData = resp.data;
+      }
 
-        if (fieldData.length > 0) {
-          axios
-            .get(
-              "/cases/caseassoctypecascade?CaseTypeID=".concat(
-                caseTypeId
-              )
-            )
-            .then((resp) => {
-              if (localParentChildData !== JSON.stringify(resp.data)) {
-                setParentChildData(resp.data);
-                ls.set(
-                  "ParentChildData-" + caseTypeId,
-                  JSON.stringify(resp.data)
-                );
-                // if (resp.data && resp.data.length) {
-                //   ls.set(
-                //     "ParentChildData-" + caseTypeId,
-                //     JSON.stringify(resp.data)
-                //   );
-                // }
-                loadParentDropDown(resp.data, fieldData, caseTypeId);
-              }
-            });
-        }
-      });
+      if (fieldData.length > 0) {
+        axios
+          .get("/cases/caseassoctypecascade?CaseTypeID=".concat(caseTypeId))
+          .then((resp) => {
+            if (localParentChildData !== JSON.stringify(resp.data)) {
+              setParentChildData(resp.data);
+              ls.set(
+                "ParentChildData-" + caseTypeId,
+                JSON.stringify(resp.data)
+              );
+              // if (resp.data && resp.data.length) {
+              //   ls.set(
+              //     "ParentChildData-" + caseTypeId,
+              //     JSON.stringify(resp.data)
+              //   );
+              // }
+              loadParentDropDown(resp.data, fieldData, caseTypeId);
+            }
+          });
+      }
+    });
   };
 
   const loadParentDropDown = async (responseData, fieldData, caseTypeId) => {

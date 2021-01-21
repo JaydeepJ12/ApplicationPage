@@ -17,9 +17,9 @@ import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
 import useStyles from "../../assets/css/common_styles";
+import Froala from "../../components/common/froala.js";
 import * as notification from "../../components/common/toast";
 import FileUpload from "../../components/file-upload.js";
-import Froala from "../../components/froala.js";
 import Loading from "../../components/Loader.js";
 import CaseBasicInformation from "./case-basic-information.js";
 
