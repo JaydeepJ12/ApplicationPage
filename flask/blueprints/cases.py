@@ -17,7 +17,6 @@ db = CasesSQL()
 
 # <<<<<<< HEAD
 # mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
-# =======
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
 # >>>>>>> ee1c9333331dd2a4fdb47b80f7b7275c4f37c89a
 
