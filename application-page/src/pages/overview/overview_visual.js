@@ -6,12 +6,17 @@ import {
   Paper,
   Tab,
   Tabs,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { navigate } from "@reach/router";
 import React, { useState } from "react";
 import SwipeableViews from "react-swipeable-views";
+import Carousel from "react-material-ui-carousel";
+import CaseTypeStatusGraph from "../../components/react_graph/status_case_graph";
+import AssigendCase from "../../components/react_graph/assigend_case";
+import AssignedCaseTypeSupervisor from "../../components/react_graph/assigned_supervisor_graph";
+import Example from "../../components/react_graph/common_graph";
 
 const basePath = process.env.REACT_APP_BASE_PATH;
 
@@ -111,7 +116,12 @@ export default function VisualOverview() {
               onChangeIndex={handleChangeIndex}
             >
               <TabPanel value={value} index={0} dir={theme.direction}>
-                Tab-1
+                <Carousel interval={125250000}>
+                  <CaseTypeStatusGraph />
+                  <Example />
+                  <AssigendCase />
+                  <AssignedCaseTypeSupervisor />
+                </Carousel>
               </TabPanel>
               <TabPanel value={value} index={1} dir={theme.direction}>
                 Tab-2
