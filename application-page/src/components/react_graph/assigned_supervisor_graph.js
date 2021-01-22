@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Typography } from "@material-ui/core";
-import API from "../api_base/api";
+// import API from "../api_base/api";
+import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -12,16 +13,17 @@ import {
   Legend,
 } from "recharts";
 
-export default function Example(props) {
+export default function AssignedCaseTypeSupervisor(props) {
   const [useCanvas, setUseCanvas] = useState(false);
   const [casetype, setCaseType] = useState();
   const [filter, setfilter] = useState(null);
   const [hovered, sethovered] = useState(null);
   const [highlighting, sethighlighting] = useState(false);
   useEffect(() => {
-    API.get(
-      "cases/assigned_supervisor?case_type=6,19&color_sequence=pink,red,yellow"
-    )
+    axios
+      .get(
+        "cases/assigned_supervisor?case_type=6,19&color_sequence=pink,red,yellow"
+      )
       .then((response) => {
         setCaseType(response.data.data);
       })

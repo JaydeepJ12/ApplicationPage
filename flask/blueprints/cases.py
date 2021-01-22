@@ -15,7 +15,10 @@ from flask_cors import CORS, cross_origin
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
+# <<<<<<< HEAD
+# mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
+# >>>>>>> ee1c9333331dd2a4fdb47b80f7b7275c4f37c89a
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
