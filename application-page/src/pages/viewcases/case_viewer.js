@@ -323,27 +323,32 @@ export default function CaseViewer(props) {
               );
 
               if (dataValue && !dataValue.length) {
-                dataAvailable = false;
-                currentData[commentIndex].assoc_decode = currentData[
-                  commentIndex
-                ].assoc_decode
-                  ? currentData[commentIndex].assoc_decode.concat(externalData)
-                  : externalData;
-                loadParentDropDown(
-                  fieldData,
-                  caseTypeId,
-                  maxCountValue * 2,
+                var parentDiv = document.getElementById(
                   currentData[commentIndex].controlId
                 );
+                if (parentDiv) {
+                  // Add span
+                  var span_obj = document.createElement("span");
+
+                  // Set attribute for span element, such as id
+                  span_obj.setAttribute(
+                    "id",
+                    "span-" + currentData[commentIndex].controlId
+                  );
+
+                  // Set text for span element
+                  span_obj.innerHTML = currentData[commentIndex].controlValue;
+
+                  // Append span element in parent div
+                  parentDiv.appendChild(span_obj);
+                }
               }
             }
 
-            if (dataAvailable) {
-              currentData[commentIndex].assoc_decode = externalData;
-              setCaseFields(currentData);
-              if (i + 1 === superParentAssocTypeIds.length) {
-                isLastDropdown = true;
-              }
+            currentData[commentIndex].assoc_decode = externalData;
+            setCaseFields(currentData);
+            if (i + 1 === superParentAssocTypeIds.length) {
+              isLastDropdown = true;
             }
           })
           .catch(function (error) {
