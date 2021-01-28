@@ -123,6 +123,7 @@ export default function CaseViewer(props) {
         let caseDetailsData = response?.data?.responseContent;
 
         if (caseDetailsData.details.length) {
+          // Todo: Need to configure ControlPriority same as SystemPriority in config application
           caseDetailsData.details = caseDetailsData.details.sort(
             (a, b) => a.controlPriority - b.controlPriority
           );
@@ -309,8 +310,6 @@ export default function CaseViewer(props) {
         await axios(config)
           .then(function (response) {
             let externalData = response?.data?.responseContent;
-
-            let dataAvailable = true;
             if (
               externalData &&
               externalData.length &&
