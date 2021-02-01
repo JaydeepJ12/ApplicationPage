@@ -476,6 +476,7 @@ export default function ViewCase(props) {
                     }
                     caseLoaded={caseLoaded}
                     componentLoader={componentLoader}
+                    firstCaseId={caseId}
                   ></CaseList>
                 </div>
               </Grid>
