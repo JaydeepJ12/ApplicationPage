@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   FormControl,
@@ -8,82 +9,20 @@ import {
   InputBase,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Typography
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
+import useStyles from "../../assets/css/common_styles";
 import ComponentLoader from "../common/component-loader";
+import headerStyles from "../header/header_styles";
 import PeoplePreview from "./people-preview";
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  },
-  searchPaper: {
-    padding: "5px 4px",
-    display: "flex",
-    alignItems: "center",
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  fontWeight: {
-    fontWeight: "bold",
-  },
-  nextButton: {
-    float: "right",
-  },
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: "lightgrey",
-    "&:hover": {
-      backgroundColor: "lightgrey",
-    },
-    marginLeft: 0,
-    // width: '100%'
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  inputRoot: {
-    color: "inherit",
-  },
-  inputInput: {
-    // padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    // transition: theme.transitions.create('width'),
-    width: "100%",
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    // flex: 1,
-  },
-  iconButton: {
-    padding: 10,
-  },
-  large: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
-}), {index: 1});
-
 export default function Peoples() {
   const classes = useStyles();
+  const sharedClasses = headerStyles();
+
   const [open, setOpen] = React.useState(false);
   const [userName, setUserName] = React.useState("");
   const [userFullName, setUserFullName] = React.useState("");
@@ -135,7 +74,7 @@ export default function Peoples() {
     };
     var config = {
       method: "post",
-      url: '/cases/getPeople',
+      url: "/cases/getPeople",
       data: jsonData,
     };
 
@@ -173,20 +112,18 @@ export default function Peoples() {
   const renderUserImage = (userName, fullName) => {
     if (userName) {
       return (
-        <img
+        <Avatar
+          onClick={() => handleClickOpen(userName, fullName)}
           onError={(event) => addDefaultSrc(event)}
           src={process.env.REACT_APP_USER_ICON.concat(userName)}
-          height={50}
-          width={50}
-          onClick={() => handleClickOpen(userName, fullName)}
+          className={classes.avt_large}
         />
       );
     } else {
       return (
-        <img
+        <Avatar
           src="../../assets/images/default-userimage.png"
-          height={50}
-          width={50}
+          className={classes.avt_large}
         />
       );
     }
@@ -217,15 +154,15 @@ export default function Peoples() {
   };
 
   return (
-    <div>
+    <>
       <PeoplePreview
         open={open}
         userName={userName}
         userFullName={userFullName}
         handleClose={handleClose}
       ></PeoplePreview>
-      <Box boxShadow={0} className="card card-task-overview" borderRadius={35}>
-        <Grid item xs={12} container spacing={3}>
+      <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
+        <Grid item xs={12} container spacing={2}>
           <Grid item lg={3} md={3} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id="demo-simple-select-outlined-label">
@@ -248,17 +185,21 @@ export default function Peoples() {
           </Grid>
           <Grid item lg={6} md={6} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
-              <Paper component="form" className={classes.searchPaper}>
+              <div
+                className={
+                  sharedClasses.search + " " + sharedClasses.searchFocused
+                }
+              >
+                <div className={sharedClasses.searchIconOpened}>
+                  <IconButton className={sharedClasses.headerMenuButton}>
+                    <SearchIcon className={sharedClasses.headerIcon} />
+                  </IconButton>
+                </div>
                 <InputBase
-                  className={classes.input}
-                  placeholder="Search People…"
-                  inputProps={{ "aria-label": "search people…" }}
                   onInput={(event) => searchPeople(event.target.value)}
+                  placeholder="Search…"
                 />
-                <IconButton className={classes.iconButton} aria-label="search">
-                  <SearchIcon />
-                </IconButton>
-              </Paper>
+              </div>
             </FormControl>
           </Grid>
           <Grid
@@ -282,20 +223,29 @@ export default function Peoples() {
         </Grid>
         {/* <Slider {...SilderSetting}> */}
         {componentLoader ? (
-          <ComponentLoader type="rect" />
+          <div className={classes.mt_one}>
+            <ComponentLoader type="rect" />
+          </div>
         ) : (
-          <div className="people-image-list">
+          <div className={classes.mt_one}>
             <Grid container spacing={3}>
               {peopleData.length ? (
                 peopleData.map((people) => (
-                  <Grid item lg={3} md={3} xs={3} sm={3}>
+                  <Grid
+                    item
+                    lg={3}
+                    md={3}
+                    xs={3}
+                    sm={3}
+                    style={{ textAlign: "center" }}
+                  >
                     <Box>
                       <Icon className="s-option-auto-image">
                         {renderUserImage(people.ShortUserName, people.FullName)}
                       </Icon>
                       <Typography
                         className={classes.fontWeight}
-                        variant="caption"
+                        variant="subtitle2"
                         display="block"
                         gutterBottom
                       >
@@ -312,7 +262,7 @@ export default function Peoples() {
                       </Typography>
                       <Typography
                         className={classes.fontWeight}
-                        variant="caption"
+                        variant="subtitle2"
                         display="block"
                         gutterBottom
                       >
@@ -327,32 +277,55 @@ export default function Peoples() {
             </Grid>
           </div>
         )}
-        {peopleData.length >= maxCount ? (
-          <div>
-            {peopleData.length && recordLength !== maxCount ? (
-              <Button variant="contained" onClick={handlePrevClick}>
-                Prev
-              </Button>
-            ) : (
-              ""
-            )}
-            {peopleData.length ? (
-              <Button
-                variant="contained"
-                className={recordLength !== maxCount ? classes.nextButton : ""}
-                onClick={handleNextClick}
+
+        {peopleData.length ? (
+          <Grid container spacing={3}>
+            {recordLength !== maxCount ? (
+              <Grid
+                item
+                lg={6}
+                md={6}
+                xs={6}
+                sm={6}
+                style={{
+                  textAlign: peopleData.length >= maxCount ? "right" : "",
+                }}
               >
-                Next
-              </Button>
+                <Button variant="contained" onClick={handlePrevClick}>
+                  Prev
+                </Button>
+              </Grid>
             ) : (
               ""
             )}
-          </div>
+            {peopleData.length >= maxCount ? (
+              <Grid
+                item
+                lg={6}
+                md={6}
+                xs={6}
+                sm={6}
+                style={{ textAlign: "left" }}
+              >
+                <Button
+                  variant="contained"
+                  className={
+                    recordLength !== maxCount ? classes.nextButton : ""
+                  }
+                  onClick={handleNextClick}
+                >
+                  Next
+                </Button>
+              </Grid>
+            ) : (
+              ""
+            )}
+          </Grid>
         ) : (
           ""
         )}
         {/* </Slider> */}
       </Box>
-    </div>
+    </>
   );
 }

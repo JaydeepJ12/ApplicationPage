@@ -1,73 +1,55 @@
-import React from "react";
 import {
-  Grid,
+  AppBar,
+  Avatar,
   Box,
   Card,
-  AppBar,
-  Toolbar,
-  Avatar,
+  CardHeader,
+  Grid,
   Paper,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  IconButton,
   Tab,
   Tabs,
-  makeStyles,
-  Typography
+  Toolbar,
+  Typography,
 } from "@material-ui/core";
-import PropTypes from "prop-types";
-import SwipeableViews from "react-swipeable-views";
-import FilterListIcon from "@material-ui/icons/FilterList";
 import { useTheme } from "@material-ui/core/styles";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import PropTypes from "prop-types";
+import React from "react";
+import SwipeableViews from "react-swipeable-views";
+import useStyles from "../../assets/css/common_styles";
+
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`full-width-tabpanel-${index}`}
-        aria-labelledby={`full-width-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box p={3}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
-    );
-  }
-  function a11yProps(index) {
-    return {
-      id: `full-width-tab-${index}`,
-      "aria-controls": `full-width-tabpanel-${index}`,
-    };
-  }
-  TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    "aria-controls": `full-width-tabpanel-${index}`,
   };
-  const useStyles = makeStyles((theme) => ({
-  title: {
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  card: {
-    margin: 10,
-  },
-  listItem: {
-    textAlign: "right",
-  },
-  large: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
-}), {index: 1});
+}
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
 export default function PeopleDepartment() {
-    const theme = useTheme();
+  const theme = useTheme();
   var classes = useStyles();
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
@@ -78,111 +60,206 @@ export default function PeopleDepartment() {
   };
   return (
     <div className="page" id="page-overview">
-      <Card>
-        <Grid container spacing={3}>
-          <Grid item lg={3} md={3} xs={12} sm={12}>
-            <AppBar position="position" className={classes.appBar}>
-              <Toolbar>
-                <FilterListIcon />
-              </Toolbar>
-            </AppBar>
-            <div className={"st-p-1"}>
-              <Card
-                style={{ cursor: "pointer", marginBottom: "10px" }}
-                className={"card card-people-dpt"}
-              >
-                <List>
-                  <ListItem>
-                    <ListItemAvatar>
-                    <Avatar
-                            alt="Test"
-                            src="https://s3-alpha-sig.figma.com/img/67fb/f195/182fba98c8d3f90d0466b52daece2698?Expires=1610928000&Signature=WbTSsAC2RK2pr2DDwOxX44kddohUxpwnCq9Y6QFkJ73fvWpfBn1w~~Sf0GxfLpuyhu4Csza5VpKa8kFbKUA1Y5-7zAnpeqSUCspdUnnkWyyPC1mFkBdkKp~yZbsnHIENumo3wTmvz~pSDdHoyFgxOREPaCWOQukUjXQrVyem4QY~wYdbkQLOeeorCecTzOi-qcXS1PqXe~tT1qpZuytEbfpy~oo~RysXbXrfUNdpIQ4HcSKnw7I-dgJuwvx5U2mWkX8CorMgQi5dmwYd5Dwyyvd-gD7cUJUP~PFYBJ0sxIGwMb-lfz9oCe~X80q4bacvjJb9-77-HrQuQ5N3yC8Vng__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
-                          />
-                    </ListItemAvatar>
-                 
-                    <ListItemText primary="Dixit Solanki" />
-                    <ListItemText secondary="Fullstack Developer" />
-                  </ListItem>
-                </List>
-              </Card>
-
-              <Card
-                style={{ cursor: "pointer", marginBottom: "10px" }}
-                className={"card card-people-dpt"}
-              >
-                <List>
-                  <ListItem>
-                    <ListItemAvatar>
-                    <Avatar
-                            alt="Test"
-                            src="https://s3-alpha-sig.figma.com/img/67fb/f195/182fba98c8d3f90d0466b52daece2698?Expires=1610928000&Signature=WbTSsAC2RK2pr2DDwOxX44kddohUxpwnCq9Y6QFkJ73fvWpfBn1w~~Sf0GxfLpuyhu4Csza5VpKa8kFbKUA1Y5-7zAnpeqSUCspdUnnkWyyPC1mFkBdkKp~yZbsnHIENumo3wTmvz~pSDdHoyFgxOREPaCWOQukUjXQrVyem4QY~wYdbkQLOeeorCecTzOi-qcXS1PqXe~tT1qpZuytEbfpy~oo~RysXbXrfUNdpIQ4HcSKnw7I-dgJuwvx5U2mWkX8CorMgQi5dmwYd5Dwyyvd-gD7cUJUP~PFYBJ0sxIGwMb-lfz9oCe~X80q4bacvjJb9-77-HrQuQ5N3yC8Vng__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
-                          />
-                    </ListItemAvatar>
-                 
-                    <ListItemText primary="Dixit Solanki" />
-                    <ListItemText secondary="Fullstack Developer" />
-                  </ListItem>
-                </List>
-              </Card>
-            </div>
-          </Grid>
-          <Grid item lg={9} md={9} xs={12} sm={12}>
-              <div className="top-section" style={{'textAlign':'left','padding':'5px'}}>
-              <Avatar className={classes.large} 
-                            alt="Test"
-                            src="https://s3-alpha-sig.figma.com/img/67fb/f195/182fba98c8d3f90d0466b52daece2698?Expires=1610928000&Signature=WbTSsAC2RK2pr2DDwOxX44kddohUxpwnCq9Y6QFkJ73fvWpfBn1w~~Sf0GxfLpuyhu4Csza5VpKa8kFbKUA1Y5-7zAnpeqSUCspdUnnkWyyPC1mFkBdkKp~yZbsnHIENumo3wTmvz~pSDdHoyFgxOREPaCWOQukUjXQrVyem4QY~wYdbkQLOeeorCecTzOi-qcXS1PqXe~tT1qpZuytEbfpy~oo~RysXbXrfUNdpIQ4HcSKnw7I-dgJuwvx5U2mWkX8CorMgQi5dmwYd5Dwyyvd-gD7cUJUP~PFYBJ0sxIGwMb-lfz9oCe~X80q4bacvjJb9-77-HrQuQ5N3yC8Vng__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
-                          />
-              </div>
-          <div>
-              
-                    <Paper elevation={3}>
-                      <AppBar position="static" elevation={3}>
-                        <Tabs
-                          className="nav-tab-list"
-                          value={value}
-                          onChange={handleChange}
-                          indicatorColor="primary"
-                          textColor="primary"
-                          variant="fullWidth"
-                          aria-label="full width tabs example"
-                        >
-                          <Tab
-                            className="nav-tab"
-                            label="Info"
-                            {...a11yProps(0)}
-                          />
-                          <Tab
-                            className="nav-tab"
-                            label="Task"
-                            {...a11yProps(1)}
-                          />
-                          <Tab
-                            className="nav-tab"
-                            label="Acivity"
-                            {...a11yProps(2)}
-                          />
-                        </Tabs>
-                      </AppBar>
-                    </Paper>
-                    <SwipeableViews
-                      axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                      index={value}
-                      onChangeIndex={handleChangeIndex}
-                    >
-                      <TabPanel value={value} index={0} dir={theme.direction}>
-                        Info
-                      </TabPanel>
-                      <TabPanel value={value} index={1} dir={theme.direction}>
-                        Task
-                      </TabPanel>
-                      <TabPanel value={value} index={2} dir={theme.direction}>
-                       Activity
-                      </TabPanel>
-                    </SwipeableViews>
-                  </div>
-          </Grid>
+      <Grid container spacing={3}>
+        <Grid item lg={3} md={4} xs={12} sm={12}>
+          <AppBar position="position" className={classes.appBar}>
+            <Toolbar>
+              <FilterListIcon />
+            </Toolbar>
+          </AppBar>
+          <Box boxShadow={0} className="card bg-secondary" borderRadius={5}>
+            <Card
+              padding={0.5}
+              style={{ cursor: "pointer" }}
+              className={"card-user-case"}
+            >
+              <CardHeader
+                avatar={
+                  <Avatar
+                    className={classes.large}
+                    alt="Test"
+                    src="https://material-ui.com/static/images/avatar/1.jpg"
+                  />
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+              />
+            </Card>
+            <Card
+              padding={0.5}
+              style={{ cursor: "pointer" }}
+              className={"card-user-case"}
+            >
+              <CardHeader
+                avatar={
+                  <Avatar
+                    className={classes.large}
+                    alt="Test"
+                    src="https://material-ui.com/static/images/avatar/1.jpg"
+                  />
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+              />
+            </Card>
+            <Card
+              padding={0.5}
+              style={{ cursor: "pointer" }}
+              className={"card-user-case"}
+            >
+              <CardHeader
+                avatar={
+                  <Avatar
+                    className={classes.large}
+                    alt="Test"
+                    src="https://material-ui.com/static/images/avatar/1.jpg"
+                  />
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+              />
+            </Card>
+            <Card
+              padding={0.5}
+              style={{ cursor: "pointer" }}
+              className={"card-user-case"}
+            >
+              <CardHeader
+                avatar={
+                  <Avatar
+                    className={classes.large}
+                    alt="Test"
+                    src="https://material-ui.com/static/images/avatar/1.jpg"
+                  />
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+              />
+            </Card>
+            <Card
+              padding={0.5}
+              style={{ cursor: "pointer" }}
+              className={"card-user-case"}
+            >
+              <CardHeader
+                avatar={
+                  <Avatar
+                    className={classes.large}
+                    alt="Test"
+                    src="https://material-ui.com/static/images/avatar/1.jpg"
+                  />
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+              />
+            </Card>
+            <Card
+              padding={0.5}
+              style={{ cursor: "pointer" }}
+              className={"card-user-case"}
+            >
+              <CardHeader
+                avatar={
+                  <Avatar
+                    className={classes.large}
+                    alt="Test"
+                    src="https://material-ui.com/static/images/avatar/1.jpg"
+                  />
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+              />
+            </Card>
+            <Card
+              padding={0.5}
+              style={{ cursor: "pointer" }}
+              className={"card-user-case"}
+            >
+              <CardHeader
+                avatar={
+                  <Avatar
+                    className={classes.large}
+                    alt="Test"
+                    src="https://material-ui.com/static/images/avatar/1.jpg"
+                  />
+                }
+                title="Shrimp and Chorizo Paella"
+                subheader="September 14, 2016"
+              />
+            </Card>
+          </Box>
         </Grid>
-      </Card>
+        <Grid item lg={9} md={8} xs={12} sm={12}>
+          <Grid container spacing={3}>
+            <Grid item lg={2} md={3} xs={12} sm={12}>
+              <div
+                className="top-section"
+                style={{ textAlign: "left", padding: "5px" ,borderRight:'2px solid #eeeeee' }}
+              >
+                <Avatar
+                  className={classes.ex_large}
+                  alt="Test"
+                  src="https://material-ui.com/static/images/avatar/1.jpg"
+                />
+              </div>
+            </Grid>
+            <Grid item lg={8} md={9} xs={12} sm={12}>
+              <Grid container spacing={1}>
+                <Grid item lg={6} md={6} xs={12} sm={12} container>
+                  
+                      <Grid item lg={6} md={6} xs={6} sm={6}><Typography color={"primary"}>Name: </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}>  <Typography>Dixit Solanki </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}><Typography color={"primary"}>Job: </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}>  <Typography>Software  Engineer </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}><Typography color={"primary"}>Department: </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}>  <Typography>IT Department </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}><Typography color={"primary"}>Contact Info: </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}>  <Typography>85856959547 </Typography></Grid>
+                      <Grid item lg={6} md={6} xs={6} sm={6}><Typography color={"primary"}>Location: </Typography></Grid>
+                  <Grid item lg={6} md={6} xs={6} sm={6}>  <Typography>Vadodara </Typography></Grid>
+                  <Grid item lg={6} md={6} xs={6} sm={6}><Typography color={"primary"}>Manager: </Typography></Grid>
+                  <Grid item lg={6} md={6} xs={6} sm={6}>  <Typography>Michael Fore </Typography></Grid>
+                </Grid>
+               
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <div className={classes.mt_one}>
+            <Paper>
+              <AppBar position="static" elevation={1}>
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  indicatorColor="secondary"
+                  textColor="secondary"
+                  variant="fullWidth"
+                  aria-label="full width tabs example"
+                >
+                  <Tab className="nav-tab" label="Info" {...a11yProps(0)} />
+                  <Tab className="nav-tab" label="Task" {...a11yProps(1)} />
+                  <Tab className="nav-tab" label="Acivity" {...a11yProps(2)} />
+                </Tabs>
+              </AppBar>
+            </Paper>
+            <SwipeableViews
+              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+              index={value}
+              onChangeIndex={handleChangeIndex}
+            >
+              <TabPanel value={value} index={0} dir={theme.direction}>
+                Info
+              </TabPanel>
+              <TabPanel value={value} index={1} dir={theme.direction}>
+                Task
+              </TabPanel>
+              <TabPanel value={value} index={2} dir={theme.direction}>
+                Activity
+              </TabPanel>
+            </SwipeableViews>
+          </div>
+        </Grid>
+      </Grid>
     </div>
   );
 }

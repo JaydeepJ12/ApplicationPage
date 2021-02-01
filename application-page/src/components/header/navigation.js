@@ -1,5 +1,4 @@
 // styles
-import useStyles from "./header_styles";
 import {
   Avatar,
   Drawer,
@@ -11,24 +10,18 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import classnames from "classnames";
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-} from "@material-ui/icons";
-import { Link, Router } from "@reach/router";
+import { ChevronLeft, ChevronRight, Menu } from "@material-ui/icons";
+import { Link } from "@reach/router";
+import classnames from "classnames";
 import clsx from "clsx";
 import React, { useState } from "react";
-
+import rootRoute from "../../system/route";
 import HeaderRight from "../header/header_right";
-import rootRoute from '../../system/route';
-
+import menuItems from "../header/menu_items";
 import Login from "../Login/index.js";
-
-import menuItems  from '../header/menu_items'
+import useStyles from "./header_styles";
 
 export default function Navigation(props) {
   const classes = useStyles();
@@ -154,7 +147,7 @@ export default function Navigation(props) {
           </Drawer>
           <div className={classnames(classes.content)}>
             <div className={classes.fakeToolbar} />
-            { rootRoute }
+            {rootRoute}
           </div>
         </div>
       )}

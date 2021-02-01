@@ -1,9 +1,11 @@
+
 import { CircularProgress, Icon, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-
+import useStyles from "../assets/css/common_styles";
 export default function UserAutocomplete(props) {
+  var classes = useStyles();
   const [users, setUsersData] = useState([]);
   const [assignTo, setAssignTo] = useState(props.defaultHopperId);
   const [open, setOpen] = useState(false);
@@ -17,7 +19,9 @@ export default function UserAutocomplete(props) {
 
   useEffect(() => {
     setSelectedUser(props.selectedUser);
-  }, [props.selectedUser]);
+    setDefaultHopper(props.defaultHopper);
+    setDefaultHopperId(props.defaultHopperId);
+  }, [props.selectedUser, props.defaultHopper, props.defaultHopperId]);
 
   const handleAutocompleteKeyUp = (searchText) => {
     if (searchText == "") {
@@ -128,7 +132,7 @@ export default function UserAutocomplete(props) {
     } else {
       return (
         <img
-          src="../assets/images/default-userimage.png"
+          src="../../assets/images/default-userimage.png"
           height={50}
           width={50}
         />
@@ -138,7 +142,7 @@ export default function UserAutocomplete(props) {
 
   return (
     <div>
-      <div style={{ width: "auto", marginTop: ".5em" }}>
+      <div style={{ width: "auto", marginTop: ".5em" }} className={classes.form}>
         {" "}
         {
           <Autocomplete
@@ -149,9 +153,7 @@ export default function UserAutocomplete(props) {
             renderOption={(option) => {
               return (
                 <Fragment>
-                  <Icon>
-                    {renderUserImage(option?.username)}
-                  </Icon>
+                  <Icon>{renderUserImage(option?.username)}</Icon>
                   {option?.displayName +
                     (option.primaryJobTitle
                       ? " (" + option.primaryJobTitle + ")"
@@ -180,15 +182,13 @@ export default function UserAutocomplete(props) {
               setOpen(false);
             }}
             renderInput={(params) => (
-              <Fragment>
+            
                 <TextField
                   {...params}
                   label={
                     selectedUser
                       ? selectedUser
-                      : defaultHopper
-                      ? "Default Hopper- " + defaultHopper
-                      : ""
+                      : "Default Hopper- " + defaultHopper
                   }
                   placeholder="Search User"
                   variant="outlined"
@@ -208,7 +208,7 @@ export default function UserAutocomplete(props) {
                     ),
                   }}
                 />
-              </Fragment>
+             
             )}
           />
         }

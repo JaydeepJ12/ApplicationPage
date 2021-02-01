@@ -9,18 +9,21 @@ import {
   Grid,
   MenuItem,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SecureLS from "secure-ls";
 import swal from "sweetalert";
-import * as notification from "../components/common/toast";
+import useStyles from "../../assets/css/common_styles";
+import Froala from "../../components/common/froala.js";
+import * as notification from "../../components/common/toast";
+import FileUpload from "../../components/file-upload.js";
+import Loading from "../../components/Loader.js";
 import CaseBasicInformation from "./case-basic-information.js";
-import FileUpload from "./file-upload.js";
-import Froala from "./froala.js";
-import Loading from "./Loader.js";
+
+const casesBaseURL = process.env.REACT_APP_BASE_CASES_URL;
 
 export default function CaseViewer(props) {
   const [state, setState] = useState({});
@@ -39,6 +42,7 @@ export default function CaseViewer(props) {
   const [caseFields, setCaseFields] = useState([]);
   const [parentDropDownloaded, setParentDropDownloaded] = useState(false);
 
+  var classes = useStyles();
   const handleFieldAccordionChange = (isFieldExpanded) => {
     setFieldExpanded(!isFieldExpanded);
   };
@@ -119,6 +123,7 @@ export default function CaseViewer(props) {
         let caseDetailsData = response?.data?.responseContent;
 
         if (caseDetailsData.details.length) {
+          // Todo: Need to configure ControlPriority same as SystemPriority in config application
           caseDetailsData.details = caseDetailsData.details.sort(
             (a, b) => a.controlPriority - b.controlPriority
           );
@@ -160,11 +165,7 @@ export default function CaseViewer(props) {
 
       if (currentData[commentIndex]) {
         await axios
-          .get(
-            "/cases/assocDecode?AssocId=".concat(
-              assocTypeIds[i]
-            )
-          )
+          .get("/cases/assocDecode?AssocId=".concat(assocTypeIds[i]))
           .then((resp) => {
             if (resp.data.length) {
               currentData[commentIndex].assoc_decode = resp.data;
@@ -191,11 +192,7 @@ export default function CaseViewer(props) {
       }
 
       axios
-        .get(
-          "/cases/caseassoctypecascade?CaseTypeID=".concat(
-            caseTypeId
-          )
-        )
+        .get("/cases/caseassoctypecascade?CaseTypeID=".concat(caseTypeId))
         .then((resp) => {
           if (localParentChildData !== JSON.stringify(resp.data)) {
             setParentChildData(resp.data);
@@ -313,8 +310,6 @@ export default function CaseViewer(props) {
         await axios(config)
           .then(function (response) {
             let externalData = response?.data?.responseContent;
-
-            let dataAvailable = true;
             if (
               externalData &&
               externalData.length &&
@@ -327,27 +322,32 @@ export default function CaseViewer(props) {
               );
 
               if (dataValue && !dataValue.length) {
-                dataAvailable = false;
-                currentData[commentIndex].assoc_decode = currentData[
-                  commentIndex
-                ].assoc_decode
-                  ? currentData[commentIndex].assoc_decode.concat(externalData)
-                  : externalData;
-                loadParentDropDown(
-                  fieldData,
-                  caseTypeId,
-                  maxCountValue * 2,
+                var parentDiv = document.getElementById(
                   currentData[commentIndex].controlId
                 );
+                if (parentDiv) {
+                  // Add span
+                  var span_obj = document.createElement("span");
+
+                  // Set attribute for span element, such as id
+                  span_obj.setAttribute(
+                    "id",
+                    "span-" + currentData[commentIndex].controlId
+                  );
+
+                  // Set text for span element
+                  span_obj.innerHTML = currentData[commentIndex].controlValue;
+
+                  // Append span element in parent div
+                  parentDiv.appendChild(span_obj);
+                }
               }
             }
 
-            if (dataAvailable) {
-              currentData[commentIndex].assoc_decode = externalData;
-              setCaseFields(currentData);
-              if (i + 1 === superParentAssocTypeIds.length) {
-                isLastDropdown = true;
-              }
+            currentData[commentIndex].assoc_decode = externalData;
+            setCaseFields(currentData);
+            if (i + 1 === superParentAssocTypeIds.length) {
+              isLastDropdown = true;
             }
           })
           .catch(function (error) {
@@ -616,7 +616,7 @@ export default function CaseViewer(props) {
   const createDropDownField = (data, index) => {
     return (
       <div
-        className="card-page-wrap"
+        className={classes.form + " " + "card-page-wrap"}
         id="card-page-wrap"
         onScroll={(event) => onScroll(data, event)}
       >
@@ -697,20 +697,16 @@ export default function CaseViewer(props) {
   const loadFields = () => {
     return (
       <Box>
-        <div>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <div>
-                {caseFields.length
-                  ? caseFields.map((item, index) => (
-                      <div key={index}>{fieldHandler(item, index)}</div>
-                    ))
-                  : []}
-                <Box></Box>
-              </div>
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            {caseFields.length
+              ? caseFields.map((item, index) => (
+                  <div key={index}>{fieldHandler(item, index)}</div>
+                ))
+              : []}
+            <Box></Box>
           </Grid>
-        </div>
+        </Grid>
 
         {!loaded ? createLoader() : []}
       </Box>
@@ -718,7 +714,7 @@ export default function CaseViewer(props) {
   };
 
   const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../assets/images/default-userimage.png");
+    let userDefaultImage = require("../../assets/images/default-userimage.png");
     if (userDefaultImage) {
       event.target.src = userDefaultImage;
     }
@@ -758,7 +754,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isUrlContain) {
-        urlValue = urlValue;
+        urlValue = casesBaseURL + urlValue;
       }
       if (urlValue) {
         imgSrcUrls[i].setAttribute("src", urlValue);
@@ -780,7 +776,7 @@ export default function CaseViewer(props) {
       }
 
       if (!isHrefUrlContain) {
-        hrefUrlValue = hrefUrlValue;
+        hrefUrlValue = casesBaseURL + hrefUrlValue;
       }
       if (hrefUrlValue) {
         hrefUrls[j].setAttribute("href", hrefUrlValue);
@@ -890,7 +886,10 @@ export default function CaseViewer(props) {
                   </Typography>
                 </AccordionSummary>
                 {caseFields?.length ? (
-                  <AccordionDetails className="case-fields">
+                  <AccordionDetails
+                    className="case-fields"
+                    style={{ display: "block" }}
+                  >
                     <form onSubmit={handleSubmit} className="case-create-form">
                       <Button type="submit" variant="contained" color="primary">
                         Save

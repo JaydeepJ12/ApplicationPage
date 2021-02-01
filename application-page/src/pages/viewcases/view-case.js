@@ -1,76 +1,50 @@
 import {
   Card,
-  fade,
   FormControl,
   Grid,
   InputLabel,
   makeStyles,
   Menu,
   MenuItem,
-  OutlinedInput,
   Select,
-  Toolbar,
   withStyles
 } from "@material-ui/core";
+import { navigate } from "@reach/router";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import * as notification from "../components/common/toast";
+import { useSelector } from "react-redux";
+import useStylesBase from "../../assets/css/common_styles";
+import GotoBackButton from "../../components/common/BackButton";
+import * as notification from "../../components/common/toast";
+import Loading from "../../components/Loader";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
-import Loading from "./Loader";
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(1),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  fixedHeight: {
-    height: "90vh",
-    overflow: "auto",
-  },
-  caseDetails: {
-    padding: theme.spacing(2),
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
+const useStyles = makeStyles(
+  (theme) => ({
+    paper: {
+      padding: theme.spacing(1),
+      display: "flex",
+      overflow: "auto",
+      flexDirection: "column",
     },
-    marginLeft: 0,
-    // width: '100%'
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  inputRoot: {
-    color: "inherit",
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    // transition: theme.transitions.create('width'),
-    width: "100%",
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}), {index: 1});
+    fixedHeight: {
+      height: "90vh",
+      overflow: "auto",
+    },
+    caseDetails: {
+      padding: theme.spacing(2),
+    },
+    menuButton: {
+      marginRight: theme.spacing(2),
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+  }),
+  { index: 1 }
+);
 
 const StyledMenu = withStyles({
   paper: {
@@ -103,7 +77,7 @@ const StyledMenuItem = withStyles((theme) => ({
   },
 }))(MenuItem);
 
-export default function ViewCase() {
+export default function ViewCase(props) {
   const [caseId, setCaseId] = useState(0);
   const [caseData, setCaseData] = useState([]);
   const [caseListData, setCaseListData] = useState([]);
@@ -123,11 +97,22 @@ export default function ViewCase() {
   const [state, setState] = useState(0);
   const [caseTypeId, setCaseTypeId] = useState(0);
   const [labelWidth, setLabelWidth] = React.useState(0);
+  const caseTypesByEntityData = useSelector((state) => state);
 
   const inputLabel = React.useRef(null);
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const [userNameValue, setUserNameValue] = useState(
+    props.location?.state?.userName ? props.location?.state?.userName : ""
+  );
+  const [filterValue, setFilterValue] = useState(
+    props.location?.state?.filter ? props.location?.state?.filter : -1
+  );
+  const [taskCount, setTaskCount] = useState(
+    props.location?.state?.taskCount ? props.location?.state?.taskCount : 0
+  );
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -156,7 +141,7 @@ export default function ViewCase() {
     isCaseListFilterByCaseList = false,
     caseTypeId = 0
   ) => {
-    if (!caseListFiltered) {
+    if (!caseListFiltered && filterValue < 0) {
       notification.toast.warning("Please wait...!!");
       return false;
     }
@@ -184,6 +169,66 @@ export default function ViewCase() {
     });
   };
 
+  const entitiesByEntityId = async () => {
+    setComponentLoader(true);
+    let path = window.location.pathname;
+    let entityId = 0;
+    if (path) {
+      entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
+    }
+
+    var jsonData = {
+      entityId: entityId,
+    };
+
+    var config = {
+      method: "post",
+      url: "/cases/getEntitiesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        var entityData = response.data.filter((x) => x.SYSTEM_CODE === "ASSCT");
+
+        if (entityData) {
+          let entityIds = entityData
+            .map(function (x) {
+              return x.EXID;
+            })
+            .join(",");
+          if (entityIds) {
+            caseTypesByEntityIds(entityIds);
+          }
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const caseTypesByEntityIds = async (entityIds) => {
+    var jsonData = {
+      entityIds: entityIds,
+    };
+
+    var config = {
+      method: "post",
+      url: "/cases/caseTypesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        setCaseTypeData(response.data);
+        setCaseTypeId(response.data[0]?.CASE_TYPE_ID);
+        caseList("", 0, false, 0, false, true, response.data[0]?.CASE_TYPE_ID);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   const caseList = async (
     searchText = "",
     skipCount = 0,
@@ -193,6 +238,16 @@ export default function ViewCase() {
     isFilterByCaseType = false,
     caseTypeId = 0
   ) => {
+    let userName = userNameValue;
+    let caseListFilter = filterValue;
+
+    if (!loadMore && (isFilterByType || isFilterByCaseType)) {
+      userName = "";
+      caseListFilter = -1;
+      setUserNameValue("");
+      setFilterValue(-1);
+    }
+
     if (isFilterByCaseType) {
       caseTypeId = Number(caseTypeId);
       setCaseTypeIdValue(caseTypeId);
@@ -201,7 +256,11 @@ export default function ViewCase() {
     if (isFilterByType) {
       setCaseListFiltered(false);
     }
-    if (loadMore && caseFilter > 0) {
+    if (
+      loadMore &&
+      caseFilter > 0 &&
+      (taskCount <= 0 || taskCount === skipCount)
+    ) {
       return false;
     }
 
@@ -209,24 +268,23 @@ export default function ViewCase() {
       setLoaded(false);
       skipCount = 0;
     }
+
     var jsonData = {
-      "username": "michaelaf",
-      "typeId": 19,
-      "pageSize": 11,
-      "skipCount": 0,
-      "currentPage": 1,
-      "ascending": true,
-      "sortColumn": "string",
-      "filter": 0,
-      "filters": [
-        {}
-      ]
-    } ;
+      Username: userName ? userName : "bhaviks",
+      TypeId: caseTypeId > 0 ? caseTypeId : caseTypeIdValue,
+      PageSize: pageSize,
+      MaxCount: maxCount,
+      SkipCount: skipCount,
+      CurrentPage: 1,
+      Ascending: false,
+      SortColumn: null,
+      Filter: caseListFilter < 0 ? filter : caseListFilter,
+      Filters: null,
+      TypeIdsForGrouping: null,
+    };
 
-    
-    console.log(jsonData)
-
-    axios.post("/cases/GetCaseHeaders", jsonData)
+    axios
+      .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
         setCaseListFiltered(true);
         setCaseListData([]);
@@ -256,6 +314,16 @@ export default function ViewCase() {
           setFilteredCaseListData(caseHeadersData);
         }
         setComponentLoader(false);
+        if (taskCount <= maxCount) {
+          setUserNameValue("");
+          setFilterValue(-1);
+        }
+
+        if (filterValue > 0) {
+          navigate("tasks", {
+            state: { userName: "", filter: -1, taskCount: 0, isParent: false },
+          });
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -263,13 +331,24 @@ export default function ViewCase() {
   };
 
   useEffect(() => {
-    caseTypes();
+    setComponentLoader(true);
+    let data = caseTypesByEntityData.applicationData.caseTypes;
+    if (data.length) {
+      if (filterValue >= 0 && userNameValue) {
+        handleFilterCaseList(filterValue, false);
+        setCaseListFiltered(true);
+      }
+      setCaseTypeData(data);
+      setCaseTypeIdValue(data[0]?.CASE_TYPE_ID);
+      if (filterValue && filterValue < 0) {
+        setCaseTypeId(data[0]?.CASE_TYPE_ID);
+        caseList("", 0, false, 0, false, true, data[0]?.CASE_TYPE_ID);
+      }
+    }
     setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
+  }, [caseTypesByEntityData.applicationData.caseTypes]);
 
   const createLoader = (jsonData) => {
-   
-  
     return <Loading />;
   };
 
@@ -284,6 +363,7 @@ export default function ViewCase() {
   };
 
   const classes = useStyles();
+  const classesBase = useStylesBase();
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const CaseDetailsPaper = clsx(
@@ -342,148 +422,83 @@ export default function ViewCase() {
   };
   return (
     <div className="page" id="page-view-case">
+      {taskCount ? <GotoBackButton navigateCount={-2} /> : ""}
       <Card>
-      <Grid container spacing={0}>
-      
-        {loaded ? (
-          <>
-          {/* dont remove this code its usefull for reference of work after confirm i will remove this */}
-            {/* <AppBar position="static" className="inner-navigation bg-primary">
-              <Toolbar>
-                <IconButton
-                  edge="start"
-                  className={classes.menuButton}
-                  color="inherit"
-                  aria-label="open drawer"
-                >
-                  <MenuIcon />
-                </IconButton>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    placeholder="Search…"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                    onInput={(event) => searchCase(event.target.value, event)}
-                  />
-                </div>
-                <div>
-                  <Button
-                    aria-controls="customized-menu"
-                    aria-haspopup="true"
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClick}
-                  >
-                    Document List
-                  </Button>
-                  <StyledMenu
-                    id="customized-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                  >
-                    {documentList.length
-                      ? documentList.map((option) => (
-                          <StyledMenuItem>
-                            <ListItemIcon>
-                              <SendIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary="Sent mail" />
-                          </StyledMenuItem>
-                        ))
-                      : "Documents not uploaded..!!"}
-                  </StyledMenu>
-                </div>
-              </Toolbar>
-            </AppBar> */}
-           
+        <Grid container spacing={0}>
+          {loaded ? (
+            <>
               <Grid item xs={12} sm={3} md={3} lg={3} className="panel-left">
-                  <div
-                    className={fixedHeightPaper}
-                    onScroll={(event) => onScroll(caseListData, event)}
+                <div
+                  className={fixedHeightPaper}
+                  onScroll={(event) => onScroll(caseListData, event)}
+                >
+                  <FormControl
+                    variant="outlined"
+                    style={{ width: "-webkit-fill-available" }}
+                    className={classesBase.mt_one + " " + classesBase.mb_one}
                   >
-                    <FormControl
-                      style={{ width: "-webkit-fill-available" }}
-                      className={classes.formControl}
+                    <InputLabel
+                      htmlFor="outlined-filter-native-simple"
+                      shrink
+                      ref={inputLabel}
                     >
-                      <InputLabel
-                        htmlFor="outlined-caseType-native-simple"
-                        shrink
-                        ref={inputLabel}
-                      >
-                        Case Types
-                      </InputLabel>
-                      <Select
-                        value={caseTypeId}
-                        onChange={(event) =>
-                          handleFilterCaseList(
-                            0,
-                            false,
-                            true,
-                            event.target.value
-                          )
-                        }
-                        label="Case Type"
-                        inputProps={{
-                          caseTypeId: "caseTypeId",
-                          id: "outlined-caseType-native-simple",
-                        }}
-                        fullWidth={true}
-                      >
-                        {caseTypeData.length
-                          ? caseTypeData.map((option) => (
-                              <MenuItem
-                                key={option.CASE_TYPE_ID}
-                                value={option.CASE_TYPE_ID}
-                              >
-                                {option.NAME}
-                              </MenuItem>
-                            ))
-                          : []}
-                      </Select>
-                    </FormControl>
-                    <CaseList
-                      handleCasePreviewClick={handleCasePreviewClick}
-                      handleFilterCaseList={handleFilterCaseList}
-                      caseListData={
-                        filteredCaseListData.length ? filteredCaseListData : []
+                      Case Types
+                    </InputLabel>
+                    <Select
+                      value={caseTypeId}
+                      onChange={(event) =>
+                        handleFilterCaseList(0, false, true, event.target.value)
                       }
-                      caseLoaded={caseLoaded}
-                      componentLoader={componentLoader}
-                    ></CaseList>
-                  </div>
+                      label="Case Type"
+                      inputProps={{
+                        caseTypeId: "caseTypeId",
+                        id: "outlined-caseType-native-simple",
+                      }}
+                      fullWidth={true}
+                    >
+                      {caseTypeData.length
+                        ? caseTypeData.map((option) => (
+                            <MenuItem
+                              key={option.CASE_TYPE_ID}
+                              value={option.CASE_TYPE_ID}
+                            >
+                              {option.NAME}
+                            </MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                  <CaseList
+                    handleCasePreviewClick={handleCasePreviewClick}
+                    handleFilterCaseList={handleFilterCaseList}
+                    caseListData={
+                      filteredCaseListData.length ? filteredCaseListData : []
+                    }
+                    caseLoaded={caseLoaded}
+                    componentLoader={componentLoader}
+                    firstCaseId={caseId}
+                  ></CaseList>
+                </div>
               </Grid>
               {/* Recent Deposits */}
-            
-               
-                  {caseId > 0 ? (
-                    <CaseViewer
-                      caseId={caseId}
-                      caseData={caseData}
-                      handleCaseLoaded={handleCaseLoaded}
-                      handleDocumentList={handleDocumentList}
-                    ></CaseViewer>
-                  ) : (
-                    ""
-                  )}
-              
-         
-         
-          </>
-        ) : (
-          ""
-        )}
-        {!loaded ? createLoader() : []}
-      
+
+              {caseId > 0 ? (
+                <CaseViewer
+                  caseId={caseId}
+                  caseData={caseData}
+                  handleCaseLoaded={handleCaseLoaded}
+                  handleDocumentList={handleDocumentList}
+                ></CaseViewer>
+              ) : (
+                ""
+              )}
+            </>
+          ) : (
+            ""
+          )}
+          {!loaded ? createLoader() : []}
         </Grid>
-        </Card>
+      </Card>
     </div>
   );
 }

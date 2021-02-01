@@ -2,16 +2,18 @@ import { Card, Container, Grid, MenuItem, TextField } from "@material-ui/core";
 import { createHistory } from "@reach/router";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import SecureLS from "secure-ls";
+import GotoBackButton from "../../components/common/BackButton.js";
 import CaseCreator from "./case_creator.js";
-import GotoBackButton from "./common/BackButton";
 export default function CaseSelect(props) {
   let history = createHistory(window);
 
   const [caseType, setCaseType] = useState(0);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [disableCaseType, setCaseTypeDisable] = useState(false);
-  const isParent = props.location.state.isParent;
+  const caseTypesByEntityData = useSelector((state) => state);
+  const isParent = props.location?.state?.isParent;
 
   const pageLoad = () => {
     var ls = new SecureLS({
@@ -35,16 +37,79 @@ export default function CaseSelect(props) {
     }
   };
 
-  const caseTypes = async () => {
-    await axios.get("/cases/types").then((resp) => {
-      setCaseTypeData(resp.data);
-    });
+  // This API call is for get case types data
+
+  // const caseTypes = async () => {
+  //   await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
+  //     setCaseTypeData(resp.data);
+  //   });
+  // };
+
+  const entitiesByEntityId = async () => {
+    let path = window.location.pathname;
+    let entityId = 0;
+    if (path) {
+      entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
+    }
+
+    var jsonData = {
+      entityId: entityId,
+    };
+
+    var config = {
+      method: "post",
+      url: "/cases/getEntitiesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        var entityData = response.data.filter((x) => x.SYSTEM_CODE === "ASSCT");
+
+        if (entityData) {
+          let entityIds = entityData
+            .map(function (x) {
+              return x.EXID;
+            })
+            .join(",");
+          if (entityIds) {
+            caseTypesByEntityIds(entityIds);
+          }
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const caseTypesByEntityIds = async (entityIds) => {
+    var jsonData = {
+      entityIds: entityIds,
+    };
+
+    var config = {
+      method: "post",
+      url: "/cases/caseTypesByEntityId",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        // dispatch(data(response.data, 'CASE_TYPE'));
+        setCaseTypeData(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   useEffect(() => {
     pageLoad();
-    caseTypes();
-  }, []);
+    let data = caseTypesByEntityData.applicationData.caseTypes;
+    if (data && data.length) {
+      setCaseTypeData(data);
+    }
+  }, [caseTypesByEntityData.applicationData.caseTypes]);
 
   const disableEnableCaseTypeDropDown = (value) => {
     setCaseTypeDisable(value);
@@ -57,8 +122,9 @@ export default function CaseSelect(props) {
 
   return (
     <div id="page-case-select" className="page">
-      {isParent ? <GotoBackButton /> : ""}
+     
       <Container className="">
+      {isParent ? <GotoBackButton /> : ""}
         <Grid item xs={12}>
           <Card>
             <form className="st-p-2">

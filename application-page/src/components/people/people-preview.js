@@ -8,8 +8,10 @@ import ListItem from "@material-ui/core/ListItem";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
+import { navigate } from "@reach/router";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import * as notification from "../../components/common/toast";
 import ComponentLoader from "../common/component-loader";
 
 const styles = (theme) => ({
@@ -25,16 +27,20 @@ const styles = (theme) => ({
   },
 });
 
-const useStyles = makeStyles((theme) => ({
-  large: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
-  fonts: {
-    fontSize: "larger",
-    fontWeight: "bold",
-  },
-}), {index: 1});
+const useStyles = makeStyles(
+  (theme) => ({
+    cursor: { cursor: "pointer" },
+    large: {
+      width: theme.spacing(7),
+      height: theme.spacing(7),
+    },
+    fonts: {
+      fontSize: "larger",
+      fontWeight: "bold",
+    },
+  }),
+  { index: 1 }
+);
 
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
@@ -84,11 +90,10 @@ export default function PeoplePreview(props) {
     var jsonData = {
       userShortName: props.userName,
     };
-    
-  
+
     var config = {
       method: "post",
-      url: '/cases/getPeople',
+      url: "/cases/getUserInfo",
       data: jsonData,
     };
 
@@ -129,6 +134,7 @@ export default function PeoplePreview(props) {
 
     var config = {
       method: "post",
+      url: "/cases/getRelatedCasesCountData",
       data: jsonData,
     };
 
@@ -145,6 +151,22 @@ export default function PeoplePreview(props) {
       });
   };
 
+  const handleTaskClick = (userName, filter, taskCount) => {
+    if (taskCount <= 0) {
+      notification.toast.warning("No task available...!!");
+      return false;
+    }
+    navigate("tasks", {
+      state: {
+        userName: userName,
+        filter: filter,
+        taskCount: taskCount,
+        replace: true,
+        isParent: true,
+      },
+    });
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -159,6 +181,7 @@ export default function PeoplePreview(props) {
       event.target.src = userDefaultImage;
     }
   };
+
   const renderUserImage = (userName) => {
     if (userName) {
       return (
@@ -224,7 +247,16 @@ export default function PeoplePreview(props) {
               <ListItem>
                 <Grid container spacing={3}>
                   <Grid item lg={3} md={3} xs={3} sm={3}>
-                    <Box>
+                    <Box
+                      className={classes.cursor}
+                      onClick={() =>
+                        handleTaskClick(
+                          userName,
+                          1,
+                          relatedCasesCountData?.assignedCases
+                        )
+                      }
+                    >
                       <Typography
                         className={classes.fontWeight}
                         variant="caption"
@@ -246,7 +278,16 @@ export default function PeoplePreview(props) {
                     </Box>
                   </Grid>
                   <Grid item lg={3} md={3} xs={3} sm={3}>
-                    <Box>
+                    <Box
+                      className={classes.cursor}
+                      onClick={() =>
+                        handleTaskClick(
+                          userName,
+                          4,
+                          relatedCasesCountData?.ownedCases
+                        )
+                      }
+                    >
                       <Typography
                         className={classes.fontWeight}
                         variant="caption"
@@ -268,7 +309,16 @@ export default function PeoplePreview(props) {
                     </Box>
                   </Grid>
                   <Grid item lg={3} md={3} xs={3} sm={3}>
-                    <Box>
+                    <Box
+                      className={classes.cursor}
+                      onClick={() =>
+                        handleTaskClick(
+                          userName,
+                          3,
+                          relatedCasesCountData?.createdCases
+                        )
+                      }
+                    >
                       <Typography
                         className={classes.fontWeight}
                         variant="caption"
