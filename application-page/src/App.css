@@ -115,9 +115,12 @@ header.MuiPaper-elevation4 {
   background-color: transparent !important;
 }
 .card-user-case {
-  background: rgba(196, 196, 196, 0.25) !important;
+  background: rgba(196, 196, 196, 0.25);
   box-shadow: none !important;
   margin-bottom: 0.8em;
+}
+.card-background-color {
+  background: lightskyblue;
 }
 .card-user-comment {
   background: #f1f1f1;

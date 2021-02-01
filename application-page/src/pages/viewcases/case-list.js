@@ -13,6 +13,7 @@ export default function CaseList(props) {
   const [caseList, setCaseList] = useState(props.caseListData);
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
   const [componentLoader, setComponentLoader] = useState(props.componentLoader);
+  const [firstCaseId, setFirstCaseId] = useState(props.firstCaseId);
   const [state, setState] = React.useState(0);
 
   const handleCasePreviewClick = (id, caseData) => {
@@ -32,7 +33,8 @@ export default function CaseList(props) {
     setCaseList(props.caseListData);
     setCaseLoaded(props.caseLoaded);
     setComponentLoader(props.componentLoader);
-  }, [props.caseListData, props.caseLoaded, props.componentLoader]);
+    setFirstCaseId(props.firstCaseId);
+  }, [props.caseListData, props.caseLoaded, props.componentLoader, props.firstCaseId]);
 
   return (
     <Box>
@@ -74,6 +76,7 @@ export default function CaseList(props) {
                   caseId={caseData.caseID}
                   caseData={caseData}
                   caseLoaded={caseLoaded}
+                  firstCaseId={firstCaseId}
                 ></CasePreview>
               ) : (
                 <ComponentLoader type="rect" />
