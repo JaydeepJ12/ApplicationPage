@@ -14,7 +14,11 @@ from flask_cors import CORS, cross_origin
 
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
-mobile = Mobile('http://home.boxerproperty.com/MobileAPI','DixitMS','boxer@1991#')
+
+# <<<<<<< HEAD
+# mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
+# >>>>>>> ee1c9333331dd2a4fdb47b80f7b7275c4f37c89a
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
@@ -289,13 +293,15 @@ def system_code_list():
 def get_related_cases_count_data():
     data = mobile.get_related_cases_count_data(request.json).json()
     return data
-
-
-        
+  
 @bp.route('/getUserInfo', methods=['POST'])
 def get_user_info():
     data = request.json
     df = db.get_user_info(data['userShortName'])
     return df.to_json(orient='records')
 
-
+@bp.route('/getFilterValuesByCaseTypeIds', methods=['POST'])
+def getFilterValuesByCaseTypeIds():
+   data = request.json
+   df = db.get_filter_values_by_caseTypeIds(data['caseTypeIds'])
+   return df.to_json(orient='records') #

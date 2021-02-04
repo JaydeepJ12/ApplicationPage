@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Typography } from "@material-ui/core";
-import API from "../api_base/api";
+import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -19,7 +19,8 @@ export default function AssigendCase(props) {
   const [hovered, sethovered] = useState(null);
   const [highlighting, sethighlighting] = useState(false);
   useEffect(() => {
-    API.get("cases/assigned?case_type=6,19&color_sequence=gold,blue,red")
+    axios
+      .get("cases/assigned?case_type=6,19&color_sequence=gold,blue,red")
       .then((response) => {
         setCaseType(response.data.data);
       })

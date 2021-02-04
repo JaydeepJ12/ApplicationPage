@@ -9,17 +9,33 @@ import {
   Select,
   withStyles
 } from "@material-ui/core";
+import Checkbox from "@material-ui/core/Checkbox";
+import Input from "@material-ui/core/Input";
+import ListItemText from "@material-ui/core/ListItemText";
 import { navigate } from "@reach/router";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useStylesBase from "../../assets/css/common_styles";
 import GotoBackButton from "../../components/common/BackButton";
 import * as notification from "../../components/common/toast";
 import Loading from "../../components/Loader";
+import { actionData } from "../../redux/action.js";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
 const useStyles = makeStyles(
   (theme) => ({
     paper: {
@@ -98,6 +114,7 @@ export default function ViewCase(props) {
   const [caseTypeId, setCaseTypeId] = useState(0);
   const [labelWidth, setLabelWidth] = React.useState(0);
   const caseTypesByEntityData = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   const inputLabel = React.useRef(null);
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
@@ -114,8 +131,21 @@ export default function ViewCase(props) {
     props.location?.state?.taskCount ? props.location?.state?.taskCount : 0
   );
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const [prioritiesData, setPrioritiesData] = useState([]);
+  const [selectedPriorities, setSelectedPriorities] = useState([]);
+  const [statusData, setStatusData] = useState([]);
+  const [selectedStatusData, setSelectedStatusData] = useState([]);
+
+  const handleChangeMultiple = (event, filterName) => {
+    if (!caseListFiltered) {
+      notification.toast.warning("Please wait...!!");
+      return false;
+    }
+    if (filterName === "pri") {
+      setSelectedPriorities(event.target.value);
+    } else if (filterName === "status") {
+      setSelectedStatusData(event.target.value);
+    }
   };
 
   const handleClose = () => {
@@ -133,6 +163,36 @@ export default function ViewCase(props) {
 
   const handleDocumentList = (documentList) => {
     setDocumentList(documentList);
+  };
+
+  const getFilterValuesByCaseTypeIds = async (caseTypeIds) => {
+    var jsonData = {
+      caseTypeIds: caseTypeIds,
+    };
+
+    var config = {
+      method: "post",
+      url: "/cases/getFilterValuesByCaseTypeIds",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        // Here Space is require after "PRI" string because space is available in database.
+        let priorityData = response.data.filter(
+          (x) => x.SYSTEM_CODE === "PRI  "
+        );
+        if (priorityData) {
+          setPrioritiesData(priorityData);
+        }
+        let statusData = response.data.filter((x) => x.SYSTEM_CODE === "STTUS");
+        if (statusData) {
+          setStatusData(statusData);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const handleFilterCaseList = (
@@ -160,77 +220,15 @@ export default function ViewCase(props) {
     );
   };
 
-  const caseTypes = async () => {
-    setComponentLoader(true);
-    await axios.get("/cases/types").then((resp) => {
-      setCaseTypeData(resp.data);
-      setCaseTypeId(resp.data[0]?.CASE_TYPE_ID);
-      caseList("", 0, false, 0, false, true, resp.data[0]?.CASE_TYPE_ID);
-    });
-  };
-
-  const entitiesByEntityId = async () => {
-    setComponentLoader(true);
-    let path = window.location.pathname;
-    let entityId = 0;
-    if (path) {
-      entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
-    }
-
-    var jsonData = {
-      entityId: entityId,
-    };
-
-    var config = {
-      method: "post",
-      url: "/cases/getEntitiesByEntityId",
-      data: jsonData,
-    };
-
-    await axios(config)
-      .then(function (response) {
-        var entityData = response.data.filter((x) => x.SYSTEM_CODE === "ASSCT");
-
-        if (entityData) {
-          let entityIds = entityData
-            .map(function (x) {
-              return x.EXID;
-            })
-            .join(",");
-          if (entityIds) {
-            caseTypesByEntityIds(entityIds);
-          }
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-
-  const caseTypesByEntityIds = async (entityIds) => {
-    var jsonData = {
-      entityIds: entityIds,
-    };
-
-    var config = {
-      method: "post",
-      url: "/cases/caseTypesByEntityId",
-      data: jsonData,
-    };
-
-    await axios(config)
-      .then(function (response) {
-        setCaseTypeData(response.data);
-        setCaseTypeId(response.data[0]?.CASE_TYPE_ID);
-        caseList("", 0, false, 0, false, true, response.data[0]?.CASE_TYPE_ID);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-
-  const caseList = async (searchText = "",skipCount = 0,loadMore = false,filter = 0,isFilterByType = false,isFilterByCaseType = false,caseTypeId = 0) => {
-        console.log('--------skipCount',skipCount)
+  const caseList = async (
+    searchText = "",
+    skipCount = 0,
+    loadMore = false,
+    filter = 0,
+    isFilterByType = false,
+    isFilterByCaseType = false,
+    caseTypeId = 0
+  ) => {
     let userName = userNameValue;
     let caseListFilter = filterValue;
 
@@ -257,7 +255,7 @@ export default function ViewCase(props) {
     ) {
       return false;
     }
-   
+
     if (!loadMore && !isFilterByType && !isFilterByCaseType) {
       setLoaded(false);
       skipCount = 0;
@@ -276,8 +274,8 @@ export default function ViewCase(props) {
       Filters: null,
       TypeIdsForGrouping: null,
     };
- console.log("---case create-jsonData",jsonData);
-  
+    console.log("---case create-jsonData", jsonData);
+
     axios
       .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
@@ -286,6 +284,7 @@ export default function ViewCase(props) {
         setFilteredCaseListData([]);
         setComponentLoader(false);
         let caseHeadersData = response?.data?.responseContent;
+
         if (
           caseHeadersData.length &&
           !loadMore &&
@@ -327,18 +326,26 @@ export default function ViewCase(props) {
 
   useEffect(() => {
     setComponentLoader(true);
-    let data = caseTypesByEntityData.applicationData.caseTypes;
-    if (data.length) {
+    // Set Is Case Type Available As True
+    dispatch(actionData(true, "CASE_TYPE_PROPERTY"));
+    let caseTypes = caseTypesByEntityData.applicationData.caseTypes;
+    if (caseTypes && caseTypes.length) {
+      let caseTypeIds = caseTypes.map((x) => {
+        return x.CASE_TYPE_ID;
+      });
+
+      let result = caseTypeIds.map((x) => JSON.stringify(x)).join();
       if (filterValue >= 0 && userNameValue) {
         handleFilterCaseList(filterValue, false);
         setCaseListFiltered(true);
       }
-      setCaseTypeData(data);
-      setCaseTypeIdValue(data[0]?.CASE_TYPE_ID);
+      setCaseTypeData(caseTypes);
+      setCaseTypeIdValue(caseTypes[0]?.CASE_TYPE_ID);
       if (filterValue && filterValue < 0) {
-        setCaseTypeId(data[0]?.CASE_TYPE_ID);
-        caseList("", 0, false, 0, false, true, data[0]?.CASE_TYPE_ID);
+        setCaseTypeId(caseTypes[0]?.CASE_TYPE_ID);
+        caseList("", 0, false, 0, false, true, caseTypes[0]?.CASE_TYPE_ID);
       }
+      getFilterValuesByCaseTypeIds(result);
     }
     setLabelWidth(inputLabel.current.offsetWidth);
   }, [caseTypesByEntityData.applicationData.caseTypes]);
@@ -415,10 +422,123 @@ export default function ViewCase(props) {
       }
     }
   };
-  console.log("--caseListData-",caseListData);
   return (
     <div className="page" id="page-view-case">
       {taskCount ? <GotoBackButton navigateCount={-2} /> : ""}
+      <Grid container spacing={0}>
+        <Grid
+          item
+          xs={12}
+          sm={1}
+          md={1}
+          lg={1}
+          className="panel-left"
+          style={{ marginRight: "1%" }}
+        >
+          <FormControl
+            style={{ width: "-webkit-fill-available" }}
+            variant="outlined"
+            className={classes.mb_one}
+          >
+            <InputLabel htmlFor="outlined-filter-native-simple">
+              Priority
+            </InputLabel>
+            <Select
+              labelId="demo-mutiple-checkbox-label"
+              id="demo-mutiple-checkbox"
+              multiple
+              value={selectedPriorities}
+              onChange={(event) => handleChangeMultiple(event, "pri")}
+              input={<Input />}
+              label="Priority"
+              inputProps={{
+                filter: "priority",
+                id: "outlined-filter-native-simple",
+              }}
+              renderValue={(selected) => selected.join(", ")}
+              MenuProps={MenuProps}
+            >
+              {prioritiesData?.length
+                ? prioritiesData.map((priority) => (
+                    <MenuItem key={priority.NAME} value={priority.NAME}>
+                      <Checkbox
+                        checked={selectedPriorities.indexOf(priority.NAME) > -1}
+                      />
+                      <ListItemText primary={priority.NAME} />
+                    </MenuItem>
+                  ))
+                : ""}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={1} md={1} lg={1} style={{ marginRight: "1%" }}>
+          <FormControl
+            style={{ width: "-webkit-fill-available" }}
+            variant="outlined"
+            className={classes.mb_one}
+          >
+            <InputLabel htmlFor="outlined-filter-native-simple">
+              Status
+            </InputLabel>
+            <Select
+              labelId="demo-mutiple-checkbox-label"
+              id="demo-mutiple-checkbox"
+              multiple
+              value={selectedStatusData}
+              onChange={(event) => handleChangeMultiple(event, "status")}
+              input={<Input />}
+              label="Status"
+              inputProps={{
+                filter: "status",
+                id: "outlined-filter-native-simple",
+              }}
+              renderValue={(selected) => selected.join(", ")}
+              MenuProps={MenuProps}
+            >
+              {statusData?.length
+                ? statusData.map((status) => (
+                    <MenuItem key={status.NAME} value={status.NAME}>
+                      <Checkbox
+                        checked={selectedStatusData.indexOf(status.NAME) > -1}
+                      />
+                      <ListItemText primary={status.NAME} />
+                    </MenuItem>
+                  ))
+                : ""}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={1} md={1} lg={1}>
+          <FormControl
+            style={{ width: "-webkit-fill-available" }}
+            className={classes.mb_one}
+          >
+            <InputLabel htmlFor="outlined-filter-native-simple">
+              Assigned To
+            </InputLabel>
+            <Select
+              labelId="filter-label"
+              id="filter-select"
+              defaultValue={0}
+              value={state.filter}
+              onChange={(event) => {
+                handleFilterCaseList(Number(event.target.value));
+              }}
+              label="Filter"
+              inputProps={{
+                filter: "filter",
+                id: "outlined-filter-native-simple",
+              }}
+              fullWidth={true}
+            >
+              <MenuItem value={0}>All Cases</MenuItem>
+              <MenuItem value={1}>Assigned To Me</MenuItem>
+              <MenuItem value={2}>Assigned To My Team</MenuItem>
+              <MenuItem value={3}>Created By Me</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
       <Card>
         <Grid container spacing={0}>
           {loaded ? (
@@ -472,6 +592,7 @@ export default function ViewCase(props) {
                     }
                     caseLoaded={caseLoaded}
                     componentLoader={componentLoader}
+                    firstCaseId={caseId}
                   ></CaseList>
                 </div>
               </Grid>

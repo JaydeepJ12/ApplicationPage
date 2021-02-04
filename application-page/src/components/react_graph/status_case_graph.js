@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Typography } from "@material-ui/core";
-import API from "../api_base/api";
+// import API from "../api_base/api";
+import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -15,7 +16,8 @@ import {
 export default function CaseTypeStatusGraph(props) {
   const [casetype, setCaseType] = useState();
   useEffect(() => {
-    API.get("cases/status?color_sequence=red&case_type=19")
+    axios
+      .get("cases/status?color_sequence=red&case_type=19")
       .then((response) => {
         setCaseType(response.data.data);
       })
