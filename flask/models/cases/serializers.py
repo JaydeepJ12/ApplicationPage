@@ -32,3 +32,10 @@ class SystemCode(Base):
         'include_properties': ['ASSOC_SYSTEM_CODE_ID', 'SYSTEM_CODE', 'SYSTEM_CODE_LEVEL', 'SYSTEM_CODE_NAME', 'IS_ACTIVE',
                                'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY', 'CREATED_BY']
     }
+
+
+class EmployeeDepartment(Base):
+    __table__ = departments_employee
+    __mapper_args = {
+        'include_properties': ['EMPLOYEE_GUID', 'EMPLOYEEID', 'EmpFirstName']
+    }

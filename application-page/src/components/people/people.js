@@ -9,7 +9,6 @@ import {
   InputBase,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Typography,
 } from "@material-ui/core";
@@ -17,8 +16,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import useStyles from "../../assets/css/common_styles";
-import headerStyles from "../header/header_styles";
 import ComponentLoader from "../common/component-loader";
+import headerStyles from "../header/header_styles";
 import PeoplePreview from "./people-preview";
 export default function Peoples() {
   const classes = useStyles();
@@ -114,7 +113,6 @@ export default function Peoples() {
     if (userName) {
       return (
         <Avatar
-         
           onClick={() => handleClickOpen(userName, fullName)}
           onError={(event) => addDefaultSrc(event)}
           src={process.env.REACT_APP_USER_ICON.concat(userName)}
@@ -124,7 +122,6 @@ export default function Peoples() {
     } else {
       return (
         <Avatar
-        
           src="../../assets/images/default-userimage.png"
           className={classes.avt_large}
         />
@@ -141,6 +138,7 @@ export default function Peoples() {
   const handlePrevClick = () => {
     setComponentLoader(true);
     setPeopleData([]);
+
     getPeople(recordLength - maxCount * 2, true, searchTextValue);
   };
 
@@ -226,22 +224,28 @@ export default function Peoples() {
         </Grid>
         {/* <Slider {...SilderSetting}> */}
         {componentLoader ? (
-            <div className={classes.mt_one}>
-             <ComponentLoader type="rect" />
-           </div>
-        
+          <div className={classes.mt_one}>
+            <ComponentLoader type="rect" />
+          </div>
         ) : (
           <div className={classes.mt_one}>
             <Grid container spacing={3}>
               {peopleData.length ? (
                 peopleData.map((people) => (
-                  <Grid item lg={3} md={3} xs={3} sm={3} style={{textAlign:'center'}}>
-                    <Box  >
+                  <Grid
+                    item
+                    lg={3}
+                    md={3}
+                    xs={3}
+                    sm={3}
+                    style={{ textAlign: "center" }}
+                  >
+                    <Box>
                       <Icon className="s-option-auto-image">
                         {renderUserImage(people.ShortUserName, people.FullName)}
                       </Icon>
                       <Typography
-                        className={classes.fontWeight}  
+                        className={classes.fontWeight}
                         variant="subtitle2"
                         display="block"
                         gutterBottom
@@ -255,7 +259,6 @@ export default function Peoples() {
                         display="block"
                         gutterBottom
                       >
-                        
                         TASK COUNT
                       </Typography>
                       <Typography
@@ -264,7 +267,6 @@ export default function Peoples() {
                         display="block"
                         gutterBottom
                       >
-                        
                         {people.TotalCount}
                       </Typography>
                     </Box>
@@ -276,29 +278,39 @@ export default function Peoples() {
             </Grid>
           </div>
         )}
-       
 
-        
-        {peopleData.length >= maxCount ? (
-            <Grid container spacing={3}>
-            {peopleData.length && recordLength !== maxCount ? (
-                <Grid item lg={6} md={6} xs={6} sm={6} style={{textAlign:'right'}}>
-                      <Button variant="contained" onClick={handlePrevClick}>
-                        Prev
-                      </Button>
-                  </Grid>
+        {peopleData.length ? (
+          <Grid container spacing={3}>
+            {recordLength !== maxCount ? (
+              <Grid
+                item
+                lg={6}
+                md={6}
+                xs={6}
+                sm={6}
+                style={{
+                  textAlign: peopleData.length >= maxCount ? "right" : "",
+                }}
+              >
+                <Button variant="contained" onClick={handlePrevClick}>
+                  Prev
+                </Button>
+              </Grid>
             ) : (
               ""
             )}
-            {peopleData.length ? (
-               <Grid item lg={6} md={6} xs={6} sm={6} style={{textAlign:'left'}}>
-                    <Button
-                      variant="contained"
-                      className={recordLength !== maxCount ? classes.nextButton : ""}
-                      onClick={handleNextClick}
-                    >
-                      Next
-                    </Button>
+            {peopleData.length >= maxCount ? (
+              <Grid
+                item
+                lg={6}
+                md={6}
+                xs={6}
+                sm={6}
+                style={{ textAlign: "left" }}
+              >
+                <Button variant="contained" onClick={handleNextClick}>
+                  Next
+                </Button>
               </Grid>
             ) : (
               ""

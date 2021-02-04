@@ -10,7 +10,7 @@ import json
 isInline = True
 from sqlalchemy import insert
 import base64
-
+import datetime
 
 # Everythings i could need to know about case types should be found here
 
@@ -76,9 +76,36 @@ class CaseHandler(Response):
             "customData": [],
             "values": values})
 
+    def departments_data(self, maxCount):
+        values = [{
+            "label": "Department User List",
+            "id": instance.EMPLOYEEID,
+            "guid": instance.EMPLOYEE_GUID,
+            "name": instance.EmpFirstName,
+        } for instance in
+            self.session.query(EmployeeDepartment)[:int(maxCount)]]
+        return json.dumps({
+            "label": "Departmets List Type",
+            "href": "/cases/departments",
+            "description": "List of all departments people",
+            "count": len(values),
+            "requestMethod": "GET",
+            "customData": [],
+            "values": values})
+
+    def departments_data_byId(self, id):
+        data = self.session.query(EmployeeDepartment).get(id)
+        return json.dumps({
+            "label": "Departmets List Type",
+            "href": "/cases/departments",
+            "description": "List of all departments people",
+            "count": 1,
+            "requestMethod": "GET",
+            "customData": [],
+            "values": {"id": data.EMPLOYEEID, "guid": data.EMPLOYEE_GUID, "name": data.EmpFirstName}})
+
     def system_code_list(self):
         import json
-        print("in handler")
         values = [{
             "label": "System code List",
             "id": instance.ASSOC_SYSTEM_CODE_ID,
@@ -105,14 +132,15 @@ class CaseHandler(Response):
 
         use above json to store case type in db via postman
         """
-        insert = CaseType.__table__.insert(None, isInline).values(NAME=data.get("name"), INSTANCE_NAME=data.get("intance_name"),
+        for x in range(len(data.get("name"))):
+            insert = CaseType.__table__.insert(None, isInline).values(NAME=data.get("name")[x]['name'],
                                                                   IS_ACTIVE=data.get("is_active"),
                                                                   CREATED_BY=data.get("created_by"),
-                                                                  CREATED_DATETIME=data.get("created_datetime"),
-                                                                  MODIFIED_DATETIME=data.get('modified_datetime'),
+                                                                  CREATED_DATETIME=datetime.datetime.now(),
+                                                                  MODIFIED_DATETIME=datetime.datetime.now(),
                                                                   MODIFIED_BY=data.get("modified_by"))
-        self.session.execute(insert)
-        self.session.commit()
+            self.session.execute(insert)
+            self.session.commit()
         return json.dumps({
             "label": "Assoc Type",
             "href": "/Case Type/Case_Type",
@@ -120,7 +148,8 @@ class CaseHandler(Response):
             "count": [],
             "requestMethod": "POST",
             "customData": [],
-            "values": case_type.compile().params})
+            "values": [],
+            "method":200})
 
     def assoc_type_insert(self,data):
         """
@@ -152,7 +181,7 @@ class CaseHandler(Response):
             "count": [],
             "requestMethod": "POST",
             "customData": [],
-            "values": insert.compile().params})
+            "values": []})
 
 
 

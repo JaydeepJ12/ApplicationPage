@@ -9,7 +9,7 @@ class CasesSQL:
 
     def __init__(self):
         self.db = Stemmons_Dash_App()
-    
+
     def tuplefy(self, id):
         if isinstance(id, list) and len(id) > 1:
             #print(f'APP THING: {id}')
@@ -17,7 +17,7 @@ class CasesSQL:
         else:
             #print(f'APP NOT THING: {id}')
             id = f'({id[0]})'
-            
+
         return id
 
     def cases_type_form(self, id):
@@ -140,6 +140,210 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
+    def assignee_case_types(self, case_type_ids):
+        if case_type_ids is None:
+            case_type_ids = 19
+        query = f"""
+        Declare @case_type_id as nvarchar(max)='19,6'
+        Select Assigned_to_Display_Name
+        ,MAX(A.Past_due_case) AS Past_due_case
+        ,MAX(A.Not_Due) As  Not_Due
+        ,MAX(A.No_due_date) As No_due_date
+
+        from
+        (
+        SELECT Assigned_to_Display_Name
+         ,count (CL.Case_id)  As Past_due_case
+        , NULL as Not_Due
+        , Null as No_due_date
+        FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+        And IS_active='Y'and Case_Type_ID in (19,6)
+        Group By [Assigned_to_Display_Name]
+
+
+        UNION
+
+        SELECT Assigned_to_Display_Name
+        ,NULL As Past_due_case
+        ,Count(CL.Case_id) as Not_Due
+        ,NULL as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  And Case_Type_ID In (19,6)
+        Group By [Assigned_to_Display_Name]
+
+        Union
+        SELECT Assigned_to_Display_Name
+        ,NUll As Past_due_case
+        ,NULL as Not_Due
+        ,Count(CL.Case_id) as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')=''
+        And IS_active='Y'   and Case_Type_ID In (19,6)
+        Group By [Assigned_to_Display_Name]
+
+        )A
+
+        Group BY Assigned_to_Display_Name
+        """
+        return self.db.execQuery(query)
+
+    def case_type_count_dues(self, case_type_ids):
+        if case_type_ids is None:
+            case_type_ids = 19
+        query = f"""
+                Select [Case_Type_Name]
+        ,MAX(A.Past_due_case) AS Past_due_case
+        ,MAX(A.Not_Due) As  Not_Due
+        ,MAX(A.No_due_date) As No_due_date
+
+        from
+        (
+        SELECT [Case_Type_Name]
+        ,Count(CL.Case_id)  As Past_due_case
+        , NULL as Not_Due
+        , Null as No_due_date
+        FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+        UNION
+
+        SELECT [Case_Type_Name]
+        ,NULL As Past_due_case
+        ,Count(CL.Case_id) as Not_Due
+        ,NULL as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+
+        Union
+
+        SELECT [Case_Type_Name]
+        ,NUll As Past_due_case
+        ,NULL as Not_Due, Count(CL.Case_id) as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+        And IS_active='Y'  
+        Group By [Case_Type_Name]
+
+        ) A
+
+        Group BY [Case_Type_Name]
+        """
+        return self.db.execQuery(query)
+
+    def assigne_supervisor(self, case_type_ids):
+        if case_type_ids is None:
+            case_type_ids = 20
+        query = f"""
+            Declare @case_type_id as nvarchar(max)='19,6'
+
+            Select By_Assignee_Supervisor
+            ,MAX(A.Past_due_case) AS Past_due_case
+            ,MAX(A.Not_Due) As  Not_Due
+            ,MAX(A.No_due_date) As No_due_date
+
+            from
+            (
+            SELECT By_Assignee_Supervisor
+             ,count (CL.Case_id)  As Past_due_case
+            , NULL as Not_Due
+            , Null as No_due_date
+            FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+            Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+             And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+            And IS_active='Y'and Case_Type_ID in ({case_type_ids})
+            Group By [By_Assignee_Supervisor]
+
+
+            UNION
+
+            SELECT By_Assignee_Supervisor
+            ,NULL As Past_due_case
+            ,Count(CL.Case_id) as Not_Due
+            ,NULL as No_due_date
+            FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+            Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+             And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+            And IS_active='Y'  And Case_Type_ID In ({case_type_ids})
+            Group By [By_Assignee_Supervisor]
+
+            Union
+            SELECT By_Assignee_Supervisor
+            ,NUll As Past_due_case
+            ,NULL as Not_Due
+            ,Count(CL.Case_id) as No_due_date
+            FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+            Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')=''
+            And IS_active='Y'   and Case_Type_ID In ({case_type_ids})
+            Group By [By_Assignee_Supervisor]
+
+            )A
+
+            Group BY By_Assignee_Supervisor
+            """
+        print(self.db.execQuery(query))
+        return self.db.execQuery(query)
+
+    def case_type_count_all(self, case_type_ids):
+        print(case_type_ids)
+        if case_type_ids is None:
+            case_type_ids = 19
+        query = f'''
+        Select 
+        MAX(A.Past_due_case) AS Past_due_case
+        ,MAX(A.Not_Due) As  Not_Due
+        ,MAX(A.No_due_date) As No_due_date
+
+        from
+        (
+
+
+        SELECT 
+        count (CL.Case_id)  As Past_due_case
+        , NULL as Not_Due
+        , Null as No_due_date
+        FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
+        And IS_active='Y'and Case_Type_ID in ({case_type_ids})
+
+
+        UNION
+
+        SELECT 
+        NULL As Past_due_case
+        ,Count(CL.Case_id) as Not_Due
+        ,NULL as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+         And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
+        And IS_active='Y'  And Case_Type_ID in ({case_type_ids})
+        Group By [Case_Type_Name]
+
+        Union
+        SELECT 
+        NUll As Past_due_case
+        ,NULL as Not_Due
+        ,Count(CL.Case_id) as No_due_date
+        FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
+        Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
+        And IS_active='Y'   and Case_Type_ID in ({case_type_ids}) 
+        Group By [Case_Type_Name]
+
+        )A '''
+
+        return self.db.execQuery(query)
+
     def get_user_fullname(self, userShortName):
         query = f'''
         SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ('{userShortName}') ORDER BY 1 DESC
@@ -155,20 +359,53 @@ class CasesSQL:
         except:
             return '[]'
 
-    def get_people(self, skipCount, maxCount, searchText = ''):
+    def get_people(self, skipCount, maxCount, searchText=''):
         query = f'''
            	SELECT
             c.SHORT_USER_NAME AS ShortUserName,
-            c.FULL_NAME AS FullName,
+            c.DISPLAY_NAME AS FullName,
+            c.CREATED_DATETIME AS CreatedDate,
             COUNT(*) AS TotalCount
             FROM [BOXER_CME].[dbo].[CME_USER_CACHE] AS c
             INNER JOIN [BOXER_CME].[dbo].[CASE_LIST] AS b ON b.LIST_CASE_ASSGN_TO_SAM = c.SHORT_USER_NAME
             WHERE IS_ACTIVE = 'Y' AND COALESCE(IS_EXTERNAL_USER,'N')='N'
-            AND FULL_NAME Like CASE WHEN '{searchText}' = '' THEN FULL_NAME ELSE '%' + '{searchText}' + '%' END
-            GROUP BY c.FULL_NAME, c.SHORT_USER_NAME
+            AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
+            GROUP BY c.DISPLAY_NAME, c.SHORT_USER_NAME ,c.CREATED_DATETIME
             ORDER BY 1 ASC
-            offset {skipCount} rows
+            offset 0 rows
             FETCH NEXT {maxCount} rows only
+        '''
+        return self.db.execQuery(query)
+
+    def get_department_people(self, maxCount, searchText=''):
+        query = f'''
+          SELECT
+                 c.EMPLOYEE_ID,
+				c.FULL_NAME,
+				c.JOB_TITLE,
+				c.DEPARTMENT_NAME,
+				c.HOME_PHONE_NUMBER,
+				c.CITY,
+				c.STATE,
+				c.LAST_NAME,
+				c.STREET_ADDRESS,
+				c.MANAGER_LDAP_PATH,
+				c.BIRTH_DATE,
+				c.FIRST_NAME,
+				c.SHORT_USER_NAME,
+				c.HIRE_DATE,
+				c.GENDER,
+				c.MIDDLE_NAME,
+				c.EMAIL_ADDRESS,
+				c.ZIP_CODE,
+                et.EMPLOYEE_TYPE_NAME
+                
+                 				FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID)
+                    WHERE c.IS_ACTIVE = 'Y'
+                    AND c.FULL_NAME Like CASE WHEN '' = '' THEN c.FULL_NAME ELSE '%' +  '' + '%' END
+                    ORDER BY 1 ASC
+                    offset 0 rows
+                FETCH NEXT {maxCount} rows only
         '''
         return self.db.execQuery(query)
 
@@ -185,6 +422,44 @@ class CasesSQL:
     def get_user_info(self, userShortName):
         query = f'''
            	SELECT * FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME = '{userShortName}'
+        '''
+        return self.db.execQuery(query)
+
+    def get_people_info(self, EMPLOYEE_ID):
+        query = f'''
+           	SELECT 
+                c.EMPLOYEE_ID,
+				c.FULL_NAME,
+				c.JOB_TITLE,
+				c.DEPARTMENT_NAME,
+				c.HOME_PHONE_NUMBER,
+				c.CITY,
+				c.STATE,
+				c.LAST_NAME,
+				c.STREET_ADDRESS,
+				c.MANAGER_LDAP_PATH,
+				c.BIRTH_DATE,
+				c.FIRST_NAME,
+				c.SHORT_USER_NAME,
+				c.HIRE_DATE,
+				c.GENDER,
+				c.MIDDLE_NAME,
+				c.EMAIL_ADDRESS,
+				c.ZIP_CODE,
+                et.EMPLOYEE_TYPE_NAME
+                			FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID) WHERE c.EMPLOYEE_ID ={EMPLOYEE_ID}
+        '''
+        return self.db.execQuery(query)
+
+    def get_filter_values_by_caseTypeIds(self, caseTypeIds):
+        query = f'''
+            SELECT 
+            distinct [NAME], att.SYSTEM_CODE
+            FROM [BOXER_CME].[dbo].[ASSOC_DECODE] ad
+            join (
+            SELECT assoc_type_id, system_code FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE CASE_TYPE_ID in ({caseTypeIds}) and SYSTEM_CODE in ('STTUS', 'PRI  ')
+            ) att on ad.assoc_type_id = att.ASSOC_TYPE_ID
+            where ad.IS_ACTIVE = 'Y'
         '''
         return self.db.execQuery(query)
 
@@ -243,7 +518,7 @@ where a.IS_ACTIVE = 'Y'
 							where entity_id in {exid} ) 
 							and 
 							(SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL'))
-							)''' 
+							)'''
         return self.db.execQuery(query)
 
     def ctids_from_application(self, app_id):
@@ -251,10 +526,10 @@ where a.IS_ACTIVE = 'Y'
         exid = self.tuplefy(exid)
         self.ctid = self.ctids_from_exid(exid)
         return self.ctid['ID'].tolist()
-    
+
     def open_case_type_data(self, app_id):
         case_types = self.ctids_from_application(app_id)
-        
+
         case_types = self.tuplefy(case_types)
         query = f'''
         SELECT
@@ -298,10 +573,10 @@ where a.IS_ACTIVE = 'Y'
 
 
 class AppSql:
-    #need a call that gives application entity 0ds, name and icon urls
+    # need a call that gives application entity 0ds, name and icon urls
     def __init__(self):
         self.db = Stemmons_Dash_App()
-    
+
     def application_layout(self):
         pass
 
@@ -338,6 +613,7 @@ class AppSql:
 class FieldHandler:
     pass
 
+
 class AppHandler(AppSql):
     '''transforms sql calls into json for the react from end'''
 
@@ -349,7 +625,7 @@ class AppHandler(AppSql):
 
         resp = []
         for idx, row in df.iterrows():
-            
+
             id = row['url']
             if pd.isna(id):
                 id = 0
@@ -357,42 +633,48 @@ class AppHandler(AppSql):
                 id = int(id)
 
             resp.append({
-                'title':row['title'],
-                'id':row['entity_id'],
-                #TODO: after dev make dynamic
+                'title': row['title'],
+                'id': row['entity_id'],
+                # TODO: after dev make dynamic
                 'url': f"http://entities.boxerproperty.com/Download.aspx?FileID={id}"
-            })  
+            })
         return resp
+
 
 class CaseHandler(CasesSQL):
 
     def __init__(self):
         super().__init__()
 
-    def case_type_inputs(self, ctid=19 ):
+    def case_type_inputs(self, ctid=19):
         df = self.cases_type_form(ctid)
-       
 
         response = []
         for idx, row in df.iterrows():
             field_type = row['FIELD_TYPE']
 
             if field_type == 'T':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],field_type, [], row['label'], row['IS_REQUIRED']))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
 
             elif field_type == 'A':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
 
             elif field_type == 'N':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
 
             elif field_type == 'D':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
-            
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
+
             else:
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],[],[],[],[]))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], [], [], [], []))
         else:
-            response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],'Froala',[],[],[]))
+            response.append(self.resp_model(
+                idx, row['ASSOC_TYPE_ID'], 'Froala', [], [], []))
         return response
 
     def resp_model(self, idx, assoc, type, options, label, required):
@@ -403,14 +685,14 @@ class CaseHandler(CasesSQL):
             'required':False }
         }
         '''
-        return {'type':type,
-                    'options':options,
-                    'label': label,
-                    'required':required,
-                    'assocID':assoc  }
-    
+        return {'type': type,
+                'options': options,
+                'label': label,
+                'required': required,
+                'assocID': assoc}
+
     def case_graphs(self, id):
-        
+
         df = self.open_case_type_data(id)
         fig = px.line(df, x='Assigned To', y='Count')
         return fig.to_json()

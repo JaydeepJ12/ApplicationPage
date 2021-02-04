@@ -1,54 +1,84 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import SettingsIcon from "@material-ui/icons/Settings";
-import CancelIcon from "@material-ui/icons/Cancel";
-import AddBoxIcon from "@material-ui/icons/AddBox";
-import { TextField, MenuItem, FormControl } from "@material-ui/core";
+import { Settings, Cancel, AddBox } from "@material-ui/icons";
+import { withStyles } from '@material-ui/core/styles';
+import {
+  TextField,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Dialog,
+  IconButton,
+  
+} from "@material-ui/core";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import MuiDialogContent from "@material-ui/core/DialogTitle";
+import { Close} from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 import { orange } from "@material-ui/core/colors";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import Dialog from "@material-ui/core/Dialog";
-import Popover from "@material-ui/core/Popover";
 import CaseTypeFieldForm from "./calculated";
+import useCommonStyles from "../../assets/css/common_styles";
+import Typography from "@material-ui/core/Typography";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "65ch",
+const useStyles = makeStyles(
+  (theme) => ({
+    root: {
+      "& > *": {
+        margin: theme.spacing(1),
+        width: "65ch",
+      },
+      formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+      },
+      selectEmpty: {
+        marginTop: theme.spacing(2),
+      },
     },
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  },
-}), {index: 1});
-
+  }),
+  { index: 1 }
+);
 const styles = (theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
 });
+const DialogTitle = withStyles(styles)((props) => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <Close />
+        </IconButton>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
+const DialogContent = withStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2)
+  }
+}))(MuiDialogContent);
 
 export default function CaseTypeForm(props) {
+  const Commonclasses = useCommonStyles();
   const classes = useStyles();
   const [inputFields, setInputFields] = useState([{ name: "", fieldtype: "" }]);
   const [fieldType, setFieldType] = useState("");
-  // const [open, setOpen] = React.useState(false);
   const [events, setEvents] = useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
-
+  const [fullWidth, setFullWidth] = React.useState(true);
+  const [maxWidth, setMaxWidth] = React.useState("sm");
   const handleAddFields = () => {
     setInputFields([...inputFields, { name: "" }]);
   };
@@ -57,10 +87,6 @@ export default function CaseTypeForm(props) {
     const values = [...inputFields];
     values.splice(index, 1);
     setInputFields(values);
-  };
-
-  const handleChange = (event) => {
-    setFieldType(event.target.value);
   };
 
   const handleClickOpen = (value, event) => {
@@ -79,14 +105,13 @@ export default function CaseTypeForm(props) {
     values[index][event.target.name] = event.target.value;
     setInputFields(values);
   };
-
   return (
-    <div>
-      <form  noValidate autoComplete="off">
+    <div className="page" className="page-case-type">
+      <form noValidate autoComplete="off">
         {inputFields.map((inputField, index) => (
-          <div>
+          <div className={Commonclasses.mb_one}>
             <TextField
-              style={{ width: "300px" }}
+              style={{ width: "400px" }}
               id="outlined-basic"
               label="Name"
               name="name"
@@ -95,16 +120,16 @@ export default function CaseTypeForm(props) {
               onChange={(event) => handleChangeInput(index, event)}
             />
             <FormControl
-              variant="filled"
+              variant="outlined"
               className={classes.formControl}
               style={{ width: "170px", marginLeft: "10px" }}
             >
-              <InputLabel id="demo-simple-select-filled-label">
+              <InputLabel id="demo-simple-select-outlined-label">
                 Field Type
               </InputLabel>
               <Select
-                labelId="demo-simple-select-filled-label"
-                id="demo-simple-select-filled"
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
                 value={inputField.fieldtype}
                 name="fieldtype"
                 onChange={(event) => handleChangeInput(index, event)}
@@ -143,51 +168,55 @@ export default function CaseTypeForm(props) {
                 <MenuItem value="expendabletext">Expandable Text</MenuItem>
               </Select>
             </FormControl>
-            <SettingsIcon
+            <Settings
               style={{
+                cursor: "pointer",
                 color: orange[500],
                 marginLeft: "10px",
                 marginTop: "16px",
                 height: "30px",
+                fontSize: 40,
               }}
             />
-            <CancelIcon
+
+            <Cancel
               style={{
+                cursor: "pointer",
                 color: orange[500],
                 marginLeft: "10px",
                 marginTop: "16px",
                 height: "30px",
+                fontSize: 40,
               }}
               onClick={() => handleRemoveFields(index)}
             />
           </div>
         ))}
-        <AddBoxIcon
+        <AddBox
           style={{
-            color: orange[500]
+            cursor: "pointer",
+            color: orange[500],
+            height: "30px",
+            fontSize: 40,
           }}
           onClick={() => handleAddFields()}
         />
       </form>
 
-      <Popover
-        id={id}
+
+      <Dialog
+        fullWidth={fullWidth}
+        maxWidth={maxWidth}
         open={open}
-        anchorEl={anchorEl}
         onClose={handleClose}
-        anchorReference="anchorPosition"
-        anchorPosition={{ top: 15, left: 900 }}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
+        aria-labelledby="max-width-dialog-title"
       >
-        <CaseTypeFieldForm props={events} />
-      </Popover>
+        <DialogContent dividers>
+          <CaseTypeFieldForm props={events} />
+        </DialogContent>
+      </Dialog>
+
+      
     </div>
   );
 }

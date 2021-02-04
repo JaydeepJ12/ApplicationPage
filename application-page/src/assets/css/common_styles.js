@@ -5,6 +5,9 @@ export default makeStyles(
  
     return {
       // margin class 
+      m_one: {
+        margin: theme.spacing(2),
+      },
       mt_one: {
         marginTop: theme.spacing(2),
       },
@@ -23,6 +26,11 @@ export default makeStyles(
         width: theme.spacing(7),
         height: theme.spacing(7),
       },
+      ex_large: {
+        width: theme.spacing(15),
+        height: theme.spacing(15),
+      },
+      
       form: {
         "& .MuiTextField-root": {
           marginBottom: theme.spacing(1),
@@ -48,7 +56,39 @@ export default makeStyles(
         height: theme.spacing(7),
       },
       // 
-      
+      paper: {
+        padding: theme.spacing(1),
+        display: "flex",
+        overflow: "auto",
+        flexDirection: "column",
+      },
+      fixedHeight: {
+        height: "84vh",
+        overflow: "auto",
+      },
+      fixedHeightCard: {
+        height: "62vh",
+        overflow: "auto",
+      },
+      // use for side by side form field
+      form_root: {
+        '& .MuiTextField-root': {
+          margin: theme.spacing(1),
+          width: '31ch',
+        }
+      },
+      root: {
+        flexGrow: 1,
+      },
+    
+      paper: {
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+      },
+      inputLabel: {
+        color:'red',
+
+      }
     };
   },
   { index: 1 }
