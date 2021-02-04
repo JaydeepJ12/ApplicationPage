@@ -9,7 +9,7 @@ class CasesSQL:
 
     def __init__(self):
         self.db = Stemmons_Dash_App()
-    
+
     def tuplefy(self, id):
         if isinstance(id, list) and len(id) > 1:
             #print(f'APP THING: {id}')
@@ -17,7 +17,7 @@ class CasesSQL:
         else:
             #print(f'APP NOT THING: {id}')
             id = f'({id[0]})'
-            
+
         return id
 
     def cases_type_form(self, id):
@@ -359,20 +359,53 @@ class CasesSQL:
         except:
             return '[]'
 
-    def get_people(self, skipCount, maxCount, searchText = ''):
+    def get_people(self, skipCount, maxCount, searchText=''):
         query = f'''
            	SELECT
             c.SHORT_USER_NAME AS ShortUserName,
-            c.FULL_NAME AS FullName,
+            c.DISPLAY_NAME AS FullName,
+            c.CREATED_DATETIME AS CreatedDate,
             COUNT(*) AS TotalCount
             FROM [BOXER_CME].[dbo].[CME_USER_CACHE] AS c
             INNER JOIN [BOXER_CME].[dbo].[CASE_LIST] AS b ON b.LIST_CASE_ASSGN_TO_SAM = c.SHORT_USER_NAME
             WHERE IS_ACTIVE = 'Y' AND COALESCE(IS_EXTERNAL_USER,'N')='N'
-            AND FULL_NAME Like CASE WHEN '{searchText}' = '' THEN FULL_NAME ELSE '%' + '{searchText}' + '%' END
-            GROUP BY c.FULL_NAME, c.SHORT_USER_NAME
+            AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
+            GROUP BY c.DISPLAY_NAME, c.SHORT_USER_NAME ,c.CREATED_DATETIME
             ORDER BY 1 ASC
-            offset {skipCount} rows
+            offset 0 rows
             FETCH NEXT {maxCount} rows only
+        '''
+        return self.db.execQuery(query)
+
+    def get_department_people(self, maxCount, searchText=''):
+        query = f'''
+          SELECT
+                 c.EMPLOYEE_ID,
+				c.FULL_NAME,
+				c.JOB_TITLE,
+				c.DEPARTMENT_NAME,
+				c.HOME_PHONE_NUMBER,
+				c.CITY,
+				c.STATE,
+				c.LAST_NAME,
+				c.STREET_ADDRESS,
+				c.MANAGER_LDAP_PATH,
+				c.BIRTH_DATE,
+				c.FIRST_NAME,
+				c.SHORT_USER_NAME,
+				c.HIRE_DATE,
+				c.GENDER,
+				c.MIDDLE_NAME,
+				c.EMAIL_ADDRESS,
+				c.ZIP_CODE,
+                et.EMPLOYEE_TYPE_NAME
+                
+                 				FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID)
+                    WHERE c.IS_ACTIVE = 'Y'
+                    AND c.FULL_NAME Like CASE WHEN '' = '' THEN c.FULL_NAME ELSE '%' +  '' + '%' END
+                    ORDER BY 1 ASC
+                    offset 0 rows
+                FETCH NEXT {maxCount} rows only
         '''
         return self.db.execQuery(query)
 
@@ -389,6 +422,32 @@ class CasesSQL:
     def get_user_info(self, userShortName):
         query = f'''
            	SELECT * FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME = '{userShortName}'
+        '''
+        return self.db.execQuery(query)
+
+    def get_people_info(self, EMPLOYEE_ID):
+        query = f'''
+           	SELECT 
+                c.EMPLOYEE_ID,
+				c.FULL_NAME,
+				c.JOB_TITLE,
+				c.DEPARTMENT_NAME,
+				c.HOME_PHONE_NUMBER,
+				c.CITY,
+				c.STATE,
+				c.LAST_NAME,
+				c.STREET_ADDRESS,
+				c.MANAGER_LDAP_PATH,
+				c.BIRTH_DATE,
+				c.FIRST_NAME,
+				c.SHORT_USER_NAME,
+				c.HIRE_DATE,
+				c.GENDER,
+				c.MIDDLE_NAME,
+				c.EMAIL_ADDRESS,
+				c.ZIP_CODE,
+                et.EMPLOYEE_TYPE_NAME
+                			FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID) WHERE c.EMPLOYEE_ID ={EMPLOYEE_ID}
         '''
         return self.db.execQuery(query)
 
@@ -447,7 +506,7 @@ where a.IS_ACTIVE = 'Y'
 							where entity_id in {exid} ) 
 							and 
 							(SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL'))
-							)''' 
+							)'''
         return self.db.execQuery(query)
 
     def ctids_from_application(self, app_id):
@@ -455,10 +514,10 @@ where a.IS_ACTIVE = 'Y'
         exid = self.tuplefy(exid)
         self.ctid = self.ctids_from_exid(exid)
         return self.ctid['ID'].tolist()
-    
+
     def open_case_type_data(self, app_id):
         case_types = self.ctids_from_application(app_id)
-        
+
         case_types = self.tuplefy(case_types)
         query = f'''
         SELECT
@@ -502,10 +561,10 @@ where a.IS_ACTIVE = 'Y'
 
 
 class AppSql:
-    #need a call that gives application entity 0ds, name and icon urls
+    # need a call that gives application entity 0ds, name and icon urls
     def __init__(self):
         self.db = Stemmons_Dash_App()
-    
+
     def application_layout(self):
         pass
 
@@ -542,6 +601,7 @@ class AppSql:
 class FieldHandler:
     pass
 
+
 class AppHandler(AppSql):
     '''transforms sql calls into json for the react from end'''
 
@@ -553,7 +613,7 @@ class AppHandler(AppSql):
 
         resp = []
         for idx, row in df.iterrows():
-            
+
             id = row['url']
             if pd.isna(id):
                 id = 0
@@ -561,42 +621,48 @@ class AppHandler(AppSql):
                 id = int(id)
 
             resp.append({
-                'title':row['title'],
-                'id':row['entity_id'],
-                #TODO: after dev make dynamic
+                'title': row['title'],
+                'id': row['entity_id'],
+                # TODO: after dev make dynamic
                 'url': f"http://entities.boxerproperty.com/Download.aspx?FileID={id}"
-            })  
+            })
         return resp
+
 
 class CaseHandler(CasesSQL):
 
     def __init__(self):
         super().__init__()
 
-    def case_type_inputs(self, ctid=19 ):
+    def case_type_inputs(self, ctid=19):
         df = self.cases_type_form(ctid)
-       
 
         response = []
         for idx, row in df.iterrows():
             field_type = row['FIELD_TYPE']
 
             if field_type == 'T':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],field_type, [], row['label'], row['IS_REQUIRED']))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
 
             elif field_type == 'A':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
 
             elif field_type == 'N':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
 
             elif field_type == 'D':
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'], field_type, [],row['label'], row['IS_REQUIRED']))
-            
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], field_type, [], row['label'], row['IS_REQUIRED']))
+
             else:
-                response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],[],[],[],[]))
+                response.append(self.resp_model(
+                    idx, row['ASSOC_TYPE_ID'], [], [], [], []))
         else:
-            response.append(self.resp_model(idx,row['ASSOC_TYPE_ID'],'Froala',[],[],[]))
+            response.append(self.resp_model(
+                idx, row['ASSOC_TYPE_ID'], 'Froala', [], [], []))
         return response
 
     def resp_model(self, idx, assoc, type, options, label, required):
@@ -607,14 +673,14 @@ class CaseHandler(CasesSQL):
             'required':False }
         }
         '''
-        return {'type':type,
-                    'options':options,
-                    'label': label,
-                    'required':required,
-                    'assocID':assoc  }
-    
+        return {'type': type,
+                'options': options,
+                'label': label,
+                'required': required,
+                'assocID': assoc}
+
     def case_graphs(self, id):
-        
+
         df = self.open_case_type_data(id)
         fig = px.line(df, x='Assigned To', y='Count')
         return fig.to_json()

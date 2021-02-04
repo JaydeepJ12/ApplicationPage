@@ -229,15 +229,8 @@ export default function ViewCase(props) {
       });
   };
 
-  const caseList = async (
-    searchText = "",
-    skipCount = 0,
-    loadMore = false,
-    filter = 0,
-    isFilterByType = false,
-    isFilterByCaseType = false,
-    caseTypeId = 0
-  ) => {
+  const caseList = async (searchText = "",skipCount = 0,loadMore = false,filter = 0,isFilterByType = false,isFilterByCaseType = false,caseTypeId = 0) => {
+        console.log('--------skipCount',skipCount)
     let userName = userNameValue;
     let caseListFilter = filterValue;
 
@@ -256,6 +249,7 @@ export default function ViewCase(props) {
     if (isFilterByType) {
       setCaseListFiltered(false);
     }
+
     if (
       loadMore &&
       caseFilter > 0 &&
@@ -263,7 +257,7 @@ export default function ViewCase(props) {
     ) {
       return false;
     }
-
+   
     if (!loadMore && !isFilterByType && !isFilterByCaseType) {
       setLoaded(false);
       skipCount = 0;
@@ -282,7 +276,8 @@ export default function ViewCase(props) {
       Filters: null,
       TypeIdsForGrouping: null,
     };
-
+ console.log("---case create-jsonData",jsonData);
+  
     axios
       .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
@@ -420,6 +415,7 @@ export default function ViewCase(props) {
       }
     }
   };
+  console.log("--caseListData-",caseListData);
   return (
     <div className="page" id="page-view-case">
       {taskCount ? <GotoBackButton navigateCount={-2} /> : ""}

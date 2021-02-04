@@ -12,7 +12,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { navigate } from "@reach/router";
 import React, { useState } from "react";
 import SwipeableViews from "react-swipeable-views";
-
+import GotoBackButton from "../../components/common/BackButton.js";
 const basePath = process.env.REACT_APP_BASE_PATH;
 
 const TabPanel = (props) => {
@@ -34,10 +34,10 @@ const TabPanel = (props) => {
   );
 };
 
-export default function VisualOverview() {
+export default function VisualOverview(props) {
   const [value, setValue] = useState(0);
   const theme = useTheme();
-
+  const isParent = props.location?.state?.isParent;
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -60,6 +60,9 @@ export default function VisualOverview() {
   };
 
   return (
+     <div id="page-overview" className="page">
+     
+     <GotoBackButton />
     <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
       <Grid container>
         <Grid
@@ -124,5 +127,6 @@ export default function VisualOverview() {
         </Grid>
       </Grid>
     </Box>
+    </div>
   );
 }

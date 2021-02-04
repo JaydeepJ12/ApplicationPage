@@ -20,6 +20,7 @@ export default function CasePreview(props) {
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
 
   const handleCasePreviewClick = (caseId, caseData) => {
+
     // props.handleCasePreviewClick(caseId, caseData);
     if (!caseLoaded) {
       notification.toast.warning("Please wait. Your case is loading...!!");
@@ -58,6 +59,7 @@ export default function CasePreview(props) {
       return <Avatar src="../assets/images/default-userimage.png" />;
     }
   };
+
 
   return (
     <Card

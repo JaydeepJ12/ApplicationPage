@@ -232,3 +232,10 @@ header.MuiPaper-elevation4 {
 #page-overview .MuiFormLabel-root {
   line-height: 0.4 !important;
 }
+.MuiFormLabel-root.Mui-disabled {
+  color:#333333 !important;
+}
+/* case card  */
+.card-user-case:hover {
+  background: rgb(3 218 197) !important;
+}
