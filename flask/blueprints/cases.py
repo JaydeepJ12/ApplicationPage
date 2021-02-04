@@ -92,6 +92,20 @@ def getPeople():
    df = db.get_people(data['skipCount'], data['maxCount'], data['searchText'])
    return df.to_json(orient='records') #
 
+@bp.route('/getDepartmentPeoples', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def getDepartmentPeoples():
+   data = request.json
+   df = db.get_department_people(data['maxCount'], data['searchText'])
+   return df.to_json(orient='records') #
+
+@bp.route('/getPeopleInfo', methods=['POST'])
+def getPeopleInfo():
+    data = request.json
+    print(data)
+    df = db.get_people_info(data['EMPLOYEE_ID'])
+    return df.to_json(orient='records')  
+    
 @bp.route('/test')
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
@@ -235,10 +249,22 @@ def case_type_data():
     if request.method == 'GET':
         return CaseHandler().case_type_data()
 
+@bp.route('/departments', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def departments_data():
+    data = request.json
+    return CaseHandler().departments_data(data['maxCount'])
+
+@bp.route('/departments_info', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def departments_data_byId():
+    if request.method == 'POST':
+        data = request.json
+        return CaseHandler().departments_data_byId(data['id'])
+
 @bp.route('/case_type_insert', methods=['POST'])
 def insert_case_type_data():
     data = json.loads(request.data)
-    print(data)
     if request.method == 'POST':
         try:
             return CaseHandler().case_type_insert(data)
@@ -267,7 +293,7 @@ def system_code_list():
 def get_related_cases_count_data():
     data = mobile.get_related_cases_count_data(request.json).json()
     return data
-
+  
 @bp.route('/getUserInfo', methods=['POST'])
 def get_user_info():
     data = request.json

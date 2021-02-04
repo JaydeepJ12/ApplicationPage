@@ -247,6 +247,7 @@ export default function ViewCase(props) {
     if (isFilterByType) {
       setCaseListFiltered(false);
     }
+
     if (
       loadMore &&
       caseFilter > 0 &&
@@ -273,6 +274,7 @@ export default function ViewCase(props) {
       Filters: null,
       TypeIdsForGrouping: null,
     };
+    console.log("---case create-jsonData", jsonData);
 
     axios
       .post("/cases/GetCaseHeaders", jsonData)
@@ -420,7 +422,6 @@ export default function ViewCase(props) {
       }
     }
   };
-
   return (
     <div className="page" id="page-view-case">
       {taskCount ? <GotoBackButton navigateCount={-2} /> : ""}

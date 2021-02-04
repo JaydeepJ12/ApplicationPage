@@ -152,6 +152,9 @@ export default function PeoplePreview(props) {
   };
 
   const handleTaskClick = (userName, filter, taskCount) => {
+    console.log("-------userName",userName);
+    console.log("-------filter",filter);
+    console.log("-------taskCount",taskCount);
     if (taskCount <= 0) {
       notification.toast.warning("No task available...!!");
       return false;
@@ -250,11 +253,7 @@ export default function PeoplePreview(props) {
                     <Box
                       className={classes.cursor}
                       onClick={() =>
-                        handleTaskClick(
-                          userName,
-                          1,
-                          relatedCasesCountData?.assignedCases
-                        )
+                        handleTaskClick(userName, 1,relatedCasesCountData?.assignedCases)
                       }
                     >
                       <Typography
