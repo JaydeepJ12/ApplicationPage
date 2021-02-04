@@ -10,7 +10,7 @@ export default function OverView(props) {
       <Container>
         <Grid container spacing={3}>
           <Grid item lg={12} md={12} xs={12} sm={12}>
-            <VisualOverview />
+            {/* <VisualOverview /> */}
           </Grid>
           <Grid item lg={6} md={6} xs={12} sm={12}>
             <PeopleOverview />
