@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { data } from "../../redux/action.js";
+import { actionData } from "../../redux/action.js";
 
 export default function ReducerData() {
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ export default function ReducerData() {
     };
     await axios(config)
       .then(function (response) {
-        dispatch(data(response.data, "CASE_TYPE"));
+        dispatch(actionData(response.data, "CASE_TYPE"));
         console.log(response.data);
       })
       .catch(function (error) {

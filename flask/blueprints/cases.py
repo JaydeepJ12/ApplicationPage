@@ -273,3 +273,9 @@ def get_user_info():
     data = request.json
     df = db.get_user_info(data['userShortName'])
     return df.to_json(orient='records')
+
+@bp.route('/getFilterValuesByCaseTypeIds', methods=['POST'])
+def getFilterValuesByCaseTypeIds():
+   data = request.json
+   df = db.get_filter_values_by_caseTypeIds(data['caseTypeIds'])
+   return df.to_json(orient='records') #

@@ -392,6 +392,18 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
+    def get_filter_values_by_caseTypeIds(self, caseTypeIds):
+        query = f'''
+                SELECT 
+            distinct [NAME], att.SYSTEM_CODE
+            FROM [BOXER_CME].[dbo].[ASSOC_DECODE] ad
+            join (
+            SELECT assoc_type_id, system_code FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE CASE_TYPE_ID in ({caseTypeIds}) and SYSTEM_CODE in ('STTUS', 'PRI  ')
+            ) att on ad.assoc_type_id = att.ASSOC_TYPE_ID
+            where ad.IS_ACTIVE = 'Y'
+        '''
+        return self.db.execQuery(query)
+
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
         return the exid for that
