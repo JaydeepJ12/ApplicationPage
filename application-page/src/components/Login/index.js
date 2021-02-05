@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     marginTop: theme.spacing.unit * 3,
   },
-}));
+}), {index: 1});
 
 export default function Login(props) {
   const classes = useStyles();

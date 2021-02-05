@@ -6,6 +6,8 @@ from operator import itemgetter
 import pandas as pd
 import json 
 import time
+import math
+import plotly.express as px
 import numpy as np
 from handlers.cases import CaseHandler
 from flask_cors import CORS, cross_origin
@@ -13,15 +15,20 @@ from flask_cors import CORS, cross_origin
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
-mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
+# <<<<<<< HEAD
+# mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
+# >>>>>>> ee1c9333331dd2a4fdb47b80f7b7275c4f37c89a
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin','Boxer@123') #store the token in the browser
 def t():
     return time.time()
+
 @bp.after_request
 def after_request(r):
     r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Access-Control-Allow-Headers'] = '*'
     return r
 
 @bp.route('/config')
@@ -31,15 +38,9 @@ def config():
     # r = cases.get(f'https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={{user}}&caseType={ctid}') # all calls to the CasesSql object will return a pandas data frame https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
     df = db.cases_type_form(int(ctid))
     # df = df.sort_values(by='NAME')
-    t1 = t()
-    print(f'Get Types by Type Id: {t1-t0}')
-
     df['assoc_decode']=[[] for i in df.index]
     for i, row in df.iterrows():
-        t0 = t()
         data1 = assocDecode(f"{row['AssocTypeId']}")
-        t1 = t()
-        print(f"{row['AssocTypeId']} took: {t1-t0}")
         df['assoc_decode'][i] = json.loads(data1)
     return df.to_json(orient='records') #
 
@@ -58,7 +59,22 @@ def assocDecode(assoc_id = 0):
 def caseTypes():
    df = db.cases_types()
    df = df.sort_values(by='NAME')
+   #print(df)
    return df.to_json(orient='records') #
+
+@bp.route('/getEntitiesByEntityId', methods=['POST'])
+def getEntitiesByEntityId():
+   data = request.json
+   df = db.get_entities_by_entity_id(data['entityId'])
+   df = df.sort_values(by='NAME')
+   return df.to_json(orient='records')
+
+@bp.route('/caseTypesByEntityId', methods=['POST'])
+def caseTypesByEntityId():
+   data = request.json
+   df = db.case_types_by_entity_id(data['entityIds'])
+   df = df.sort_values(by='NAME')
+   return df.to_json(orient='records')
 
 @bp.route('/caseassoctypecascade')
 def caseassoctypecascade():
@@ -66,6 +82,30 @@ def caseassoctypecascade():
    df = db.caseassoctypecascade(int(caseTypeId))
    return df.to_json(orient='records') #
 
+def getPastDueCount(userShortName):
+    df = db.get_past_due_count(userShortName) #always returns dataframe
+    return df.to_json(orient='records')
+
+@bp.route('/getPeople', methods=['POST'])
+def getPeople():
+   data = request.json
+   df = db.get_people(data['skipCount'], data['maxCount'], data['searchText'])
+   return df.to_json(orient='records') #
+
+@bp.route('/getDepartmentPeoples', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def getDepartmentPeoples():
+   data = request.json
+   df = db.get_department_people(data['maxCount'], data['searchText'])
+   return df.to_json(orient='records') #
+
+@bp.route('/getPeopleInfo', methods=['POST'])
+def getPeopleInfo():
+    data = request.json
+    print(data)
+    df = db.get_people_info(data['EMPLOYEE_ID'])
+    return df.to_json(orient='records')  
+    
 @bp.route('/test')
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
@@ -116,18 +156,6 @@ def getSystemPriority(assocTypeId):
 @bp.route('/GetFullCaseByCaseId', methods=['POST'])
 def get_full_case_by_caseId():
     data = mobile.get_full_case_by_caseId(request.json).json()
-    # for x in data['responseContent']['notes']: #can throw error with resp is empty
-    #     userShortName = x['createdBy']
-    #     print('userShortName --- ' , userShortName)
-    #     userFullName = json.loads(getUserFullName(str(userShortName)))
-    #     print('userFullName-----', userFullName)
-    #     if userFullName:
-    #         x['fullName'] = userFullName[0]['FULL_NAME']
-    # for y in data['responseContent']['details']: #can throw error with resp is empty
-    #     systemPriority = json.loads(getSystemPriority(y['controlId']))
-    #     y['systemPriority'] = systemPriority[0]['SYSTEM_PRIORITY']
-    #     # y['assoc_decode'] = []
-    #     # y['systemPriority'] = 1
     return data
 
 
@@ -142,6 +170,12 @@ def assigned_to():
     sub_query = db.assignee_case_types(case_type).values.tolist()
     dataset = []
     for data in sub_query:
+        if math.isnan(data[1]):
+            data[1] = 0
+        if math.isnan(data[2]):
+            data[2] = 0
+        if math.isnan(data[3]):
+            data[3] = 0
         dataset.append({"assigned_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
     return json.dumps({"name":"Assign Case List API","status": 200, "data": dataset, })
 
@@ -157,6 +191,12 @@ def assigned_supervisor():
     sub_query = db.assigne_supervisor(case_type).values.tolist()
     dataset = []
     for data in sub_query:
+        if math.isnan(data[1]):
+            data[1] = 0
+        if math.isnan(data[2]):
+            data[2] = 0
+        if math.isnan(data[3]):
+            data[3] = 0
         dataset.append({"assigned_supervisor_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
     return json.dumps({"name":"Assign Assignee Supervisor List API", "status": 200, "data": dataset})
 
@@ -166,13 +206,14 @@ def status():
     case_type = request.args.get('case_type')
     color_sequence = request.args.get('color_sequence')
     if color_sequence is None:
-        color_sequence = ['goldenrod', 'darkgrey', 'black']
+        color_sequence = 'black'
     else:
-        color_sequence = color_sequence.split(',')
+        color_sequence = request.args.get('color_sequence')
     sub_query = db.case_type_count_all(case_type).values.tolist()
     dataset = []
     for data in sub_query:
-        dataset.append({"past_due_case": data[0], "not_due": data[1], "no_due_date": data[2]})
+        dataset.append({"past_due_case":data[0],"not_due":data[1],
+                        "no_due_date":data[2]})
     return json.dumps({"name":"Status of Case", "status": 200, "data": dataset})
 
 
@@ -187,7 +228,14 @@ def case_type():
     sub_query = db.case_type_count_dues(case_type).values.tolist()
     dataset = []
     for data in sub_query:
-        dataset.append({"case_type_name": data[0], "past_due_case": data[1], "not_due": data[2], "no_due_date": data[3]})
+        if math.isnan(data[1]):
+            data[1] = 0
+        if math.isnan(data[2]):
+            data[2] = 0
+        if math.isnan(data[3]):
+            data[3] = 0
+        dataset.append({"case_type_name": data[0], "past_due_case": data[1], "not_due": data[2],
+                        "no_due_date": data[3]})
     return json.dumps({"name": "Case Type API List", "status": 200, "data": dataset})
 
 
@@ -201,10 +249,22 @@ def case_type_data():
     if request.method == 'GET':
         return CaseHandler().case_type_data()
 
+@bp.route('/departments', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def departments_data():
+    data = request.json
+    return CaseHandler().departments_data(data['maxCount'])
+
+@bp.route('/departments_info', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def departments_data_byId():
+    if request.method == 'POST':
+        data = request.json
+        return CaseHandler().departments_data_byId(data['id'])
+
 @bp.route('/case_type_insert', methods=['POST'])
 def insert_case_type_data():
     data = json.loads(request.data)
-    print(data)
     if request.method == 'POST':
         try:
             return CaseHandler().case_type_insert(data)
@@ -228,3 +288,20 @@ def system_code_list():
             return CaseHandler().system_code_list()
         except Exception as exe:
             return json.dumps({"error_stack": str(exe)})
+
+@bp.route('/getRelatedCasesCountData', methods=['POST'])
+def get_related_cases_count_data():
+    data = mobile.get_related_cases_count_data(request.json).json()
+    return data
+  
+@bp.route('/getUserInfo', methods=['POST'])
+def get_user_info():
+    data = request.json
+    df = db.get_user_info(data['userShortName'])
+    return df.to_json(orient='records')
+
+@bp.route('/getFilterValuesByCaseTypeIds', methods=['POST'])
+def getFilterValuesByCaseTypeIds():
+   data = request.json
+   df = db.get_filter_values_by_caseTypeIds(data['caseTypeIds'])
+   return df.to_json(orient='records') #

@@ -1,6 +1,6 @@
 import { Box } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import UserAutocomplete from "./autocomplete.js";
+import UserAutocomplete from "../../components/autocomplete.js";
 
 export default function CaseBasicInformation(props) {
   const [caseData, setCaseData] = useState(props.caseData);
@@ -15,7 +15,8 @@ export default function CaseBasicInformation(props) {
 
   const createAssignTo = () => {
     return (
-      <UserAutocomplete className="input-auto-suggest"
+      <UserAutocomplete
+        className="input-auto-suggest"
         defaultHopper={""}
         defaultHopperId={0}
         selectedUser={
@@ -45,30 +46,29 @@ export default function CaseBasicInformation(props) {
         ) : (
           "Normal"
         )}
-     </>
+      </>
     );
   };
 
   return (
     <>
-       <div className="text-left" style={{ marginBottom: '1rem' }}>
-              <span style={{ fontWeight: "bold" }}>Assignee :  </span>
-              {caseData?.assignedToFullName
-              ? caseData?.assignedToFullName
-              : caseData?.assignedTo}  
-        </div>
+      <div className="text-left" style={{ marginBottom: "1rem" }}>
+        <span style={{ fontWeight: "bold" }}>Assignee : </span>
+        {caseData?.assignedToFullName
+          ? caseData?.assignedToFullName
+          : caseData?.assignedTo}
+      </div>
       <Box className="input-box">{createAssignTo()}</Box>
       <br />
-       <div className="text-left">
-          <span style={{ fontWeight: "bold" }}>Reporter :  </span>
-          {caseData?.createdByFullName}            
-       </div>
+      <div className="text-left">
+        <span style={{ fontWeight: "bold" }}>Reporter : </span>
+        {caseData?.createdByFullName}
+      </div>
       <br />
-       <div className="text-left" style={{ marginBottom: '1rem' }}>
-        <span style={{ fontWeight: "bold" }}>Priority :  </span>
-        {handlePriority(caseData.priority)}       
-       </div>
-
+      <div className="text-left" style={{ marginBottom: "1rem" }}>
+        <span style={{ fontWeight: "bold" }}>Priority : </span>
+        {handlePriority(caseData.priority)}
+      </div>
     </>
   );
 }
