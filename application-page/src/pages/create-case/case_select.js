@@ -38,14 +38,6 @@ export default function CaseSelect(props) {
     }
   };
 
-  // This API call is for get case types data
-
-  // const caseTypes = async () => {
-  //   await axios.get("http://localhost:5000/cases/caseTypes").then((resp) => {
-  //     setCaseTypeData(resp.data);
-  //   });
-  // };
-
   useEffect(() => {
     pageLoad();
     // Set Is Case Type Available As True
