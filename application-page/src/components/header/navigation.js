@@ -38,23 +38,23 @@ export default function Navigation(props) {
   const [appId, setAppId] = React.useState(0);
 
   React.useEffect(() => {
-    setCurrentPageValue();
     let appId = reducerState.applicationData.appId;
     if (appId) {
+      setCurrentPageValue(appId);
       setBasePath(basePath + appId);
       setAppId(appId);
     }
   }, [reducerState.applicationData.appId, props.appId]);
 
-  const setCurrentPageValue = () => {
+  const setCurrentPageValue = (appId) => {
     let path = window.location.pathname;
 
     if (path) {
-      var parts = path.split("/");
+      var parts = path.split(appId);
       path = parts[parts.length - 1];
 
       let isLogin = path === "login";
-      let page = menuItems.find((x) => x.menuPath == "/" + path);
+      let page = menuItems.find((x) => x.menuPath === path);
       if (page) {
         dispatch(actionData(false, "PAGE_NOT_FOUND"));
         setCurrentPage(page.pageTitle);
