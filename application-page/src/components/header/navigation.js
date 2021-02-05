@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
@@ -17,6 +17,8 @@ import { Link } from "@reach/router";
 import classnames from "classnames";
 import clsx from "clsx";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { actionData } from "../../redux/action";
 import rootRoute from "../../system/route";
 import HeaderRight from "../header/header_right";
 import menuItems from "../header/menu_items";
@@ -26,23 +28,38 @@ import useStyles from "./header_styles";
 export default function Navigation(props) {
   const classes = useStyles();
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   const [open, setOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [isLogin, setIsLogin] = React.useState(false);
+  const [basePath, setBasePath] = useState(process.env.REACT_APP_BASE_PATH);
+  const reducerState = useSelector((state) => state);
+  const [appId, setAppId] = React.useState(0);
 
-  React.useEffect(() => setCurrentPageValue(), []);
+  React.useEffect(() => {
+    setCurrentPageValue();
+    let appId = reducerState.applicationData.appId;
+    if (appId) {
+      setBasePath(basePath + appId);
+      setAppId(appId);
+    }
+  }, [reducerState.applicationData.appId, props.appId]);
 
   const setCurrentPageValue = () => {
     let path = window.location.pathname;
 
     if (path) {
-      let result = path.replace("/", "");
-      let isLogin = result === "login";
-      let page = menuItems.find((x) => x.menuPath == path);
+      var parts = path.split("/");
+      path = parts[parts.length - 1];
+
+      let isLogin = path === "login";
+      let page = menuItems.find((x) => x.menuPath == "/" + path);
       if (page) {
+        dispatch(actionData(false, "PAGE_NOT_FOUND"));
         setCurrentPage(page.pageTitle);
       } else if (!isLogin) {
+        dispatch(actionData(true, "PAGE_NOT_FOUND"));
         setCurrentPage("");
       }
 
@@ -132,7 +149,7 @@ export default function Navigation(props) {
             </div>
             <List className="sidebar-navigation-block">
               {menuItems.map((item, index) => (
-                <Link to={item.menuPath} style={{ color: "black" }}>
+                <Link to={basePath + item.menuPath} style={{ color: "black" }}>
                   <ListItem
                     onClick={() => {
                       setCurrentPage(item.pageTitle);
