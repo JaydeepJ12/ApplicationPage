@@ -8,16 +8,16 @@ import OverView from "../pages/overview/overview";
 import ViewCase from "../pages/viewcases/view-case";
 
 const basePath = process.env.REACT_APP_BASE_PATH;
-
+//3570310
 const rootRoute = (
   <div>
     <Router basepath={basePath}>
-      <CaseSelect path="/case-select" />
-      <OverView path="/overview" default />
-      <CaseTypeForm path="/case-type-form"></CaseTypeForm>
-      <PeopleDepartment path="/people_dept" />
-      <ViewCase path="/tasks"></ViewCase>
-      <Login path="/login" />
+      <CaseSelect path="/:app_id/case-select" />
+      <OverView path="/:app_id/overview" default />
+      <CaseTypeForm path="/:app_id/case-type-form"></CaseTypeForm>
+      <PeopleDepartment path="/:app_id/people_dept" />
+      <ViewCase path="/:app_id/tasks"></ViewCase>
+      <Login path="/:app_id/login" />
     </Router>
   </div>
 );
