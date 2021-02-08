@@ -12,7 +12,7 @@ class Engine:
                  user='spreader',
                  passw='Red_Sky',
                  server='BPM-PGMT-2-2-1',
-                 db='BOXER_CME',
+                 db='Departments',
                  driver='SQL+Server',
                  debug=False):
         self._engine = create_engine(f'mssql+pyodbc://{user}:{passw}@{server}/{db}?driver={driver}',

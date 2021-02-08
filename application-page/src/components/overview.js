@@ -13,16 +13,20 @@ import {
   Tab,
   Tabs,
   Typography,
-  Icon
+  Icon,
 } from "@material-ui/core";
-
-// // icons
+import Example from "./react_graph/common_graph";
+import CaseTypeStatusGraph from "./react_graph/status_case_graph";
+import CaseTypeAssignedSupervisor from "./react_graph/assigned_supervisor_graph";
+import AssigendCase from "./react_graph/assigend_case";
 import { Notifications, Settings } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import SwipeableViews from "react-swipeable-views";
 import Slider from "react-slick";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
+import Carousel from "react-material-ui-carousel";
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
@@ -103,34 +107,39 @@ export default function OverView(props) {
     slidesToShow: 2,
     slidesToScroll: 1,
     infinite: false,
-    responsive: [{
-     breakpoint: 1024,
-       settings: {
-        slidesToShow: 2,
-         slidesToScroll: 1,
-         initialSlide: 3
-       }
-     }, {
-       breakpoint: 1150,
-       settings: {
-      slidesToShow: 2,
-         slidesToScroll: 1,
-         initialSlide: 4
-       }
-     }, {
-       breakpoint: 600,
-       settings: {
-        slidesToShow: 2,
-         slidesToScroll: 1,
-         initialSlide: 2
-       }
-     }, {
-       breakpoint: 480,
-       settings: {
-         slidesToShow: 1,
-         slidesToScroll: 1
-       }
-     }]
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          initialSlide: 3,
+        },
+      },
+      {
+        breakpoint: 1150,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          initialSlide: 4,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          initialSlide: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
   return (
     <div className="page" id="page-overview">
@@ -154,6 +163,35 @@ export default function OverView(props) {
               />
             </div>
           </Grid>
+          <Grid
+            item
+            lg={2}
+            md={2}
+            xs={12}
+            sm={2}
+            justify="center"
+            className="vertical-center"
+          >
+            <form>
+              <div
+                className=""
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  handleClick(props);
+                }}
+              >
+                <Button
+                  variant="contained"
+                  size="large"
+                  className="btn btn-create-button btn-primary rounded-pill"
+                  variant="contained"
+                  color="primary"
+                >
+                  + Create
+                </Button>
+              </div>
+            </form>
+          </Grid>
           <Grid item lg={12} md={12} xs={12} sm={12}>
             <Box
               boxShadow={0}
@@ -161,38 +199,9 @@ export default function OverView(props) {
               borderRadius={35}
             >
               <Grid container>
-                <Grid
-                  item
-                  lg={2}
-                  md={2}
-                  xs={12}
-                  sm={2}
-                  justify="center"
-                  className="vertical-center"
-                >
-                  <form>
-                    <div
-                      className=""
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        handleClick(props);
-                      }}
-                    >
-                      <Button
-                        variant="contained"
-                        size="large"
-                        className="btn btn-create-button btn-primary rounded-pill"
-                        variant="contained"
-                        color="primary"
-                      >
-                        + Create
-                      </Button>
-                    </div>
-                  </form>
-                </Grid>
-                <Grid item lg={8} md={8} xs={12} sm={8}>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
                   <div className={classes.root2}>
-                    <Paper elevation={3}>
+                    <Paper elevation={6}>
                       <AppBar position="static" elevation={3}>
                         <Tabs
                           className="nav-tab-list"
@@ -227,7 +236,12 @@ export default function OverView(props) {
                       onChangeIndex={handleChangeIndex}
                     >
                       <TabPanel value={value} index={0} dir={theme.direction}>
-                        Tab-1
+                        <Carousel interval={1115000}>
+                          <Example />
+                          <CaseTypeStatusGraph />
+                          <CaseTypeAssignedSupervisor />
+                          <AssigendCase />
+                        </Carousel>
                       </TabPanel>
                       <TabPanel value={value} index={1} dir={theme.direction}>
                         Tab-2
@@ -242,15 +256,17 @@ export default function OverView(props) {
             </Box>
           </Grid>
           <Grid item lg={6} md={6} xs={12} sm={12}>
-         
             <Box
               boxShadow={0}
               className="card card-task-overview"
               borderRadius={35}
             >
               <Grid container spacing={3}>
-               <Grid item lg={9} md={9} xs={6} sm={6}>
-                  <FormControl variant="outlined" className={classes.formControl}>
+                <Grid item lg={9} md={9} xs={6} sm={6}>
+                  <FormControl
+                    variant="outlined"
+                    className={classes.formControl}
+                  >
                     <InputLabel id="demo-simple-select-outlined-label">
                       People
                     </InputLabel>
@@ -270,17 +286,24 @@ export default function OverView(props) {
                       <MenuItem value={30}>Thirty</MenuItem>
                     </Select>
                   </FormControl>
-              </Grid>
-                <Grid item lg={3} md={3} xs={6} sm={6} style={{'text-align':'right'}}>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      className="btn btn-create-button btn-primary rounded-pill"
-                      variant="contained"
-                      color="primary"
-                    >
-                      + Add
-                    </Button>
+                </Grid>
+                <Grid
+                  item
+                  lg={3}
+                  md={3}
+                  xs={6}
+                  sm={6}
+                  style={{ "text-align": "right" }}
+                >
+                  <Button
+                    variant="contained"
+                    size="large"
+                    className="btn btn-create-button btn-primary rounded-pill"
+                    variant="contained"
+                    color="primary"
+                  >
+                    + Add
+                  </Button>
                 </Grid>
               </Grid>
               {/* <Slider {...SilderSetting}> */}
@@ -288,41 +311,7 @@ export default function OverView(props) {
                 <Grid container spacing={3}>
                   <Grid item lg={3} md={3} xs={3} sm={3}>
                     <Box>
-                    <Icon className="s-option-auto-image">
-                        <img
-                          src={
-                            "https://material-ui.com/static/images/avatar/1.jpg"
-                          }
-                          height={50}
-                          width={50}
-                        />
-                      </Icon>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        Dixit Solanki
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        (10)
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        (50)
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item lg={3} md={3} xs={3} sm={3}>
-                    <Box>
-                    <Icon className="s-option-auto-image">
+                      <Icon className="s-option-auto-image">
                         <img
                           src={
                             "https://material-ui.com/static/images/avatar/1.jpg"
@@ -365,7 +354,6 @@ export default function OverView(props) {
                           width={50}
                         />
                       </Icon>
-                     
                       <Typography
                         variant="caption"
                         display="block"
@@ -391,7 +379,42 @@ export default function OverView(props) {
                   </Grid>
                   <Grid item lg={3} md={3} xs={3} sm={3}>
                     <Box>
-                    <Icon className="s-option-auto-image">
+                      <Icon className="s-option-auto-image">
+                        <img
+                          src={
+                            "https://material-ui.com/static/images/avatar/1.jpg"
+                          }
+                          height={50}
+                          width={50}
+                        />
+                      </Icon>
+
+                      <Typography
+                        variant="caption"
+                        display="block"
+                        gutterBottom
+                      >
+                        Dixit Solanki
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        display="block"
+                        gutterBottom
+                      >
+                        (10)
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        display="block"
+                        gutterBottom
+                      >
+                        (50)
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item lg={3} md={3} xs={3} sm={3}>
+                    <Box>
+                      <Icon className="s-option-auto-image">
                         <img
                           src={
                             "https://material-ui.com/static/images/avatar/1.jpg"
@@ -435,10 +458,13 @@ export default function OverView(props) {
               borderRadius={35}
             >
               <Grid container spacing={3}>
-               <Grid item lg={9} md={9} xs={6} sm={6}>
-                  <FormControl variant="outlined" className={classes.formControl}>
+                <Grid item lg={9} md={9} xs={6} sm={6}>
+                  <FormControl
+                    variant="outlined"
+                    className={classes.formControl}
+                  >
                     <InputLabel id="demo-simple-select-outlined-label">
-                    Items
+                      Items
                     </InputLabel>
                     <Select
                       className="input-dropdown"
@@ -456,58 +482,46 @@ export default function OverView(props) {
                       <MenuItem value={30}>Thirty</MenuItem>
                     </Select>
                   </FormControl>
-              </Grid>
-                <Grid item lg={3} md={3} xs={6} sm={6} style={{'text-align':'right'}}>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      className="btn btn-create-button btn-primary rounded-pill"
-                      variant="contained"
-                      color="primary"
-                    >
-                      + Add
-                    </Button>
+                </Grid>
+                <Grid
+                  item
+                  lg={3}
+                  md={3}
+                  xs={6}
+                  sm={6}
+                  style={{ "text-align": "right" }}
+                >
+                  <Button
+                    variant="contained"
+                    size="large"
+                    className="btn btn-create-button btn-primary rounded-pill"
+                    variant="contained"
+                    color="primary"
+                  >
+                    + Add
+                  </Button>
                 </Grid>
               </Grid>
 
               <div className="people-item-list" style={{ cursor: "pointer" }}>
                 <Grid container spacing={7}>
-                <Grid item lg={12} md={12} xs={12} sm={12}>
-                     <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                       
-                        COUNT OF ITEMS
-                      </Typography>
+                  <Grid item lg={12} md={12} xs={12} sm={12}>
+                    <Typography variant="caption" display="block" gutterBottom>
+                      COUNT OF ITEMS
+                    </Typography>
+                  </Grid>
 
-                </Grid>
-                
-                <Grid item lg={12} md={12} xs={12} sm={12}>
-                     <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                      
-                        COUNT OF ITEMS BY STATUS TYPE
-                      </Typography>
+                  <Grid item lg={12} md={12} xs={12} sm={12}>
+                    <Typography variant="caption" display="block" gutterBottom>
+                      COUNT OF ITEMS BY STATUS TYPE
+                    </Typography>
+                  </Grid>
 
-                </Grid>
-                
-                <Grid item lg={12} md={12} xs={12} sm={12}>
-                     <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                       
-                        COUNT OF ITEMS BY CATEGORY
-                      </Typography>
-
-                </Grid>
-                
+                  <Grid item lg={12} md={12} xs={12} sm={12}>
+                    <Typography variant="caption" display="block" gutterBottom>
+                      COUNT OF ITEMS BY CATEGORY
+                    </Typography>
+                  </Grid>
                 </Grid>
               </div>
             </Box>

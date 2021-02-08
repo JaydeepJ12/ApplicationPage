@@ -76,9 +76,36 @@ class CaseHandler(Response):
             "customData": [],
             "values": values})
 
+    def departments_data(self, maxCount):
+        values = [{
+            "label": "Department User List",
+            "id": instance.EMPLOYEEID,
+            "guid": instance.EMPLOYEE_GUID,
+            "name": instance.EmpFirstName,
+        } for instance in
+            self.session.query(EmployeeDepartment)[:int(maxCount)]]
+        return json.dumps({
+            "label": "Departmets List Type",
+            "href": "/cases/departments",
+            "description": "List of all departments people",
+            "count": len(values),
+            "requestMethod": "GET",
+            "customData": [],
+            "values": values})
+
+    def departments_data_byId(self, id):
+        data = self.session.query(EmployeeDepartment).get(id)
+        return json.dumps({
+            "label": "Departmets List Type",
+            "href": "/cases/departments",
+            "description": "List of all departments people",
+            "count": 1,
+            "requestMethod": "GET",
+            "customData": [],
+            "values": {"id": data.EMPLOYEEID, "guid": data.EMPLOYEE_GUID, "name": data.EmpFirstName}})
+
     def system_code_list(self):
         import json
-        print("in handler")
         values = [{
             "label": "System code List",
             "id": instance.ASSOC_SYSTEM_CODE_ID,
@@ -121,7 +148,8 @@ class CaseHandler(Response):
             "count": [],
             "requestMethod": "POST",
             "customData": [],
-            "values": []})
+            "values": [],
+            "method":200})
 
     def assoc_type_insert(self,data):
         """

@@ -8,8 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import API from "../api_base/api";
-import Button from '@material-ui/core/Button';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
     },
   },
-}));
+}), {index: 1});
 
 export default function CaseTypeFieldForm(props) {
   const classes = useStyles();
@@ -38,6 +37,7 @@ export default function CaseTypeFieldForm(props) {
   const [age, setAge] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [system_code, setSystemCode] = React.useState("");
+
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -68,7 +68,7 @@ export default function CaseTypeFieldForm(props) {
   };
 
   const getSystemCOde = async () => {
-    await API.get(`cases/system_code`)
+    await axios.get(`cases/system_code`)
       .then(function (response) {
         let data_cat = response.data.values;
         if (data_cat.length) {
@@ -99,13 +99,12 @@ export default function CaseTypeFieldForm(props) {
   };
 
   return (
-    <div style={{ height: "480px", marginLeft: "20px", width: "350px" }}>
-      <form className={classes.root} noValidate autoComplete="off">
+    <>
+      <form  noValidate autoComplete="off">
         {props.props == "calculated" ? (
           <div>
             <Typography
-              variant="h4"
-              style={{ marginLeft: "60px" }}
+              variant="h5"
               gutterBottom
             >
               Calculated
@@ -124,8 +123,7 @@ export default function CaseTypeFieldForm(props) {
         ) : props.props == "datefield" ? (
           <div>
             <Typography
-              variant="h4"
-              style={{ marginBottom: "50px", marginLeft: "70px" }}
+              variant="h5"
               gutterBottom
             >
               Date Field
@@ -134,8 +132,7 @@ export default function CaseTypeFieldForm(props) {
         ) : props.props == "textfield" ? (
           <div>
             <Typography
-              variant="h4"
-              style={{ marginBottom: "50px", marginLeft: "70px" }}
+              variant="h5"
               gutterBottom
             >
               Text Field
@@ -153,18 +150,16 @@ export default function CaseTypeFieldForm(props) {
           onChange={(e) => descriptValue(e.target.value)}
         />
         <label>User to control output</label>
-        <br></br>
-        <br></br>
         <div>
-          <FormControl
+          <FormControl  variant="outlined"
             style={{ float: "right", marginRight: "100px", marginTop: "-14px" }}
           >
-            <InputLabel id="demo-controlled-open-select-label">
+           <InputLabel id="demo-simple-select-outlined-label">
               System Code
             </InputLabel>
             <Select
-              labelId="demo-controlled-open-select-label"
-              id="demo-controlled-open-select"
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
               open={open}
               onClose={handleClose}
               onOpen={handleOpen}
@@ -221,15 +216,7 @@ export default function CaseTypeFieldForm(props) {
         ) : (
           ""
         )}
-        <br></br>
-        <Button
-          style={{ width: "150px", backgroundColor: "orange" }}
-          variant="contained"
-          color="primary"
-        >
-          Add
-        </Button>
       </form>
-    </div>
+    </>
   );
 }
