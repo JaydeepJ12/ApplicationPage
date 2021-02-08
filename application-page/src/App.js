@@ -1,6 +1,6 @@
 import {
   createGenerateClassName,
-  StylesProvider
+  StylesProvider,
 } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import axios from "axios";
@@ -32,7 +32,11 @@ function App() {
   const id_from_url = () => {
     let path = window.location.pathname;
     let split = path.split(basePath);
-    let appId = split[1].split("/")[0];
+    let appId = 0;
+    if (split && split[1]) {
+      appId = split[1].split("/")[0];
+    }
+
     //id should always be second from last rgardless of prefix
 
     console.log(appId);
