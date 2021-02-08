@@ -372,7 +372,7 @@ class CasesSQL:
             AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
             GROUP BY c.DISPLAY_NAME, c.SHORT_USER_NAME ,c.CREATED_DATETIME
             ORDER BY 1 ASC
-            offset 0 rows
+            offset {skipCount} rows
             FETCH NEXT {maxCount} rows only
         '''
         return self.db.execQuery(query)
