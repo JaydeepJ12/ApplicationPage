@@ -9,61 +9,60 @@ import {
     Timeline,
     ViewList,
   } from "@material-ui/icons";
-const basePath = process.env.REACT_APP_BASE_PATH
 
 const menuItems = [
     {
       menuName: "Overview",
       menuIcon: <Streetview />,
-      menuPath: basePath + "/overview",
+      menuPath: "/overview",
       pageTitle: "Overview",
     },
     {
       menuName: "Tasks",
       menuIcon: <Assignment />,
-      menuPath: basePath + "/tasks",
+      menuPath: "/tasks",
       pageTitle: "Tasks",
     },
     {
       menuName: "People",
       menuIcon: <People />,
-      menuPath: basePath + "/people",
+      menuPath: "/people",
       pageTitle: "People",
     },
     {
       menuName: "People Department",
       menuIcon: <Dvr />,
-      menuPath: basePath + "/people_dept",
+      menuPath: "/people_dept",
       pageTitle: "People Department",
     },
     {
       menuName: "Items",
       menuIcon: <ViewList />,
-      menuPath: basePath + "/items",
+      menuPath: "/items",
       pageTitle: "Items",
     },
     {
       menuName: "Insights",
       menuIcon: <Timeline />,
-      menuPath: basePath + "/insights",
+      menuPath: "/insights",
       pageTitle: "Insights",
     },
     {
       menuName: "CaseCreator",
       menuIcon: <Create />,
-      menuPath: basePath + "/case-select",
+      menuPath: "/case-select",
       pageTitle: "Create Case",
     },
     {
       menuName: "View Cases",
       menuIcon: <ViewList />,
-      menuPath: basePath + "/viewcase",
+      menuPath: "/viewcase",
       pageTitle: "View Cases",
     },
     {
       menuName: "Case Type Form",
       menuIcon: <Dvr />,
-      menuPath: basePath + "/case-type-form",
+      menuPath: "/case-type-form",
       pageTitle: "Case Type",
     },
   ];
