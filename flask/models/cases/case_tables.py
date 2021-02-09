@@ -41,3 +41,30 @@ system_code = Table('ASSOC_SYSTEM_CODE', Base.metadata,
                     Column('MODIFIED_BY', String),
                     Column('CREATED_BY', String),
                    )
+
+case_activity_type = Table('CASE_ACTIVITY_TYPE', Base.metadata,
+                    Column('CASE_ACTIVITY_TYPE_ID', Integer, primary_key=True),
+                    Column('NAME', String),
+                    Column('DESCRIPTION', String),
+                    Column('BCOLOR', String),
+                    Column('FCOLOR', String),
+                    Column('SYSTEM_CODE', String),
+                    Column('IS_ACTIVE', String),
+                    Column('MODIFIED_BY', String),
+                    Column('CREATED_DATETIME', String),
+                    Column('MODIFIED_DATETIME', String),
+                    Column('CREATED_BY', String),
+                   )
+
+
+case_activity_log = Table('CASE_ACTIVITY', Base.metadata,
+                    Column('CASE_ACTIVITY_ID', Integer, primary_key=True),
+                    Column('CASE_ID', Integer),
+                    Column('IS_ACTIVE', String),
+                    # Column('ACTIVITY_TYPE_ID', Integer, ForeignKey('case_activity_type.ACTIVITY_TYPE_ID')),
+                    Column('NOTE', String),
+                    Column('CREATED_DATETIME', String),
+                    Column('MODIFIED_DATETIME', String),
+                    Column('MODIFIED_BY', String),
+                    Column('CREATED_BY', String),
+                   )
