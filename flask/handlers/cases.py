@@ -81,7 +81,7 @@ class CaseHandler(Response):
             case_ids = case_ids.split(',')
             final_id = [int(x) for x in case_ids]
             values = [{
-                "label": "Case Activity Logs",
+                "label": "Case Activity Logss",
                 "activity_id": instance.CASE_ACTIVITY_ID,
                 "case_id": instance.CASE_ID,
                 "activity_note": instance.NOTE,
