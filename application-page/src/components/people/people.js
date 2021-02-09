@@ -10,7 +10,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
@@ -138,6 +138,7 @@ export default function Peoples() {
   const handlePrevClick = () => {
     setComponentLoader(true);
     setPeopleData([]);
+
     getPeople(recordLength - maxCount * 2, true, searchTextValue);
   };
 
@@ -307,13 +308,7 @@ export default function Peoples() {
                 sm={6}
                 style={{ textAlign: "left" }}
               >
-                <Button
-                  variant="contained"
-                  className={
-                    recordLength !== maxCount ? classes.nextButton : ""
-                  }
-                  onClick={handleNextClick}
-                >
+                <Button variant="contained" onClick={handleNextClick}>
                   Next
                 </Button>
               </Grid>

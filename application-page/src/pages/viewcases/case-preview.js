@@ -18,22 +18,38 @@ export default function CasePreview(props) {
   const [caseId, setCaseId] = useState(props.caseId);
   const [caseData, setCaseData] = useState(props.caseData);
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
+  const [firstCaseId, setFirstCaseId] = useState(props.firstCaseId);
+  const [isFromPeopleDept, setIsFromPeopleDept] = useState(props.isFromPeopleDept ? props.isFromPeopleDept : false);
 
   const handleCasePreviewClick = (caseId, caseData) => {
-    // props.handleCasePreviewClick(caseId, caseData);
-    if (!caseLoaded) {
-      notification.toast.warning("Please wait. Your case is loading...!!");
-      return false;
+    if(!isFromPeopleDept){
+      if (!caseLoaded) {
+        notification.toast.warning("Please wait. Your case is loading...!!");
+        return false;
+      }
+      setBackGroundColor(caseId);
+      props.handleCasePreviewClick(caseId, caseData);
     }
+  };
 
-    props.handleCasePreviewClick(caseId, caseData);
+  const setBackGroundColor = (caseId) => {
+    var cardDiv = document.getElementById("card-" + caseId);
+    var selectedDiv = document.querySelector(".card-background-color");
+    if (selectedDiv) {
+      selectedDiv.classList.remove("card-background-color");
+    }
+    if (cardDiv) {
+      cardDiv.classList.add("card-background-color");
+    }
   };
 
   useEffect(() => {
     setCaseData(props.caseData);
     setCaseId(props.caseId);
     setCaseLoaded(props.caseLoaded);
-  }, [props.caseId, props.caseData, props.caseLoaded]);
+    setFirstCaseId(props.firstCaseId);
+    setBackGroundColor(props.firstCaseId);
+  }, [props.caseId, props.caseData, props.caseLoaded, props.firstCaseId]);
 
   const addDefaultSrc = (event) => {
     let userDefaultImage = require("../../assets/images/default-userimage.png");
@@ -59,12 +75,14 @@ export default function CasePreview(props) {
     }
   };
 
+
   return (
     <Card
       padding={0.5}
       style={{ cursor: "pointer" }}
       className={"card-user-case"}
       key={caseData.caseID}
+      id={"card-" + caseId}
       onClick={(event) => {
         handleCasePreviewClick(caseId, caseData);
       }}

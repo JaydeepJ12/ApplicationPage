@@ -68,3 +68,15 @@ case_activity_log = Table('CASE_ACTIVITY', Base.metadata,
                     Column('MODIFIED_BY', String),
                     Column('CREATED_BY', String),
                    )
+
+departments_employee = Table('vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER', Base.metadata,
+                    Column('EMPLOYEE_GUID', String),
+                    Column('EMPLOYEEID', Integer, primary_key=True),
+                    Column('EmpFirstName', String),
+                    # Column('SYSTEM_CODE_NAME', String),
+                    # Column('IS_ACTIVE', String),
+                    # Column('CREATED_DATETIME', String),
+                    # Column('MODIFIED_DATETIME', String),
+                    # Column('MODIFIED_BY', String),
+                    # Column('CREATED_BY', String),
+                   )

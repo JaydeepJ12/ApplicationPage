@@ -41,3 +41,10 @@ class CaseActivityLog(Base):
         'include_properties': ['CASE_ACTIVITY_ID', 'CASE_ID', 'IS_ACTIVE', 'NOTE', 'CREATED_DATETIME',
                                'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY', 'CREATED_BY']
     }
+
+
+class EmployeeDepartment(Base):
+    __table__ = departments_employee
+    __mapper_args = {
+        'include_properties': ['EMPLOYEE_GUID', 'EMPLOYEEID', 'EmpFirstName']
+    }

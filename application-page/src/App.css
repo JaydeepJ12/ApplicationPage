@@ -115,9 +115,12 @@ header.MuiPaper-elevation4 {
   background-color: transparent !important;
 }
 .card-user-case {
-  background: rgba(196, 196, 196, 0.25) !important;
+  background: rgba(196, 196, 196, 0.25);
   box-shadow: none !important;
   margin-bottom: 0.8em;
+}
+.card-background-color {
+  background: lightskyblue;
 }
 .card-user-comment {
   background: #f1f1f1;
@@ -231,4 +234,19 @@ header.MuiPaper-elevation4 {
 }
 #page-overview .MuiFormLabel-root {
   line-height: 0.4 !important;
+}
+.MuiFormLabel-root.Mui-disabled {
+  color: #333333 !important;
+}
+/* case card  */
+.card-user-case:hover {
+  background: rgb(3 218 197) !important;
+}
+/* filter card */
+.card-filter select {
+  cursor: pointer;
+  width: 21.6rem !important;
+}
+#page-department .MuiPopover-paper {
+  left: 6.5rem !important;
 }

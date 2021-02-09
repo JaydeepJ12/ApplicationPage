@@ -15,11 +15,7 @@ from flask_cors import CORS, cross_origin
 bp = Blueprint('cases', __name__, url_prefix='/cases')
 db = CasesSQL()
 
-# <<<<<<< HEAD
-# mobile = Mobile('http://home.boxerproperty.com/MobileAPI','satishp','S@ti$h98240')
-# =======
-# mobile = Mobile("http://home.boxerproperty.com/MobileAPI", "michaelaf", "Boxer@@2021")
-# >>>>>>> ee1c9333331dd2a4fdb47b80f7b7275c4f37c89a
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
 
 cases = Cases('https://casesapi.boxerproperty.com')
 r = cases.token('API_Admin', 'Boxer@123')  # store the token in the browser
@@ -105,6 +101,27 @@ def getPeople():
     return df.to_json(orient='records')  #
 
 
+@bp.route('/getDepartmentPeoples', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def getDepartmentPeoples():
+   data = request.json
+   df = db.get_department_people(data['maxCount'], data['searchText'])
+   return df.to_json(orient='records') #
+@bp.route('/getPeopleInfo', methods=['POST'])
+def getPeopleInfo():
+    data = request.json
+    print(data)
+    df = db.get_people_info(data['EMPLOYEE_ID'])
+    return df.to_json(orient='records')  
+
+@bp.route('/getDepartmentEmpFilterValues', methods=['GET'])
+def getDepartmentEmpFilterValues():
+    try:
+        df = db.get_department_emp_filters()
+        return df.to_json(orient='records')  
+    except:
+        return '[]'
+        
 @bp.route('/test')
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
@@ -266,11 +283,22 @@ def case_activity_log():
             return json.dumps({'error_status': 400, 'error': "please pass the case id"})
         return CaseHandler().case_activity_log(caseIds)
 
+@bp.route('/departments', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def departments_data():
+    data = request.json
+    return CaseHandler().departments_data(data['maxCount'])
+
+@bp.route('/departments_info', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def departments_data_byId():
+    if request.method == 'POST':
+        data = request.json
+        return CaseHandler().departments_data_byId(data['id'])
 
 @bp.route('/case_type_insert', methods=['POST'])
 def insert_case_type_data():
     data = json.loads(request.data)
-    print(data)
     if request.method == 'POST':
         try:
             return CaseHandler().case_type_insert(data)
@@ -303,9 +331,14 @@ def get_related_cases_count_data():
     data = mobile.get_related_cases_count_data(request.json).json()
     return data
 
-
 @bp.route('/getUserInfo', methods=['POST'])
 def get_user_info():
     data = request.json
     df = db.get_user_info(data['userShortName'])
     return df.to_json(orient='records')
+
+@bp.route('/getFilterValuesByCaseTypeIds', methods=['POST'])
+def getFilterValuesByCaseTypeIds():
+   data = request.json
+   df = db.get_filter_values_by_caseTypeIds(data['caseTypeIds'])
+   return df.to_json(orient='records') #

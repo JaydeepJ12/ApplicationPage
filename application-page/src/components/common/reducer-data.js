@@ -1,15 +1,29 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { data } from "../../redux/action.js";
+import { actionData } from "../../redux/action.js";
+
+
+const id_from_url = () =>{
+  let path = window.location.pathname;
+  let split= path.split('/')
+  //id should always be second from last rgardless of prefix
+  
+  console.log(split[split.length - 2])
+  return Number(split[split.length - 2])
+}
+
+
 
 export default function ReducerData() {
   const dispatch = useDispatch();
   const entitiesByEntityId = async () => {
+   
     let path = window.location.pathname;
     let entityId = 0;
     if (path) {
-      entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
+      //entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
+      entityId = id_from_url()
     }
     if (!entityId) {
       entityId = 0;
@@ -56,7 +70,7 @@ export default function ReducerData() {
     };
     await axios(config)
       .then(function (response) {
-        dispatch(data(response.data, "CASE_TYPE"));
+        dispatch(actionData(response.data, "CASE_TYPE"));
         console.log(response.data);
       })
       .catch(function (error) {

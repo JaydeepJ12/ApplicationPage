@@ -1,4 +1,3 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import React, { useEffect, useState } from "react";
@@ -13,6 +12,7 @@ export default function CaseList(props) {
   const [caseList, setCaseList] = useState(props.caseListData);
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
   const [componentLoader, setComponentLoader] = useState(props.componentLoader);
+  const [firstCaseId, setFirstCaseId] = useState(props.firstCaseId);
   const [state, setState] = React.useState(0);
 
   const handleCasePreviewClick = (id, caseData) => {
@@ -21,46 +21,20 @@ export default function CaseList(props) {
     }
   };
 
-  const handleFilterCaseList = (event) => {
-    const filter = Number(event.target.value);
-    setState(filter);
-    setComponentLoader(true);
-    props.handleFilterCaseList(filter);
-  };
-
   useEffect(() => {
     setCaseList(props.caseListData);
     setCaseLoaded(props.caseLoaded);
     setComponentLoader(props.componentLoader);
-  }, [props.caseListData, props.caseLoaded, props.componentLoader]);
+    setFirstCaseId(props.firstCaseId);
+  }, [
+    props.caseListData,
+    props.caseLoaded,
+    props.componentLoader,
+    props.firstCaseId,
+  ]);
 
   return (
     <Box>
-      <FormControl
-        style={{ width: "-webkit-fill-available" }}
-        variant="outlined"
-        className={classes.mb_one}
-      >
-        <InputLabel htmlFor="outlined-filter-native-simple">Filter</InputLabel>
-        <Select
-          labelId="filter-label"
-          id="filter-select"
-          value={state.filter}
-          onChange={handleFilterCaseList}
-          label="Filter"
-          inputProps={{
-            filter: "filter",
-            id: "outlined-filter-native-simple",
-          }}
-          fullWidth={true}
-        >
-          <MenuItem value={0}>All Cases</MenuItem>
-          <MenuItem value={1}>Assigned To Me</MenuItem>
-          <MenuItem value={2}>Assigned To My Team</MenuItem>
-          <MenuItem value={3}>Created By Me</MenuItem>
-        </Select>
-      </FormControl>
-
       {caseList.length ? (
         <>
           {(componentLoader
@@ -74,6 +48,7 @@ export default function CaseList(props) {
                   caseId={caseData.caseID}
                   caseData={caseData}
                   caseLoaded={caseLoaded}
+                  firstCaseId={firstCaseId}
                 ></CasePreview>
               ) : (
                 <ComponentLoader type="rect" />
