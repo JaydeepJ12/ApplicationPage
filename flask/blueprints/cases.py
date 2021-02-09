@@ -98,14 +98,21 @@ def getDepartmentPeoples():
    data = request.json
    df = db.get_department_people(data['maxCount'], data['searchText'])
    return df.to_json(orient='records') #
-
 @bp.route('/getPeopleInfo', methods=['POST'])
 def getPeopleInfo():
     data = request.json
     print(data)
     df = db.get_people_info(data['EMPLOYEE_ID'])
     return df.to_json(orient='records')  
-    
+
+@bp.route('/getDepartmentEmpFilterValues', methods=['GET'])
+def getDepartmentEmpFilterValues():
+    try:
+        df = db.get_department_emp_filters()
+        return df.to_json(orient='records')  
+    except:
+        return '[]'
+        
 @bp.route('/test')
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')

@@ -14,6 +14,9 @@ export default makeStyles(
       mb_one: {
         marginBottom: theme.spacing(2),
       },
+      mr_one: {
+        marginRight: theme.spacing(2),
+      },
       // padding class
       pt_zero: {
         paddingTop: theme.spacing(0),
@@ -63,11 +66,11 @@ export default makeStyles(
         flexDirection: "column",
       },
       fixedHeight: {
-        height: "84vh",
+        height: "70vh",
         overflow: "auto",
       },
       fixedHeightCard: {
-        height: "62vh",
+        height: "70vh",
         overflow: "auto",
       },
       // use for side by side form field
