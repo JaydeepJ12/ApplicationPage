@@ -236,7 +236,7 @@ header.MuiPaper-elevation4 {
   line-height: 0.4 !important;
 }
 .MuiFormLabel-root.Mui-disabled {
-  color:#333333 !important;
+  color: #333333 !important;
 }
 /* case card  */
 .card-user-case:hover {
@@ -247,6 +247,6 @@ header.MuiPaper-elevation4 {
   cursor: pointer;
   width: 21.6rem !important;
 }
-.MuiPopover-paper {
+#page-department .MuiPopover-paper {
   left: 6.5rem !important;
 }
