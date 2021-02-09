@@ -115,13 +115,12 @@ def getPeopleInfo():
     df = db.get_people_info(data['EMPLOYEE_ID'])
     return df.to_json(orient='records')  
 
-@bp.route('/getDepartmentEmpFilterValues', methods=['GET'])
+@bp.route('/getDepartmentEmpFilterValues', methods=['POST'])
 def getDepartmentEmpFilterValues():
-    try:
-        df = db.get_department_emp_filters()
-        return df.to_json(orient='records')  
-    except:
-        return '[]'
+    data = request.json
+    print(data)
+    df = db.get_department_emp_filters(data['parentName'],data['parentID'])
+    return df.to_json(orient='records')  
         
 @bp.route('/test')
 def create():

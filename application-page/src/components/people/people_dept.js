@@ -88,10 +88,13 @@ export default function PeopleDepartment(props) {
   const [pageSize, setPageSize] = useState(10);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
+  // fill dropdown
   const [topLevelDrpData, setTopLevelDrpData] = useState([]);
   const [basicNameDrpData, setBasicNameDrpData] = useState([]);
   const [subDepartmentDrpData, setSubDepartmentDrpData] = useState([]);
-
+  const [jobFunctionDrpData, setJobFunctionDrpData] = useState([]);
+  const [jobTitleDrpData, setJobTitleDrpData] = useState([]);
+  const [companyDrpData, setCompanyDrpData] = useState([]);
   const [state, setState] = React.useState({
     age: "",
     name: "hai",
@@ -107,8 +110,8 @@ export default function PeopleDepartment(props) {
   };
   const handleCasePreviewClick = (caseId, caseData) => {};
   // filter start
-  const handleFilterChange = (event, value) => {
-    setTopFilterValue(value);
+  const handleFilterChange = (parentName, parentID) => {
+    GetDropdownFilters(parentName, parentID);
   };
   // filter end
   const GetDepartmentPeopleList = async (searchText = "", skipCount = 0) => {
@@ -176,33 +179,57 @@ export default function PeopleDepartment(props) {
 
   // for GetDropdownFilters
 
-  const GetDropdownFilters = async () => {
+  const GetDropdownFilters = async (parentName, parentID) => {
+    var jsonData = {
+      parentName: parentName ? parentName : "",
+      parentID: parentID ? parentID : 0,
+    };
     var config = {
-      method: "GET",
+      method: "post",
       url: "/cases/getDepartmentEmpFilterValues",
+      data: jsonData,
     };
     await axios(config)
       .then(function (response) {
         // for top level dropdown
-        let DrpTopLevelData = response.data.filter(
-          (x) => x.level === "TOP LEVEL"
+        let drpTopLevelData = response.data.filter(
+          (x) => x.Level === "TOP LEVEL"
         );
-        if (DrpTopLevelData) {
-          setTopLevelDrpData(DrpTopLevelData);
+        if (drpTopLevelData.length) {
+          setTopLevelDrpData(drpTopLevelData);
         }
         // for basic name dropdown
-        let DrpBasicNameData = response.data.filter(
-          (x) => x.level === "BASIC NAME"
+        let drpBasicNameData = response.data.filter(
+          (x) => x.Level === "BASIC NAME"
         );
-        if (DrpBasicNameData) {
-          setBasicNameDrpData(DrpBasicNameData);
+        if (drpBasicNameData.length) {
+          setBasicNameDrpData(drpBasicNameData);
         }
         // for SUB DEPARTMENT dropdown
-        let DrpSubDepartmentData = response.data.filter(
-          (x) => x.level === "SUB DEPARTMENT"
+        let drpSubDepartmentData = response.data.filter(
+          (x) => x.Level === "SUB DEPARTMENT"
         );
-        if (DrpSubDepartmentData) {
-          setSubDepartmentDrpData(DrpSubDepartmentData);
+        if (drpSubDepartmentData.length) {
+          setSubDepartmentDrpData(drpSubDepartmentData);
+        }
+        // for JOB FUNCTION dropdown
+        let drpJobFunctionData = response.data.filter(
+          (x) => x.Level === "JOB FUNCTION"
+        );
+        if (drpJobFunctionData.length) {
+          setJobFunctionDrpData(drpJobFunctionData);
+        }
+        // for JOB Title dropdown
+        let drpJobTitleData = response.data.filter(
+          (x) => x.Level === "JOB TITLE"
+        );
+        if (drpJobTitleData.length) {
+          setJobTitleDrpData(drpJobTitleData);
+        }
+        // for Company dropdown
+        let drpCompanyData = response.data.filter((x) => x.Level === "Company");
+        if (drpCompanyData) {
+          setCompanyDrpData(drpCompanyData);
         }
       })
       .catch(function (error) {
@@ -362,6 +389,7 @@ export default function PeopleDepartment(props) {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+
   return (
     <div className="page" id="page-department">
       <Grid container spacing={3}>
@@ -400,21 +428,28 @@ export default function PeopleDepartment(props) {
             <Grid className={"card-filter " + classesBase.m_one}>
               <Grid item lg={12} md={12} xs={12} sm={12}>
                 <FormControl
+                  fullWidth={true}
                   variant="outlined"
-                  style={{ width: "-webkit-fill-available" }}
                   className={classesBase.mb_one}
                 >
-                  <InputLabel
-                    htmlFor="outlined-filter-native-simple"
-                    shrink
-                    ref={inputLabel}
-                  >
+                  <InputLabel id="demo-controlled-open-select-label">
                     Top Level
                   </InputLabel>
-                  <Select label="Top Level" fullWidth={true}>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("topLevel", e.target.value)
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
                     {topLevelDrpData.length
                       ? topLevelDrpData.map((option) => (
-                          <MenuItem>{option.NAME}</MenuItem>
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
                         ))
                       : []}
                   </Select>
@@ -422,44 +457,28 @@ export default function PeopleDepartment(props) {
               </Grid>
               <Grid item lg={12} md={12} xs={12} sm={12}>
                 <FormControl
+                  fullWidth={true}
                   variant="outlined"
-                  style={{ width: "-webkit-fill-available" }}
                   className={classesBase.mb_one}
                 >
-                  <InputLabel
-                    htmlFor="outlined-filter-native-simple"
-                    shrink
-                    ref={inputLabel}
-                  >
+                  <InputLabel id="demo-controlled-open-select-label">
                     Basic Name
                   </InputLabel>
-                  <Select label="Basic Name" fullWidth={true}>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("basicName", e.target.value)
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
                     {basicNameDrpData.length
                       ? basicNameDrpData.map((option) => (
-                          <MenuItem>{option.NAME}</MenuItem>
-                        ))
-                      : []}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  variant="outlined"
-                  style={{ width: "-webkit-fill-available" }}
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel
-                    htmlFor="outlined-filter-native-simple"
-                    shrink
-                    ref={inputLabel}
-                  >
-                    Sub Department
-                  </InputLabel>
-                  <Select label="Sub Department" fullWidth={true}>
-                    {subDepartmentDrpData.length
-                      ? subDepartmentDrpData.map((option) => (
-                          <MenuItem>{option.NAME}</MenuItem>
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
                         ))
                       : []}
                   </Select>
@@ -476,21 +495,26 @@ export default function PeopleDepartment(props) {
                     Sub Department
                   </InputLabel>
                   <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("subDepartment", e.target.value)
+                    }
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {subDepartmentDrpData.length
+                      ? subDepartmentDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
                   </Select>
                 </FormControl>
               </Grid>
+
               <Grid item lg={12} md={12} xs={12} sm={12}>
                 <FormControl
                   fullWidth={true}
@@ -501,18 +525,22 @@ export default function PeopleDepartment(props) {
                     Job Function
                   </InputLabel>
                   <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("jobFunction", e.target.value)
+                    }
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {jobFunctionDrpData.length
+                      ? jobFunctionDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
                   </Select>
                 </FormControl>
               </Grid>
@@ -526,21 +554,23 @@ export default function PeopleDepartment(props) {
                     Job Title
                   </InputLabel>
                   <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {jobTitleDrpData.length
+                      ? jobTitleDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
                   </Select>
                 </FormControl>
               </Grid>
+
               <Grid item lg={12} md={12} xs={12} sm={12}>
                 <FormControl
                   fullWidth={true}
@@ -551,18 +581,17 @@ export default function PeopleDepartment(props) {
                     Employee Status
                   </InputLabel>
                   <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value="Active">Active</MenuItem>
+                    <MenuItem value="INACTIVE">INACTIVE</MenuItem>
+                    <MenuItem value="both">both</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -576,46 +605,18 @@ export default function PeopleDepartment(props) {
                     Provisioned
                   </InputLabel>
                   <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
+                    <MenuItem aria-label="None" value="" />
+                    <MenuItem value="Yes">Yes</MenuItem>
+                    <MenuItem value="No">NO</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Search by Name
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
-                  >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
+
               <Grid item lg={12} md={12} xs={12} sm={12}>
                 <FormControl
                   fullWidth={true}
@@ -626,18 +627,17 @@ export default function PeopleDepartment(props) {
                     Company
                   </InputLabel>
                   <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
+                    <MenuItem aria-label="None" value="" />
+                    {companyDrpData.length
+                      ? companyDrpData.map((option) => (
+                          <MenuItem value={option.NAME}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
                   </Select>
                 </FormControl>
               </Grid>
