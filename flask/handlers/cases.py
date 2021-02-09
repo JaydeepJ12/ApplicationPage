@@ -82,12 +82,7 @@ class CaseHandler(Response):
             values = [{
                 "label": "Case Activity Logss",
                 "activity_id": instance.CASE_ACTIVITY_ID,
-                "activity_type": [
-                    {
-                        "case_activity_type_name":self.session.query(CaseActivityType).get(instance.ACTIVITY_TYPE_ID).NAME,
-
-                    }
-                ],
+                "activity_type": self.session.query(CaseActivityType).get(instance.ACTIVITY_TYPE_ID).NAME,
                 "case_id": instance.CASE_ID,
                 "activity_note": instance.NOTE,
                 "created_by": instance.CREATED_BY,
