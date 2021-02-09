@@ -107,6 +107,7 @@ def getDepartmentPeoples():
    data = request.json
    df = db.get_department_people(data['maxCount'], data['searchText'])
    return df.to_json(orient='records') #
+
 @bp.route('/getPeopleInfo', methods=['POST'])
 def getPeopleInfo():
     data = request.json

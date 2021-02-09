@@ -38,7 +38,7 @@ class SystemCode(Base):
 class CaseActivityLog(Base):
     __table__ = case_activity_log
     __mapper_args = {
-        'include_properties': ['CASE_ACTIVITY_ID', 'CASE_ID', 'IS_ACTIVE', 'NOTE', 'CREATED_DATETIME',
+        'include_properties': ['CASE_ACTIVITY_ID', 'CASE_ID', 'IS_ACTIVE', 'NOTE',
                                'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY', 'CREATED_BY']
     }
 
