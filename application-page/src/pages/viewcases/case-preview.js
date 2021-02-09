@@ -19,16 +19,17 @@ export default function CasePreview(props) {
   const [caseData, setCaseData] = useState(props.caseData);
   const [caseLoaded, setCaseLoaded] = useState(props.caseLoaded);
   const [firstCaseId, setFirstCaseId] = useState(props.firstCaseId);
+  const [isFromPeopleDept, setIsFromPeopleDept] = useState(props.isFromPeopleDept ? props.isFromPeopleDept : false);
 
   const handleCasePreviewClick = (caseId, caseData) => {
-
-    // props.handleCasePreviewClick(caseId, caseData);
-    if (!caseLoaded) {
-      notification.toast.warning("Please wait. Your case is loading...!!");
-      return false;
+    if(!isFromPeopleDept){
+      if (!caseLoaded) {
+        notification.toast.warning("Please wait. Your case is loading...!!");
+        return false;
+      }
+      setBackGroundColor(caseId);
+      props.handleCasePreviewClick(caseId, caseData);
     }
-    setBackGroundColor(caseId);
-    props.handleCasePreviewClick(caseId, caseData);
   };
 
   const setBackGroundColor = (caseId) => {

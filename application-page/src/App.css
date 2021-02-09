@@ -242,3 +242,11 @@ header.MuiPaper-elevation4 {
 .card-user-case:hover {
   background: rgb(3 218 197) !important;
 }
+/* filter card */
+.card-filter select {
+  cursor: pointer;
+  width: 21.6rem !important;
+}
+.MuiPopover-paper {
+  left: 6.5rem !important;
+}
