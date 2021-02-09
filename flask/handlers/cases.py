@@ -76,6 +76,25 @@ class CaseHandler(Response):
             "customData": [],
             "values": values})
 
+    def case_activity_log(self, case_ids):
+        case_ids = case_ids.split(',')
+        values = [{
+            "label": "Case Activity Logs",
+            "activity_id": instance.CASE_ACTIVITY_ID,
+            "case_id": instance.CASE_ID,
+            "activity_note": instance.NOTE,
+            "created_by": instance.CREATED_BY,
+            "is_active": instance.IS_ACTIVE,
+            "modified_by": instance.MODIFIED_BY,
+            "created_datetime": str(instance.CREATED_DATETIME),
+            "modified_datetime": str(instance.MODIFIED_DATETIME),
+            "href": f"#/",
+        } for instance in
+            self.session.query(CaseActivityLog).filter(CaseActivityLog.CASE_ID.in_(case_ids)).all()]
+        return json.dumps({
+            "label": "Case Activity Logs",
+            "href": "/Case Activity Logs",
+            "description": "List of all case activity logs",
     def departments_data(self, maxCount):
         values = [{
             "label": "Department User List",

@@ -29,7 +29,16 @@ class CaseType(Base):
 class SystemCode(Base):
     __table__ = system_code
     __mapper_args = {
-        'include_properties': ['ASSOC_SYSTEM_CODE_ID', 'SYSTEM_CODE', 'SYSTEM_CODE_LEVEL', 'SYSTEM_CODE_NAME', 'IS_ACTIVE',
+        'include_properties': ['ASSOC_SYSTEM_CODE_ID', 'SYSTEM_CODE', 'SYSTEM_CODE_LEVEL', 'SYSTEM_CODE_NAME',
+                               'IS_ACTIVE',
+                               'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY', 'CREATED_BY']
+    }
+
+
+class CaseActivityLog(Base):
+    __table__ = case_activity_log
+    __mapper_args = {
+        'include_properties': ['CASE_ACTIVITY_ID', 'CASE_ID', 'IS_ACTIVE', 'NOTE', 'CREATED_DATETIME',
                                'CREATED_DATETIME', 'MODIFIED_DATETIME', 'MODIFIED_BY', 'CREATED_BY']
     }
 
