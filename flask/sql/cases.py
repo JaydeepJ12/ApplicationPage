@@ -372,10 +372,32 @@ class CasesSQL:
             AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
             GROUP BY c.DISPLAY_NAME, c.SHORT_USER_NAME ,c.CREATED_DATETIME
             ORDER BY 1 ASC
-            offset 0 rows
+            offset {skipCount} rows
             FETCH NEXT {maxCount} rows only
         '''
         return self.db.execQuery(query)
+
+    def get_department_emp_filters(self):
+        try:
+            query = f'''
+                Select NAME , 'TOP LEVEL' as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_TOP_LEVEL] WITH(NOLOCK)
+                UNION
+                Select NAME , 'BASIC NAME' as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_BASIC_NAME] WITH(NOLOCK)
+                UNION
+                Select NAME ,'SUB DEPARTMENT'as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_SUB_DEPARTMENT] WITH(NOLOCK)
+                UNION
+                Select NAME ,'JOB FUNCTION'as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_FUNCTION] WITH(NOLOCK)
+                UNION
+                Select NAME ,'JOB TITLE'as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE] WITH(NOLOCK)
+                UNION
+                Select EMPLOYEE_TYPE_NAME ,'EMPLOYEE TYPE'as level from [DEPARTMENTS].[dbo].[employee_type] WITH(NOLOCK)
+                UNION
+                Select  COMPANY_NAME ,'Company'as level  from [DEPARTMENTS].[dbo].[Company] WITH(NOLOCK)
+                Order by level  
+            '''
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return '[]'
 
     def get_department_people(self, maxCount, searchText=''):
         query = f'''
