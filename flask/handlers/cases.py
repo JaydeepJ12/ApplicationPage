@@ -79,10 +79,15 @@ class CaseHandler(Response):
     def case_activity_log(self, case_ids):
         try:
             case_ids = case_ids.split(',')
-            final_id = [int(x) for x in case_ids]
             values = [{
                 "label": "Case Activity Logss",
                 "activity_id": instance.CASE_ACTIVITY_ID,
+                "activity_type": [
+                    {
+                        "case_activity_type_name":self.session.query(CaseActivityType).get(instance.ACTIVITY_TYPE_ID).NAME,
+
+                    }
+                ],
                 "case_id": instance.CASE_ID,
                 "activity_note": instance.NOTE,
                 "created_by": instance.CREATED_BY,
