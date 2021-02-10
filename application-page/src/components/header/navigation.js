@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
@@ -23,6 +23,7 @@ import rootRoute from "../../system/route";
 import HeaderRight from "../header/header_right";
 import menuItems from "../header/menu_items";
 import Login from "../Login/index.js";
+import ApplicationPageDropDown from "./applicationList";
 import useStyles from "./header_styles";
 
 export default function Navigation(props) {
@@ -113,7 +114,7 @@ export default function Navigation(props) {
               </Typography>
 
               <Typography variant="h6" noWrap>
-                {currentPage}
+                <ApplicationPageDropDown currentPage={currentPage} />
               </Typography>
               <HeaderRight />
             </Toolbar>

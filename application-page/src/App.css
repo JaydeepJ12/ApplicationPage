@@ -242,6 +242,9 @@ header.MuiPaper-elevation4 {
 .card-user-case:hover {
   background: rgb(3 218 197) !important;
 }
+.top-app-drp-list img {
+  object-fit: scale-down !important;
+}
 /* filter card */
 .card-filter select {
   cursor: pointer;

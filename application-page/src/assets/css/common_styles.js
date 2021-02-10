@@ -2,9 +2,8 @@ import { makeStyles } from "@material-ui/core";
 const drawerWidth = 240;
 export default makeStyles(
   (theme) => {
- 
     return {
-      // margin class 
+      // margin class
       m_one: {
         margin: theme.spacing(2),
       },
@@ -33,12 +32,12 @@ export default makeStyles(
         width: theme.spacing(15),
         height: theme.spacing(15),
       },
-      
+
       form: {
         "& .MuiTextField-root": {
           marginBottom: theme.spacing(1),
           minWidth: `calc(100%)`,
-        }
+        },
       },
       formControl: {
         minWidth: `calc(100%)`,
@@ -58,7 +57,7 @@ export default makeStyles(
         width: theme.spacing(7),
         height: theme.spacing(7),
       },
-      // 
+      //
       paper: {
         padding: theme.spacing(1),
         display: "flex",
@@ -75,23 +74,38 @@ export default makeStyles(
       },
       // use for side by side form field
       form_root: {
-        '& .MuiTextField-root': {
+        "& .MuiTextField-root": {
           margin: theme.spacing(1),
-          width: '31ch',
-        }
+          width: "31ch",
+        },
       },
       root: {
         flexGrow: 1,
       },
-    
+
       paper: {
-        textAlign: 'center',
+        textAlign: "center",
         color: theme.palette.text.secondary,
       },
       inputLabel: {
-        color:'red',
+        color: "red",
+      },
 
-      }
+      //top DropDown (10/2/2021)
+      listHeader: {
+        paddingBottom: 0,
+      },
+      listSubHeader: {
+        height: 23,
+        fontSize: "1.25rem",
+      },
+      listHeaderItem: {
+        textAlign: "right",
+      },
+      skeletonWidth: {
+        width: 200,
+        height: 50,
+      },
     };
   },
   { index: 1 }
