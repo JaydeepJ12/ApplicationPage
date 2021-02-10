@@ -257,7 +257,6 @@ export default function ViewCase(props) {
     }
 
     if (!loadMore && !isFilterByType && !isFilterByCaseType) {
-      setLoaded(false);
       skipCount = 0;
     }
 
