@@ -149,6 +149,11 @@ def get_case_headers():
     data = mobile.get_case_headers(request.json).json()
     return data
 
+@bp.route('/GetApplicationList', methods=['POST'])
+def get_application_list():
+    data = mobile.get_application_list().json()
+    return data
+
 def getSystemPriority(assocTypeId):
     df = db.get_system_priority(assocTypeId) #always returns dataframe
     return df.to_json(orient='records')

@@ -236,9 +236,12 @@ header.MuiPaper-elevation4 {
   line-height: 0.4 !important;
 }
 .MuiFormLabel-root.Mui-disabled {
-  color:#333333 !important;
+  color: #333333 !important;
 }
 /* case card  */
 .card-user-case:hover {
   background: rgb(3 218 197) !important;
+}
+.top-app-drp-list img {
+  object-fit: scale-down !important;
 }
