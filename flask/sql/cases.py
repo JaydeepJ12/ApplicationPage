@@ -372,10 +372,34 @@ class CasesSQL:
             AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
             GROUP BY c.DISPLAY_NAME, c.SHORT_USER_NAME ,c.CREATED_DATETIME
             ORDER BY 1 ASC
-            offset {skipCount} rows
+            offset 0 rows
             FETCH NEXT {maxCount} rows only
         '''
         return self.db.execQuery(query)
+
+    def get_department_emp_filters(self,parentName,parentID):
+           
+            if parentName == 'topLevel':
+                query = f'''
+                    Select DEPARTMENT_STRUCTURE_BASIC_NAME_ID as ID, NAME , 'BASIC NAME' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_BASIC_NAME] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_TOP_LEVEL_ID={parentID}
+                '''
+            elif parentName == 'basicName':
+                  query = f'''
+                    Select DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID as ID, NAME ,'SUB DEPARTMENT'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_SUB_DEPARTMENT]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_BASIC_NAME_ID={parentID}
+                '''
+            elif parentName == 'subDepartment':
+                  query = f'''
+                    Select DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID as ID, NAME ,'JOB FUNCTION'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_FUNCTION] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID={parentID}
+                '''
+            elif parentName == 'jobFunction':
+                  query = f'''
+                    Select DEPARTMENT_STRUCTURE_JOB_TITLE_ID as ID, NAME ,'JOB TITLE'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID={parentID}
+                '''
+            else:
+                query = f'''
+                    Select DEPARTMENT_STRUCTURE_TOP_LEVEL_ID as ID ,NAME , 'TOP LEVEL' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_TOP_LEVEL]  WITH(NOLOCK)  WHERE COMMON_DISPLAY ='Y'
+                '''
+            return self.db.execQuery(query)
 
     def get_department_people(self, maxCount, searchText=''):
         query = f'''

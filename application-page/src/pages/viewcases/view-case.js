@@ -257,9 +257,12 @@ export default function ViewCase(props) {
     }
 
     if (!loadMore && !isFilterByType && !isFilterByCaseType) {
-      setLoaded(false);
       skipCount = 0;
     }
+
+    // caseTypeId = props.location?.state?.caseTypeId
+    //   ? props.location?.state?.caseTypeId
+    //   : caseTypeId;
 
     var jsonData = {
       Username: userName ? userName : "bhaviks",
@@ -274,8 +277,6 @@ export default function ViewCase(props) {
       Filters: null,
       TypeIdsForGrouping: null,
     };
-    console.log("---case create-jsonData", jsonData);
-
     axios
       .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
@@ -284,17 +285,35 @@ export default function ViewCase(props) {
         setFilteredCaseListData([]);
         setComponentLoader(false);
         let caseHeadersData = response?.data?.responseContent;
-
+        let caseId = props.location?.state?.caseId
+          ? props.location?.state?.caseId
+          : 0;
         if (
           caseHeadersData.length &&
           !loadMore &&
           !isFilterByType &&
           (!isFilterByCaseType || caseTypeIdValue == 0)
         ) {
+          let selectedCaseHeadersData = [];
+          if (caseId > 0) {
+            selectedCaseHeadersData = caseHeadersData.filter(
+              (x) => x.caseID === caseId
+            );
+          }
           setCaseListData(caseHeadersData);
           setFilteredCaseListData(caseHeadersData);
-          setCaseData(caseHeadersData[0]);
-          setCaseId(caseHeadersData[0].caseID);
+          setCaseData(
+            selectedCaseHeadersData.length
+              ? selectedCaseHeadersData[0]
+              : caseHeadersData[0]
+          );
+          setCaseId(
+            caseId > 0
+              ? caseId
+              : selectedCaseHeadersData.length
+              ? selectedCaseHeadersData[0].caseID
+              : caseHeadersData[0].caseID
+          );
           setLoaded(true);
         } else if (caseHeadersData.length && loadMore) {
           caseHeadersData = caseListData.concat(caseHeadersData);
@@ -315,7 +334,14 @@ export default function ViewCase(props) {
 
         if (filterValue > 0) {
           navigate("tasks", {
-            state: { userName: "", filter: -1, taskCount: 0, isParent: false },
+            state: {
+              userName: "",
+              filter: -1,
+              taskCount: 0,
+              isParent: false,
+              caseId: 0,
+              caseTypeId: 0,
+            },
           });
         }
       })
@@ -329,6 +355,7 @@ export default function ViewCase(props) {
     // Set Is Case Type Available As True
     dispatch(actionData(true, "CASE_TYPE_PROPERTY"));
     let caseTypes = caseTypesByEntityData.applicationData.caseTypes;
+
     if (caseTypes && caseTypes.length) {
       let caseTypeIds = caseTypes.map((x) => {
         return x.CASE_TYPE_ID;
@@ -339,11 +366,14 @@ export default function ViewCase(props) {
         handleFilterCaseList(filterValue, false);
         setCaseListFiltered(true);
       }
+      let caseTypeId = props.location?.state?.caseTypeId
+        ? props.location?.state?.caseTypeId
+        : caseTypes[0]?.CASE_TYPE_ID;
       setCaseTypeData(caseTypes);
-      setCaseTypeIdValue(caseTypes[0]?.CASE_TYPE_ID);
+      setCaseTypeIdValue(caseTypeId);
       if (filterValue && filterValue < 0) {
-        setCaseTypeId(caseTypes[0]?.CASE_TYPE_ID);
-        caseList("", 0, false, 0, false, true, caseTypes[0]?.CASE_TYPE_ID);
+        setCaseTypeId(caseTypeId);
+        caseList("", 0, false, 0, false, true, caseTypeId);
       }
       getFilterValuesByCaseTypeIds(result);
     }

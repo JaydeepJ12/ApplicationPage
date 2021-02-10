@@ -1,41 +1,40 @@
 import {
   AppBar,
   Avatar,
-  Button,
   Box,
+  Button,
   Card,
   CardHeader,
   Grid,
+  InputLabel,
+  MenuItem,
   Paper,
+  Popover,
   Tab,
   Tabs,
-  Toolbar,
-  Typography,
   TextField,
-  Popover,
-  InputLabel
+  Toolbar,
+  Typography
 } from "@material-ui/core";
-import clsx from "clsx";
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import axios from "axios";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 import { useTheme } from "@material-ui/core/styles";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import { navigate } from "@reach/router";
+import axios from "axios";
+import clsx from "clsx";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import SwipeableViews from "react-swipeable-views";
-import useStyles from "../../assets/css/common_styles";
+import {
+  default as useStyles,
+  default as useStylesBase
+} from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader.js";
-import CasePreview from "../../pages/viewcases/case-preview.js";
 import * as notification from "../../components/common/toast";
-import { navigate } from "@reach/router";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import useStylesBase from "../../assets/css/common_styles";
-
-
+import CasePreview from "../../pages/viewcases/case-preview.js";
 
 const basePath = process.env.REACT_APP_BASE_PATH;
-
 
 var dateFormat = require("dateformat");
 
@@ -82,26 +81,37 @@ export default function PeopleDepartment(props) {
   const [peopleData, setPeopleData] = useState([]);
   const [peopleInfo, setPeopleInfoData] = useState([]);
   const [peopleCases, setPeopleCasesData] = useState([]);
+  const [caseListData, setCaseListData] = useState([]);
   const [userManager, setUserManager] = React.useState("");
   const [maxCount, setMaxCount] = useState(10);
-  const [pageSize, setPageSize] = useState(50);
+  const [recordCount, setRecordCount] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  // fill dropdown
+  const [topLevelDrpData, setTopLevelDrpData] = useState([]);
+  const [basicNameDrpData, setBasicNameDrpData] = useState([]);
+  const [subDepartmentDrpData, setSubDepartmentDrpData] = useState([]);
+  const [jobFunctionDrpData, setJobFunctionDrpData] = useState([]);
+  const [jobTitleDrpData, setJobTitleDrpData] = useState([]);
+  const [companyDrpData, setCompanyDrpData] = useState([]);
   const [state, setState] = React.useState({
-    age: '',
-    name: 'hai',
+    age: "",
+    name: "hai",
   });
+
   // filter value set
 
   const [TopFilterValue, setTopFilterValue] = React.useState(0);
-
+  const inputLabel = React.useRef(null);
   // end filter value set
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
- 
+  const handleCasePreviewClick = (caseId, caseData) => {};
   // filter start
-  const handleFilterChange = (event, value) => {
-    setTopFilterValue(value);
+  const handleFilterChange = (parentName, parentID) => {
+    GetDropdownFilters(parentName, parentID);
   };
   // filter end
   const GetDepartmentPeopleList = async (searchText = "", skipCount = 0) => {
@@ -166,32 +176,66 @@ export default function PeopleDepartment(props) {
         console.log(error);
       });
   };
-  const getPeopleTasks = (peopleInfo) => {
-    setTaskLoader(true);
+
+  // for GetDropdownFilters
+
+  const GetDropdownFilters = async (parentName, parentID) => {
     var jsonData = {
-      Ascending: false,
-      CurrentPage: 1,
-      Filter: 1,
-      Filters: null,
-      PageSize: pageSize,
-      MaxCount: maxCount,
-      SkipCount: 0,
-      SortColumn: null,
-      TypeId: 147, // leading
-      TypeIdsForGrouping: null,
-      Username: peopleInfo?.SHORT_USER_NAME
-        ? peopleInfo?.SHORT_USER_NAME
-        : "dixitms",
+      parentName: parentName ? parentName : "",
+      parentID: parentID ? parentID : 0,
     };
-    axios.post("/cases/GetCaseHeaders", jsonData).then(function (response) {
-      let caseHeadersData = response?.data?.responseContent;
-      setPeopleCasesData(caseHeadersData);
-      setTaskLoader(false);
-    });
+    var config = {
+      method: "post",
+      url: "/cases/getDepartmentEmpFilterValues",
+      data: jsonData,
+    };
+    await axios(config)
+      .then(function (response) {
+        // for top level dropdown
+        let drpTopLevelData = response.data.filter(
+          (x) => x.Level === "TOP LEVEL"
+        );
+        if (drpTopLevelData.length) {
+          setTopLevelDrpData(drpTopLevelData);
+        }
+        // for basic name dropdown
+        let drpBasicNameData = response.data.filter(
+          (x) => x.Level === "BASIC NAME"
+        );
+        if (drpBasicNameData.length) {
+          setBasicNameDrpData(drpBasicNameData);
+        }
+        // for SUB DEPARTMENT dropdown
+        let drpSubDepartmentData = response.data.filter(
+          (x) => x.Level === "SUB DEPARTMENT"
+        );
+        if (drpSubDepartmentData.length) {
+          setSubDepartmentDrpData(drpSubDepartmentData);
+        }
+        // for JOB FUNCTION dropdown
+        let drpJobFunctionData = response.data.filter(
+          (x) => x.Level === "JOB FUNCTION"
+        );
+        if (drpJobFunctionData.length) {
+          setJobFunctionDrpData(drpJobFunctionData);
+        }
+        // for JOB Title dropdown
+        let drpJobTitleData = response.data.filter(
+          (x) => x.Level === "JOB TITLE"
+        );
+        if (drpJobTitleData.length) {
+          setJobTitleDrpData(drpJobTitleData);
+        }
+        // for Company dropdown
+        let drpCompanyData = response.data.filter((x) => x.Level === "Company");
+        if (drpCompanyData) {
+          setCompanyDrpData(drpCompanyData);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
-  useEffect(() => {
-    GetDepartmentPeopleList();
-  }, []);
 
   // people image set
   const addDefaultSrc = (event) => {
@@ -236,8 +280,8 @@ export default function PeopleDepartment(props) {
       GetDepartmentPeopleList("", peopleData?.length, true);
     }
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
+  const fixedHeightPaperTask = clsx(classes.paper, classes.fixedHeightCard);
   const renderPeopleImage = (UserName) => {
     if (UserName) {
       return (
@@ -264,7 +308,7 @@ export default function PeopleDepartment(props) {
     setComponentLoader(true);
     setPeopleData([]);
   };
-  const handleTaskClick = (userName, filter, taskCount) => {
+  const handleTaskClick = (userName, filter, taskCount, caseId, caseTypeId) => {
     if (taskCount <= 0) {
       notification.toast.warning("No task available...!!");
       return false;
@@ -276,23 +320,76 @@ export default function PeopleDepartment(props) {
         taskCount: taskCount,
         replace: true,
         isParent: true,
+        caseId: caseId,
+        caseTypeId: caseTypeId,
       },
     });
   };
-  const handleCasePreviewClick = (id, caseData) => {
-    if (id > 0) {
-      props.handleCasePreviewClick(id, caseData);
-    }
-  };
+
   // popup over
   const handleClick = (event) => {
+    GetDropdownFilters();
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const onTaskScroll = (people_info, caseListData, recordCount, event) => {
+    const bottom =
+      event.target.scrollHeight - event.target.scrollTop ===
+      event.target.clientHeight;
+
+    if (bottom && taskLoader && recordCount >= maxCount) {
+      caseList(people_info, caseListData?.length, true);
+    }
+  };
+
+  const caseList = async (people, skipCount = 0, loadMore) => {
+    setTaskLoader(false);
+    setCaseListData([]);
+    setRecordCount(0);
+    var jsonData = {
+      Username: people.SHORT_USER_NAME ? people.SHORT_USER_NAME : "dixitms",
+      TypeId: 147,
+      PageSize: pageSize,
+      MaxCount: maxCount,
+      SkipCount: skipCount,
+      CurrentPage: 1,
+      Ascending: false,
+      SortColumn: null,
+      Filter: 1,
+      Filters: null,
+      TypeIdsForGrouping: null,
+    };
+
+    axios
+      .post("/cases/GetCaseHeaders", jsonData)
+      .then(function (response) {
+        let caseHeadersData = response?.data?.responseContent;
+        setRecordCount(caseHeadersData?.length);
+        if (caseHeadersData.length && !loadMore) {
+          setCaseListData(caseHeadersData);
+        } else if (caseHeadersData.length && loadMore) {
+          caseHeadersData = caseListData.concat(caseHeadersData);
+          setCaseListData(caseHeadersData);
+        } else if (caseHeadersData.length) {
+          setCaseListData(caseHeadersData);
+        }
+        setTaskLoader(true);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    GetDepartmentPeopleList();
+  }, []);
+
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+
   return (
     <div className="page" id="page-department">
       <Grid container spacing={3}>
@@ -328,55 +425,277 @@ export default function PeopleDepartment(props) {
               horizontal: "center",
             }}
           >
-              <Grid container  className={classesBase.m_one }>
-                <Grid item lg={12} md={12} xs={12} sm={12}>
-                      <FormControl
-                        fullWidth={true}
-                        variant="outlined"
+            <Grid className={"card-filter " + classesBase.m_one}>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Top Level
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("topLevel", e.target.value)
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {topLevelDrpData.length
+                      ? topLevelDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Basic Name
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("basicName", e.target.value)
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {basicNameDrpData.length
+                      ? basicNameDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
+                  </Select>
+                </FormControl>
+              </Grid>
 
-                      >
-                            <InputLabel id="demo-controlled-open-select-label">Top Level</InputLabel>
-                                <Select
-                                  native
-                                  value={TopFilterValue}
-                                  onChange={handleFilterChange}
-                                 
-                                  inputProps={{
-                                    name: "age",
-                                    id: "filled-age-native-simple",
-                                  }}
-                                >
-                                  <option aria-label="None" value="" />
-                                  <option value={10}>Ten</option>
-                                  <option value={20}>Twenty</option>
-                                  <option value={30}>Thirty</option>
-                                </Select>
-                          </FormControl>
-                  </Grid>
-                  <Grid item lg={12} md={12} xs={12} sm={12}>
-                        <FormControl
-                          variant="outlined"
-                               fullWidth={true}
-                         
-                        >
-                          <InputLabel id="demo-controlled-open-select-label">Job Title</InputLabel>
-                          <Select
-                            native
-                            value={TopFilterValue}
-                            onChange={handleFilterChange}
-                            inputProps={{
-                              name: "age",
-                              id: "filled-age-native-simple",
-                            }}
-                          >
-                            <option aria-label="None" value="" />
-                            <option value={10}>Ten</option>
-                            <option value={20}>Twenty</option>
-                            <option value={30}>Thirty</option>
-                          </Select>
-                        </FormControl>
-                </Grid>
-                </Grid>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Sub Department
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("subDepartment", e.target.value)
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {subDepartmentDrpData.length
+                      ? subDepartmentDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Job Function
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                    onChange={(e) =>
+                      handleFilterChange("jobFunction", e.target.value)
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {jobFunctionDrpData.length
+                      ? jobFunctionDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Job Title
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {jobTitleDrpData.length
+                      ? jobTitleDrpData.map((option) => (
+                          <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Employee Status
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value="Active">Active</MenuItem>
+                    <MenuItem value="INACTIVE">INACTIVE</MenuItem>
+                    <MenuItem value="both">both</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Provisioned
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                  >
+                    <MenuItem aria-label="None" value="" />
+                    <MenuItem value="Yes">Yes</MenuItem>
+                    <MenuItem value="No">NO</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Company
+                  </InputLabel>
+                  <Select
+                    className="input-dropdown"
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    label="People"
+                  >
+                    <MenuItem aria-label="None" value="" />
+                    {companyDrpData.length
+                      ? companyDrpData.map((option) => (
+                          <MenuItem value={option.NAME}>{option.NAME}</MenuItem>
+                        ))
+                      : []}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <FormControl
+                  fullWidth={true}
+                  variant="outlined"
+                  className={classesBase.mb_one}
+                >
+                  <InputLabel id="demo-controlled-open-select-label">
+                    Employee Type
+                  </InputLabel>
+                  <Select
+                    native
+                    value={TopFilterValue}
+                    onChange={handleFilterChange}
+                    inputProps={{
+                      name: "age",
+                      id: "filled-age-native-simple",
+                    }}
+                  >
+                    <option aria-label="None" value="" />
+                    <option value={10}>Ten</option>
+                    <option value={20}>Twenty</option>
+                    <option value={30}>Thirty</option>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                <TextField
+                  id="outlined-basic"
+                  label="Outlined"
+                  className={classesBase.mb_one}
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid
+                item
+                lg={12}
+                md={12}
+                xs={12}
+                sm={12}
+                className={classesBase.mb_one}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classesBase.mr_one}
+                >
+                  Filter
+                </Button>
+                <Button variant="contained" color="secondary">
+                  Clear
+                </Button>
+              </Grid>
+            </Grid>
           </Popover>
 
           <div
@@ -398,7 +717,7 @@ export default function PeopleDepartment(props) {
                           className={"card-user-case"}
                           onClick={(event) => {
                             handlePeopleInfo(people.EMPLOYEE_ID);
-                            getPeopleTasks(people);
+                            caseList(people, 0, false);
                           }}
                         >
                           <CardHeader
@@ -528,7 +847,14 @@ export default function PeopleDepartment(props) {
                   aria-label="full width tabs example"
                 >
                   <Tab className="nav-tab" label="Info" {...a11yProps(0)} />
-                  <Tab className="nav-tab" label="Task" {...a11yProps(1)} />
+                  <Tab
+                    onClick={(event) => {
+                      caseList(peopleInfo, 0, false);
+                    }}
+                    className="nav-tab"
+                    label="Task"
+                    {...a11yProps(1)}
+                  />
                   <Tab className="nav-tab" label="Acivity" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
@@ -537,7 +863,6 @@ export default function PeopleDepartment(props) {
               className=""
               axis={theme.direction === "rtl" ? "x-reverse" : "x"}
               index={value}
-            
             >
               <TabPanel value={value} index={0} dir={theme.direction}>
                 <Box
@@ -721,81 +1046,93 @@ export default function PeopleDepartment(props) {
                 </Box>
               </TabPanel>
               <TabPanel value={value} index={1} dir={theme.direction}>
-                <Box
-                  boxShadow={0}
-                  className="card bg-secondary"
-                  borderRadius={5}
+                <div
+                  className={fixedHeightPaperTask}
+                  onScroll={(event) =>
+                    onTaskScroll(peopleInfo, caseListData, recordCount, event)
+                  }
                 >
-                  <Grid container spacing={3}>
-                    {peopleCases.length ? (
-                      <>
-                        {(taskLoader
-                          ? Array.from(new Array(peopleCases.length))
-                          : peopleCases
-                        ).map((peopleCase, index) => (
-                          <Grid item xs={4}>
-                            <Box
-                              key={index}
-                              width="100%"
-                              onClick={(event) => {
-                                handleTaskClick(
-                                  peopleInfo.SHORT_USER_NAME,
-                                  1,
-                                  2
-                                );
+                  <Box
+                    boxShadow={0}
+                    className="card bg-secondary"
+                    borderRadius={5}
+                  >
+                    <Grid container spacing={3}>
+                      {caseListData?.length ? (
+                        <>
+                          {(!taskLoader
+                            ? Array.from(new Array(caseListData.length))
+                            : caseListData
+                          ).map((peopleCase, index) => (
+                            <Grid item xs={4}>
+                              <Box
+                                key={index}
+                                width="100%"
+                                onClick={(event) => {
+                                  handleTaskClick(
+                                    peopleInfo.SHORT_USER_NAME,
+                                    1,
+                                    2,
+                                    peopleCase.caseID,
+                                    peopleCase.typeId
+                                  );
+                                }}
+                              >
+                                {peopleCase ? (
+                                  <CasePreview
+                                    // handleCasePreviewClick={handleCasePreviewClick}
+                                    caseId={peopleCase.caseID}
+                                    caseData={peopleCase}
+                                    firstCaseId={peopleCase.caseID}
+                                    isFromPeopleDept={true}
+                                  ></CasePreview>
+                                ) : (
+                                  <ComponentLoader type="rect" />
+                                )}
+                              </Box>
+                            </Grid>
+                          ))}
+                        </>
+                      ) : (
+                        <>
+                          {!taskLoader ? (
+                            <>
+                              {(!taskLoader
+                                ? Array.from(new Array(4))
+                                : Array(2)
+                              ).map((item, index) => (
+                                <Grid item xs={4}>
+                                  <Box key={index} width="100%" padding={0.5}>
+                                    {item ? (
+                                      <img
+                                        style={{ width: "100%", height: 118 }}
+                                        alt={item.title}
+                                        src={item.src}
+                                      />
+                                    ) : (
+                                      <ComponentLoader type="rect" />
+                                    )}
+                                  </Box>
+                                </Grid>
+                              ))}
+                            </>
+                          ) : (
+                            <Typography
+                              variant="h6"
+                              center
+                              style={{
+                                textAlign: "center",
+                                padding: "5px",
                               }}
                             >
-                              {peopleCase ? (
-                                <CasePreview
-                                  caseId={peopleCase.caseID}
-                                  caseData={peopleCase}
-                                ></CasePreview>
-                              ) : (
-                                <ComponentLoader type="rect" />
-                              )}
-                            </Box>
-                          </Grid>
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        {taskLoader ? (
-                          <>
-                            {(taskLoader
-                              ? Array.from(new Array(4))
-                              : Array(2)
-                            ).map((item, index) => (
-                              <Grid item xs={4}>
-                                <Box key={index} width="100%" padding={0.5}>
-                                  {item ? (
-                                    <img
-                                      style={{ width: "100%", height: 118 }}
-                                      alt={item.title}
-                                      src={item.src}
-                                    />
-                                  ) : (
-                                    <ComponentLoader type="rect" />
-                                  )}
-                                </Box>
-                              </Grid>
-                            ))}
-                          </>
-                        ) : (
-                          <Typography
-                            variant="h6"
-                            center
-                            style={{
-                              textAlign: "center",
-                              padding: "5px",
-                            }}
-                          >
-                            No Task Found
-                          </Typography>
-                        )}
-                      </>
-                    )}
-                  </Grid>
-                </Box>
+                              No Task Found
+                            </Typography>
+                          )}
+                        </>
+                      )}
+                    </Grid>
+                  </Box>
+                </div>
               </TabPanel>
               <TabPanel value={value} index={2} dir={theme.direction}>
                 Activity

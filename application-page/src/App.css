@@ -245,3 +245,11 @@ header.MuiPaper-elevation4 {
 .top-app-drp-list img {
   object-fit: scale-down !important;
 }
+/* filter card */
+.card-filter select {
+  cursor: pointer;
+  width: 21.6rem !important;
+}
+#page-department .MuiPopover-paper {
+  left: 6.5rem !important;
+}
