@@ -91,6 +91,8 @@ function ApplicationListDropdown(props) {
         if (index > 0) {
           const appData = applicationList[index];
           setAppName(appData.name);
+        } else {
+          setAppName("Application Page");
         }
       }
     }
