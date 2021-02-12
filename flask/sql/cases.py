@@ -401,11 +401,24 @@ class CasesSQL:
                 '''
             return self.db.execQuery(query)
 
+    def get_department_company_list(self):
+        query = f'''
+           	Select  * from [DEPARTMENTS].[dbo].[Company] WHERE IS_ACTIVE ='Y'
+        '''
+        return self.db.execQuery(query)
+
+    def get_department_employee_type_list(self):
+        query = f'''
+           	select * from [DEPARTMENTS].[dbo].[employee_type] WHERE IS_ACTIVE ='Y'
+        '''
+        return self.db.execQuery(query)    
+
     def get_department_people(self, maxCount, searchText=''):
         query = f'''
           SELECT
                  c.EMPLOYEE_ID,
 				c.FULL_NAME,
+                c.DISPLAY_NAME,
 				c.JOB_TITLE,
 				c.DEPARTMENT_NAME,
 				c.HOME_PHONE_NUMBER,
@@ -424,11 +437,11 @@ class CasesSQL:
 				c.ZIP_CODE,
                 et.EMPLOYEE_TYPE_NAME
                 
-                 				FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID)
-                    WHERE c.IS_ACTIVE = 'Y'
-                    AND c.FULL_NAME Like CASE WHEN '' = '' THEN c.FULL_NAME ELSE '%' +  '' + '%' END
-                    ORDER BY 1 ASC
-                    offset 0 rows
+                FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID)
+                 WHERE c.IS_ACTIVE = 'Y'
+                AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
+                ORDER BY 1 ASC
+                offset 0 rows
                 FETCH NEXT {maxCount} rows only
         '''
         return self.db.execQuery(query)
@@ -594,6 +607,7 @@ where a.IS_ACTIVE = 'Y'
   and CASE_TYPE_ID in {case_types} 
         '''
         return self.db.execQuery(query)
+        
 
 
 class AppSql:

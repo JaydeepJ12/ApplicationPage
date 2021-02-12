@@ -164,6 +164,7 @@ export default function Peoples() {
       ></PeoplePreview>
       <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
         <Grid item xs={12} container spacing={2}>
+          
           <Grid item lg={3} md={3} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id="demo-simple-select-outlined-label">

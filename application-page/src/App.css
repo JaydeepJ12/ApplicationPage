@@ -64,6 +64,21 @@ a {
   margin: 0.5rem !important;
 }
 /* -------------end commonn padding------------------- */
+/*  start display  */
+.st-inline {
+  display: inline-grid;
+}
+/* display end  */
+
+/*  start float  */
+
+.st-float-start {
+  float:left;
+ }
+ .st-float-end {
+   float:right;
+  }
+/* float end  */
 
 /* input form  */
 .MuiInput-underline:before {
