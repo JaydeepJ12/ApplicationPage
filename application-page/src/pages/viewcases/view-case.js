@@ -7,7 +7,7 @@ import {
   Menu,
   MenuItem,
   Select,
-  withStyles
+  withStyles,
 } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
@@ -16,12 +16,11 @@ import { navigate } from "@reach/router";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import useStylesBase from "../../assets/css/common_styles";
 import GotoBackButton from "../../components/common/BackButton";
 import * as notification from "../../components/common/toast";
 import Loading from "../../components/Loader";
-import { actionData } from "../../redux/action.js";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
 
@@ -113,8 +112,9 @@ export default function ViewCase(props) {
   const [state, setState] = useState(0);
   const [caseTypeId, setCaseTypeId] = useState(0);
   const [labelWidth, setLabelWidth] = React.useState(0);
-  const caseTypesByEntityData = useSelector((state) => state);
-  const dispatch = useDispatch();
+  const [caseListCount, setCaseListCount] = useState(0);
+
+  const reducerState = useSelector((state) => state);
 
   const inputLabel = React.useRef(null);
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
@@ -248,22 +248,21 @@ export default function ViewCase(props) {
       setCaseListFiltered(false);
     }
 
+    if (loadMore && (skipCount < maxCount || caseListCount < maxCount)) {
+      return false;
+    }
+
     if (
       loadMore &&
       caseFilter > 0 &&
-      (taskCount <= 0 || taskCount === skipCount)
+      (taskCount <= 0 || taskCount < skipCount)
     ) {
       return false;
     }
 
     if (!loadMore && !isFilterByType && !isFilterByCaseType) {
-      setLoaded(false);
       skipCount = 0;
     }
-
-    // caseTypeId = props.location?.state?.caseTypeId
-    //   ? props.location?.state?.caseTypeId
-    //   : caseTypeId;
 
     var jsonData = {
       Username: userName ? userName : "bhaviks",
@@ -286,6 +285,7 @@ export default function ViewCase(props) {
         setFilteredCaseListData([]);
         setComponentLoader(false);
         let caseHeadersData = response?.data?.responseContent;
+        setCaseListCount(caseHeadersData?.length);
         let caseId = props.location?.state?.caseId
           ? props.location?.state?.caseId
           : 0;
@@ -332,8 +332,8 @@ export default function ViewCase(props) {
           setUserNameValue("");
           setFilterValue(-1);
         }
-
-        if (filterValue > 0) {
+        
+        if (props.location?.state?.filter > 0) {
           navigate("tasks", {
             state: {
               userName: "",
@@ -353,9 +353,7 @@ export default function ViewCase(props) {
 
   useEffect(() => {
     setComponentLoader(true);
-    // Set Is Case Type Available As True
-    dispatch(actionData(true, "CASE_TYPE_PROPERTY"));
-    let caseTypes = caseTypesByEntityData.applicationData.caseTypes;
+    let caseTypes = reducerState.applicationData.caseTypes;
 
     if (caseTypes && caseTypes.length) {
       let caseTypeIds = caseTypes.map((x) => {
@@ -379,7 +377,7 @@ export default function ViewCase(props) {
       getFilterValuesByCaseTypeIds(result);
     }
     setLabelWidth(inputLabel.current.offsetWidth);
-  }, [caseTypesByEntityData.applicationData.caseTypes]);
+  }, [reducerState.applicationData.caseTypes]);
 
   const createLoader = (jsonData) => {
     return <Loading />;

@@ -5,17 +5,16 @@ import {
   InputBase,
   Menu,
   MenuItem,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import {
   NotificationsNone as NotificationsIcon,
   Person as AccountIcon,
-  Search as SearchIcon
+  Search as SearchIcon,
 } from "@material-ui/icons";
 import { Link } from "@reach/router";
 import classNames from "classnames";
 import React, { useState } from "react";
-import theme from "../theme";
 // styles
 import useStyles from "./header_styles";
 import Settings from "./settings";
@@ -178,6 +177,13 @@ export default function HeaderRight() {
         >
           <AccountIcon className={classes.profileMenuIcon} /> Cases
         </MenuItem>
+        <MenuItem
+          className={classNames(
+            classes.profileMenuItem,
+            classes.headerMenuItem
+          )}
+        ></MenuItem>
+
         <div className={classes.profileMenuUser}>
           <Typography className={classes.profileMenuLink} color="primary">
             <Link to={"/login"}>Sign Out</Link>

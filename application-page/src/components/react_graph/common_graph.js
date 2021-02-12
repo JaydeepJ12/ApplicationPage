@@ -28,7 +28,7 @@ export default function Example(props) {
       .catch((error) => {
         console.log("catch", error);
       });
-  }, [casetype]);
+  }, []);
   return (
     <div className="grpah">
       <Typography
