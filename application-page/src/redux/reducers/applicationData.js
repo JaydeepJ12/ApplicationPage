@@ -17,13 +17,6 @@ export default function (state = initialSate, action) {
         caseTypes: content,
       };
     }
-    case "CASE_TYPE_PROPERTY": {
-      const { content } = action.payload;
-      return {
-        ...state,
-        isCaseTypesAvailable: content,
-      };
-    }
     case "APP_ID": {
       const { content } = action.payload;
       return {
