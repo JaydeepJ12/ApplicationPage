@@ -121,7 +121,18 @@ def getDepartmentEmpFilterValues():
     print(data)
     df = db.get_department_emp_filters(data['parentName'],data['parentID'])
     return df.to_json(orient='records')  
-        
+
+@bp.route('/getCompanyData', methods=['POST'])
+def getCompanyData():
+    df = db.get_department_company_list()
+    print("---df",df);
+    return df.to_json(orient='records') 
+
+@bp.route('/getEmployeeTypeData', methods=['POST'])
+def getEmployeeTypeData():
+    df = db.get_department_employee_type_list()
+    return df.to_json(orient='records')     
+
 @bp.route('/test')
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
