@@ -15,7 +15,7 @@ import {
   Tabs,
   TextField,
   Toolbar,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
@@ -32,7 +32,7 @@ import SwipeableViews from "react-swipeable-views";
 // end table library
 import {
   default as useStyles,
-  default as useStylesBase,
+  default as useStylesBase
 } from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader.js";
 import * as notification from "../../components/common/toast";
@@ -83,17 +83,18 @@ export default function PeopleDepartment(props) {
   const [taskLoader, setTaskLoader] = useState(false);
   const [activityLoader, setActivityLogLoader] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [dataInfoLoaded, setInfoDataLoaded] = useState(true);
+  const [dataInfoLoaded, setInfoDataLoaded] = useState(false);
+  const [noDataFound, setNoDataFound] = useState(false);
   // end  all loading
 
   // all data set
-  const [InfoCall, setInfoCall] = useState(true);
   const [peopleData, setPeopleData] = useState([]);
-  const [peopleInfo, setPeopleInfoData] = useState([]);
+  const [peopleInfo, setPeopleInfoData] = useState("");
   const [caseListData, setCaseListData] = useState([]);
+  const [caseHistoryData, setCaseHistoryLogData] = useState([]);
   const [caseIds, setCaseIds] = useState(0);
   const [userManager, setUserManager] = React.useState("");
-  const [caseHistoryData, setCaseHistoryLogData] = useState([]);
+
   const [recordCount, setRecordCount] = useState(0);
   // end all data set
 
@@ -132,10 +133,12 @@ export default function PeopleDepartment(props) {
 
   // Start  all API call
   const getDepartmentPeopleList = async (searchText = "", skipCount = 0) => {
+    setInfoDataLoaded(false);
     setDataLoaded(false);
-    setInfoDataLoaded(true);
     setComponentLoader(true);
-    setPeopleInfoData([]);
+    setPeopleInfoData("");
+    setPeopleData([]);
+    setNoDataFound(false);
     var jsonData = {
       maxCount: maxCount + skipCount,
       searchText: searchText,
@@ -149,24 +152,28 @@ export default function PeopleDepartment(props) {
       .then(function (response) {
         setDataLoaded(true);
         setComponentLoader(false);
-
-        if (response.data) {
+        if (response.data.length) {
           setPeopleInfoData(response.data[0]);
-          setInfoDataLoaded(false);
+          setInfoDataLoaded(true);
+
           let manager = response.data[0]?.MANAGER_LDAP_PATH;
           if (manager) {
             manager = manager.split("=")[1]?.split(",")[0];
 
             setUserManager(manager);
           }
+          setPeopleData(response.data);
+        } else {
+          setNoDataFound(true);
         }
-        setPeopleData(response.data);
       })
       .catch(function (error) {
         console.log(error);
       });
   };
   const getDepartmentPeopleInfo = async (employee_id) => {
+    setInfoDataLoaded(false);
+    setNoDataFound(false);
     var jsonData = {
       EMPLOYEE_ID: employee_id,
     };
@@ -179,14 +186,17 @@ export default function PeopleDepartment(props) {
 
     await axios(config)
       .then(function (response) {
-        let peopleInfoData = response.data[0];
-        setPeopleInfoData(peopleInfoData);
-        setInfoDataLoaded(false);
-        let manager = peopleInfoData?.MANAGER_LDAP_PATH;
-        if (manager) {
-          manager = manager.split("=")[1]?.split(",")[0];
+        if (response.data.length) {
+          let peopleInfoData = response.data[0];
+          setPeopleInfoData(peopleInfoData);
+          setInfoDataLoaded(true);
+          setNoDataFound(true);
+          let manager = peopleInfoData?.MANAGER_LDAP_PATH;
+          if (manager) {
+            manager = manager.split("=")[1]?.split(",")[0];
 
-          setUserManager(manager);
+            setUserManager(manager);
+          }
         }
       })
       .catch(function (error) {
@@ -333,8 +343,8 @@ export default function PeopleDepartment(props) {
 
     axios(config)
       .then(function (response) {
-        if (response.data.values.length) {
-          setCaseHistoryLogData(response.data.values);
+        if (response?.data?.values?.length) {
+          setCaseHistoryLogData(response?.data?.values);
           setActivityLogLoader(true);
         }
       })
@@ -414,11 +424,13 @@ export default function PeopleDepartment(props) {
   };
 
   const handlePeopleInfo = (employee_id) => {
-    setInfoDataLoaded(true);
-    setInfoCall(false);
+    setValue(0);
+    setInfoDataLoaded(false);
     if (!dataInfoLoaded) {
-      getDepartmentPeopleInfo(employee_id);
+      notification.toast.warning("Please wait. Your Data is loading...!!");
+      return false;
     }
+    getDepartmentPeopleInfo(employee_id);
   };
   const handleTaskClick = (userName, filter, taskCount, caseId, caseTypeId) => {
     if (taskCount <= 0) {
@@ -456,11 +468,13 @@ export default function PeopleDepartment(props) {
     getCompanyList();
   };
   const handleFilterResetClick = () => {
+    setValue(0);
     getDepartmentPeopleList();
     handleFilterClear();
   };
 
   const handleFilterClear = () => {
+    setValue(0);
     setBasicNameDrpData([]);
     setSubDepartmentDrpData([]);
     setJobFunctionDrpData([]);
@@ -491,7 +505,9 @@ export default function PeopleDepartment(props) {
   };
   const handleFilterSubmit = (event) => {
     event.preventDefault();
-
+    setValue(0);
+    setCaseListData([]);
+    setCaseHistoryLogData([]);
     let fields = {};
     var submitted = true;
     Object.entries(event.target.elements).forEach(([name, input]) => {
@@ -505,6 +521,7 @@ export default function PeopleDepartment(props) {
 
     if (submitted == true && fields !== undefined) {
       notification.toast.success("Filter Apply successfully..!!!");
+
       getDepartmentPeopleList(fields.searchText, 0);
     }
   };
@@ -933,7 +950,6 @@ export default function PeopleDepartment(props) {
                           className={"card-user-case"}
                           onClick={(event) => {
                             handlePeopleInfo(people.EMPLOYEE_ID);
-                            caseList(people, 0, false);
                           }}
                         >
                           <CardHeader
@@ -943,27 +959,23 @@ export default function PeopleDepartment(props) {
                           />
                         </Card>
                       ) : (
-                        <ComponentLoader type="rect" />
+                        <>
+                          {noDataFound ? (
+                            <div>No Peoples Found </div>
+                          ) : (
+                            <ComponentLoader type="rect" />
+                          )}
+                        </>
                       )}
                     </Box>
                   ))}
                 </>
               ) : (
                 <>
-                  {(componentLoader ? Array.from(new Array(4)) : Array(2)).map(
-                    (item, index) => (
-                      <Box key={index} width="100%" padding={0.5}>
-                        {item ? (
-                          <img
-                            style={{ width: "100%", height: 118 }}
-                            alt={item.title}
-                            src={item.src}
-                          />
-                        ) : (
-                          <ComponentLoader type="rect" />
-                        )}
-                      </Box>
-                    )
+                  {noDataFound ? (
+                    <div>No Peoples Found </div>
+                  ) : (
+                    <ComponentLoader type="rect" />
                   )}
                 </>
               )}
@@ -971,8 +983,14 @@ export default function PeopleDepartment(props) {
           </div>
         </Grid>
         <Grid item lg={9} md={8} xs={12} sm={12}>
-          {dataInfoLoaded ? (
-            <ComponentLoader type="rect" />
+          {!dataInfoLoaded ? (
+            <Box boxShadow={0} className="card bg-secondary" borderRadius={5}>
+              {noDataFound ? (
+                <div>No Data Found </div>
+              ) : (
+                <ComponentLoader type="rect" />
+              )}
+            </Box>
           ) : (
             <Grid container spacing={3}>
               <Grid item lg={2} md={3} xs={12} sm={12}>
@@ -1063,14 +1081,21 @@ export default function PeopleDepartment(props) {
                   aria-label="full width tabs example"
                 >
                   <Tab className="nav-tab" label="Info" {...a11yProps(0)} />
-                  <Tab
-                    onClick={(event) => {
-                      caseList(peopleInfo, 0, false);
-                    }}
-                    className="nav-tab"
-                    label="Task"
-                    {...a11yProps(1)}
-                  />
+                  {peopleInfo != "undefined" &&
+                  peopleInfo != null &&
+                  peopleInfo !== "" ? (
+                    <Tab
+                      onClick={(event) => {
+                        caseList(peopleInfo, 0, false);
+                      }}
+                      className="nav-tab"
+                      label="Task"
+                      {...a11yProps(1)}
+                    />
+                  ) : (
+                    <Tab className="nav-tab" label="Task" {...a11yProps(1)} />
+                  )}
+
                   <Tab
                     className="nav-tab"
                     onClick={(event) => {
@@ -1094,177 +1119,187 @@ export default function PeopleDepartment(props) {
                   borderRadius={5}
                 >
                   <Grid container>
-                    <Grid item xs={6}>
-                      {dataInfoLoaded ? (
-                        <ComponentLoader type="rect" />
-                      ) : (
-                        <form className={classes.form_root}>
-                          <Grid container spacing={3}>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Display Name"
-                                defaultValue={peopleInfo.FULL_NAME}
-                                InputLabelProps={{
-                                  classes: {
-                                    root: classes.inputLabel,
-                                  },
-                                }}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Legal First Name"
-                                defaultValue={peopleInfo.FIRST_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Legal Last Name"
-                                defaultValue={peopleInfo.LAST_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Short User Name"
-                                defaultValue={peopleInfo.SHORT_USER_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Job Title"
-                                defaultValue={peopleInfo.JOB_TITLE}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Employee Type"
-                                defaultValue={peopleInfo.EMPLOYEE_TYPE_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office Street Address"
-                                defaultValue={peopleInfo.STREET_ADDRESS}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office State"
-                                defaultValue={peopleInfo.STATE}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office City"
-                                defaultValue={peopleInfo.CITY}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Home Phone/Cell Number"
-                                defaultValue={peopleInfo.HOME_PHONE_NUMBER}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Hire Date"
-                                defaultValue={dateFormat(
-                                  peopleInfo.HIRE_DATE,
-                                  "m/dd/yyyy"
-                                )}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Birth Date"
-                                defaultValue={peopleInfo.BIRTH_DATE}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Gender"
-                                defaultValue={
-                                  (peopleInfo.GENDER = "M" ? "Male" : "Female")
-                                }
-                              />
-                            </Grid>
+                    {!dataInfoLoaded ? (
+                      <>
+                        {noDataFound ? (
+                          <Grid item xs={12}>
+                            No Information Found{" "}
                           </Grid>
-                        </form>
-                      )}
-                    </Grid>
-                    <Grid item xs={6}>
-                      {dataInfoLoaded ? (
-                        <ComponentLoader type="rect" />
-                      ) : (
-                        <form className={classes.form_root}>
-                          <Grid container spacing={3}>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="(Preferred) Full Name"
-                                defaultValue={peopleInfo.FULL_NAME}
-                                InputLabelProps={{
-                                  classes: {
-                                    root: classes.inputLabel,
-                                  },
-                                }}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Email Address"
-                                defaultValue={peopleInfo.EMAIL_ADDRESS}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Department Name"
-                                defaultValue={peopleInfo.DEPARTMENT_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office Zip Code"
-                                defaultValue={peopleInfo.ZIP_CODE}
-                              />
-                            </Grid>
+                        ) : (
+                          <Grid item xs={12}>
+                            <ComponentLoader type="rect" />
                           </Grid>
-                        </form>
-                      )}
-                    </Grid>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <Grid item xs={6}>
+                          <form className={classes.form_root}>
+                            <Grid container spacing={3}>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Display Name"
+                                  defaultValue={peopleInfo.FULL_NAME}
+                                  InputLabelProps={{
+                                    classes: {
+                                      root: classes.inputLabel,
+                                    },
+                                  }}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Legal First Name"
+                                  defaultValue={peopleInfo.FIRST_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Legal Last Name"
+                                  defaultValue={peopleInfo.LAST_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Short User Name"
+                                  defaultValue={peopleInfo.SHORT_USER_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Job Title"
+                                  defaultValue={peopleInfo.JOB_TITLE}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Employee Type"
+                                  defaultValue={peopleInfo.EMPLOYEE_TYPE_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office Street Address"
+                                  defaultValue={peopleInfo.STREET_ADDRESS}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office State"
+                                  defaultValue={peopleInfo.STATE}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office City"
+                                  defaultValue={peopleInfo.CITY}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Home Phone/Cell Number"
+                                  defaultValue={peopleInfo.HOME_PHONE_NUMBER}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Hire Date"
+                                  defaultValue={dateFormat(
+                                    peopleInfo.HIRE_DATE,
+                                    "m/dd/yyyy"
+                                  )}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Birth Date"
+                                  defaultValue={peopleInfo.BIRTH_DATE}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Gender"
+                                  defaultValue={
+                                    (peopleInfo.GENDER = "M"
+                                      ? "Male"
+                                      : "Female")
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </form>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <form className={classes.form_root}>
+                            <Grid container spacing={3}>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="(Preferred) Full Name"
+                                  defaultValue={peopleInfo.FULL_NAME}
+                                  InputLabelProps={{
+                                    classes: {
+                                      root: classes.inputLabel,
+                                    },
+                                  }}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Email Address"
+                                  defaultValue={peopleInfo.EMAIL_ADDRESS}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Department Name"
+                                  defaultValue={peopleInfo.DEPARTMENT_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office Zip Code"
+                                  defaultValue={peopleInfo.ZIP_CODE}
+                                />
+                              </Grid>
+                            </Grid>
+                          </form>
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
                 </Box>
               </TabPanel>
@@ -1325,7 +1360,7 @@ export default function PeopleDepartment(props) {
                           {!taskLoader ? (
                             <>
                               {(!taskLoader
-                                ? Array.from(new Array(4))
+                                ? Array.from(new Array(3))
                                 : Array(2)
                               ).map((item, index) => (
                                 <Grid item xs={4}>
@@ -1363,16 +1398,29 @@ export default function PeopleDepartment(props) {
               </TabPanel>
               <TabPanel value={value} index={2} dir={theme.direction}>
                 {!activityLoader ? (
-                  <ComponentLoader type="rect" />
+                  <>
+                    {noDataFound ? (
+                      <Box
+                        boxShadow={0}
+                        className="card bg-secondary"
+                        borderRadius={5}
+                      >
+                        <Grid container>
+                          <Grid item xs={12}>
+                            No Activity Data Found
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    ) : (
+                      <ComponentLoader type="rect" />
+                    )}
+                  </>
                 ) : (
                   <div style={{ height: 400, width: "100%" }}>
                     <DataGrid rows={rows} columns={columns} pageSize={20} />
                   </div>
                 )}
               </TabPanel>
-
-
-              
             </SwipeableViews>
           </div>
         </Grid>
