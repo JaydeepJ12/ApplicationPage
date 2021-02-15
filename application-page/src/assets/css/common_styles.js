@@ -16,6 +16,9 @@ export default makeStyles(
       mr_one: {
         marginRight: theme.spacing(2),
       },
+      ml_one: {
+        marginLeft: theme.spacing(2),
+      },
       // padding class
       pt_zero: {
         paddingTop: theme.spacing(0),
