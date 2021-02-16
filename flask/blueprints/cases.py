@@ -115,14 +115,24 @@ def getPeopleInfo():
     df = db.get_people_info(data['EMPLOYEE_ID'])
     return df.to_json(orient='records')  
 
-@bp.route('/getDepartmentEmpFilterValues', methods=['GET'])
+@bp.route('/getDepartmentEmpFilterValues', methods=['POST'])
 def getDepartmentEmpFilterValues():
-    try:
-        df = db.get_department_emp_filters()
-        return df.to_json(orient='records')  
-    except:
-        return '[]'
-        
+    data = request.json
+    print(data)
+    df = db.get_department_emp_filters(data['parentName'],data['parentID'])
+    return df.to_json(orient='records')  
+
+@bp.route('/getCompanyData', methods=['POST'])
+def getCompanyData():
+    df = db.get_department_company_list()
+    print("---df",df);
+    return df.to_json(orient='records') 
+
+@bp.route('/getEmployeeTypeData', methods=['POST'])
+def getEmployeeTypeData():
+    df = db.get_department_employee_type_list()
+    return df.to_json(orient='records')     
+
 @bp.route('/test')
 def create():
     r = cases.get('https://casesapi.boxerproperty.com/api/Cases/GetTypesByCaseTypeID?user={user}&caseType=19')
@@ -172,7 +182,6 @@ def get_case_headers():
     data = mobile.get_case_headers(request.json).json()
     return data
 
-
 def getSystemPriority(assocTypeId):
     df = db.get_system_priority(assocTypeId)  # always returns dataframe
     return df.to_json(orient='records')
@@ -182,6 +191,10 @@ def get_full_case_by_caseId():
     data = mobile.get_full_case_by_caseId(request.json).json()
     return data
 
+@bp.route('/GetApplicationList', methods=['POST'])
+def get_application_list():
+    data = mobile.get_application_list().json()
+    return data
 
 @bp.route('/assigned/')
 def assigned_to():

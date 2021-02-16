@@ -76,9 +76,6 @@ class CaseHandler(Response):
             "customData": [],
             "values": values})
 
-    # def employee_fullname(self, short_name):
-    #     return self.session.query(EmployeeDepartment).get(short_name).FULL_NAME
-
     def case_activity_log(self, case_ids):
         try:
             case_ids = case_ids.split(',')
@@ -86,10 +83,9 @@ class CaseHandler(Response):
                 "label": "Case Activity Logss",
                 "activity_id": instance.CASE_ACTIVITY_ID,
                 "activity_type": self.session.query(CaseActivityType).get(instance.ACTIVITY_TYPE_ID).NAME,
-                "activity_description": self.session.query(CaseActivityType).get(instance.ACTIVITY_TYPE_ID).DESCRIPTION,
                 "case_id": instance.CASE_ID,
                 "activity_note": instance.NOTE,
-                "created_by": instance.MODIFIED_BY,
+                "created_by": instance.CREATED_BY,
                 "is_active": instance.IS_ACTIVE,
                 "modified_by": instance.MODIFIED_BY,
                 "created_datetime": str(instance.CREATED_DATETIME),

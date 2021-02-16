@@ -1,5 +1,14 @@
+import * as actions from "./actionType";
+
 export const actionData = (content, type) => ({
   type: type,
+  payload: {
+    content,
+  },
+});
+
+export const applicationList = (content) => ({
+  type: actions.APPLICATION_LIST,
   payload: {
     content,
   },

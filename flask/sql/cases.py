@@ -1,3 +1,4 @@
+
 from stemmons import Stemmons_Dash_App
 import pandas as pd
 import plotly.express as px
@@ -11,10 +12,10 @@ class CasesSQL:
 
     def tuplefy(self, id):
         if isinstance(id, list) and len(id) > 1:
-            # print(f'APP THING: {id}')
+            #print(f'APP THING: {id}')
             id = tuple(id)
         else:
-            # print(f'APP NOT THING: {id}')
+            #print(f'APP NOT THING: {id}')
             id = f'({id[0]})'
 
         return id
@@ -376,33 +377,48 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
-    def get_department_emp_filters(self):
-        try:
-            query = f'''
-                Select NAME , 'TOP LEVEL' as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_TOP_LEVEL] WITH(NOLOCK)
-                UNION
-                Select NAME , 'BASIC NAME' as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_BASIC_NAME] WITH(NOLOCK)
-                UNION
-                Select NAME ,'SUB DEPARTMENT'as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_SUB_DEPARTMENT] WITH(NOLOCK)
-                UNION
-                Select NAME ,'JOB FUNCTION'as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_FUNCTION] WITH(NOLOCK)
-                UNION
-                Select NAME ,'JOB TITLE'as level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE] WITH(NOLOCK)
-                UNION
-                Select EMPLOYEE_TYPE_NAME ,'EMPLOYEE TYPE'as level from [DEPARTMENTS].[dbo].[employee_type] WITH(NOLOCK)
-                UNION
-                Select  COMPANY_NAME ,'Company'as level  from [DEPARTMENTS].[dbo].[Company] WITH(NOLOCK)
-                Order by level  
-            '''
+    def get_department_emp_filters(self,parentName,parentID):
+           
+            if parentName == 'topLevel':
+                query = f'''
+                    Select DEPARTMENT_STRUCTURE_BASIC_NAME_ID as ID, NAME , 'BASIC NAME' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_BASIC_NAME] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_TOP_LEVEL_ID={parentID}
+                '''
+            elif parentName == 'basicName':
+                  query = f'''
+                    Select DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID as ID, NAME ,'SUB DEPARTMENT'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_SUB_DEPARTMENT]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_BASIC_NAME_ID={parentID}
+                '''
+            elif parentName == 'subDepartment':
+                  query = f'''
+                    Select DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID as ID, NAME ,'JOB FUNCTION'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_FUNCTION] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID={parentID}
+                '''
+            elif parentName == 'jobFunction':
+                  query = f'''
+                    Select DEPARTMENT_STRUCTURE_JOB_TITLE_ID as ID, NAME ,'JOB TITLE'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID={parentID}
+                '''
+            else:
+                query = f'''
+                    Select DEPARTMENT_STRUCTURE_TOP_LEVEL_ID as ID ,NAME , 'TOP LEVEL' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_TOP_LEVEL]  WITH(NOLOCK)  WHERE COMMON_DISPLAY ='Y'
+                '''
             return self.db.execQuery(query)
-        except Exception as exe:
-            return '[]'
+
+    def get_department_company_list(self):
+        query = f'''
+           	Select  * from [DEPARTMENTS].[dbo].[Company] WHERE IS_ACTIVE ='Y'
+        '''
+        return self.db.execQuery(query)
+
+    def get_department_employee_type_list(self):
+        query = f'''
+           	select * from [DEPARTMENTS].[dbo].[employee_type] WHERE IS_ACTIVE ='Y'
+        '''
+        return self.db.execQuery(query)    
 
     def get_department_people(self, maxCount, searchText=''):
         query = f'''
           SELECT
                  c.EMPLOYEE_ID,
 				c.FULL_NAME,
+                c.DISPLAY_NAME,
 				c.JOB_TITLE,
 				c.DEPARTMENT_NAME,
 				c.HOME_PHONE_NUMBER,
@@ -421,11 +437,11 @@ class CasesSQL:
 				c.ZIP_CODE,
                 et.EMPLOYEE_TYPE_NAME
                 
-                 				FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID)
-                    WHERE c.IS_ACTIVE = 'Y'
-                    AND c.FULL_NAME Like CASE WHEN '' = '' THEN c.FULL_NAME ELSE '%' +  '' + '%' END
-                    ORDER BY 1 ASC
-                    offset 0 rows
+                FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID)
+                 WHERE c.IS_ACTIVE = 'Y'
+                AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
+                ORDER BY 1 ASC
+                offset 0 rows
                 FETCH NEXT {maxCount} rows only
         '''
         return self.db.execQuery(query)
