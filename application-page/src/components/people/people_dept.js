@@ -60,6 +60,7 @@ function TabPanel(props) {
     </div>
   );
 }
+
 function a11yProps(index) {
   return {
     id: `full-width-tab-${index}`,
