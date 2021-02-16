@@ -49,8 +49,8 @@ class CaseActivityLog(Base):
     }
 
 
-class EmployeeDepartment(Base):
-    __table__ = departments_employee
-    __mapper_args = {
-        'include_properties': ['EMPLOYEE_GUID', 'EMPLOYEEID', 'EmpFirstName']
-    }
+# class EmployeeDepartment(Base):
+#     __table__ = departments_employee
+#     __mapper_args = {
+#         'include_properties': ['FULL_NAME', 'SHORT_USER_NAME']
+#     }
