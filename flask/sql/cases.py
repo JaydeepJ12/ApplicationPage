@@ -607,7 +607,47 @@ where a.IS_ACTIVE = 'Y'
   and CASE_TYPE_ID in {case_types} 
         '''
         return self.db.execQuery(query)
-        
+
+    def case_activity_log_track(self, application_type, username, skipCount, maxCount):
+        try:
+            '''case activity track query'''
+            if application_type == "entity":
+                query = f'''
+                                SELECT [ENTITY_ID] As ID
+                ,'Entity' as application_name
+                ,ea.[ENTITY_ACTIVITY_TYPE_ID] As [ACTIVITY_TYPE_ID]
+                ,[NOTE] as note
+                ,[NAME]
+                ,ea.[CREATED_BY]
+                ,ea.[CREATED_DATETIME]
+                ,eat.[DESCRIPTION]
+                FROM [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY] ea With(Nolock)
+                inner join  [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY_TYPE] eat  With(Nolock) on 
+                ea.ENTITY_ACTIVITY_TYPE_ID = eat.ENTITY_ACTIVITY_TYPE_ID 
+                WHERE ea.[CREATED_BY]='{username}'
+                order by [CREATED_DATETIME] desc
+                OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY'''
+                return self.db.execQuery(query)
+
+            elif application_type == "cases":
+                query = f'''SELECT [CASE_ID] As ID
+                    ,'Case' as application_name
+                    ,ea.[ACTIVITY_TYPE_ID] As [ACTIVITY_TYPE_ID]
+                    ,[NOTE] as note
+                    ,[NAME]
+                    ,ea.[CREATED_BY]
+                    ,ea.[CREATED_DATETIME]
+                    ,eat.[DESCRIPTION]
+                    FROM [BOXER_CME].[dbo].[CASE_ACTIVITY] ea With(Nolock)
+                    inner join [BOXER_CME].[dbo].[CASE_ACTIVITY_TYPE] eat  With(Nolock) on ea.ACTIVITY_TYPE_ID = 
+                    eat.CASE_ACTIVITY_TYPE_ID
+                    WHERE ea.[CREATED_BY]='{username}'
+                    order by [CREATED_DATETIME] desc
+                    OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY
+                    '''
+                return self.db.execQuery(query)
+        except Exception as exe:
+            print("errr===>", exe)
 
 
 class AppSql:
