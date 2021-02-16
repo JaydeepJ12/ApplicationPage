@@ -347,6 +347,7 @@ def getFilterValuesByCaseTypeIds():
 
 @bp.route('/case_activity_log_test', methods=['POST'])
 def case_activity_log_test():
+    '''API Base'''
     if request.method == 'POST':
         data = request.json
         if not data['username']:
