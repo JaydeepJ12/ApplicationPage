@@ -1,5 +1,6 @@
 from flask import Flask, request
 from blueprints.cases import bp as cases
+from blueprints.entity import bp1 as entity
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import json
 
@@ -7,6 +8,7 @@ base = Flask(__name__)
 app = Flask(__name__)
 
 app.register_blueprint(cases)
+app.register_blueprint(entity)
 
 @app.after_request
 def after_request(r):
