@@ -1,8 +1,12 @@
+import * as actions from "../actionType";
+
 const initialSate = {
   caseTypes: [],
   isCaseTypesAvailable: false,
   appId: 0,
   isPageNotFound: false,
+  applicationList: [],
+  applicationName: "",
 };
 export default function (state = initialSate, action) {
   switch (action.type) {
@@ -11,13 +15,6 @@ export default function (state = initialSate, action) {
       return {
         ...state,
         caseTypes: content,
-      };
-    }
-    case "CASE_TYPE_PROPERTY": {
-      const { content } = action.payload;
-      return {
-        ...state,
-        isCaseTypesAvailable: content,
       };
     }
     case "APP_ID": {
@@ -32,6 +29,20 @@ export default function (state = initialSate, action) {
       return {
         ...state,
         isPageNotFound: content,
+      };
+    }
+    case actions.APPLICATION_LIST: {
+      const { content } = action.payload;
+      return {
+        ...state,
+        applicationList: content,
+      };
+    }
+    case actions.APPLICATION_NAME: {
+      const { content } = action.payload;
+      return {
+        ...state,
+        applicationName: content,
       };
     }
     default:

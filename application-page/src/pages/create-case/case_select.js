@@ -1,19 +1,17 @@
 import { Card, Container, Grid, MenuItem, TextField } from "@material-ui/core";
 import { createHistory } from "@reach/router";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import SecureLS from "secure-ls";
 import GotoBackButton from "../../components/common/BackButton.js";
-import { actionData } from "../../redux/action.js";
 import CaseCreator from "./case_creator.js";
 
 export default function CaseSelect(props) {
   let history = createHistory(window);
-  const dispatch = useDispatch();
   const [caseType, setCaseType] = useState(0);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [disableCaseType, setCaseTypeDisable] = useState(false);
-  const caseTypesByEntityData = useSelector((state) => state);
+  const reducerState = useSelector((state) => state);
   const isParent = props.location?.state?.isParent;
 
   const pageLoad = () => {
@@ -40,13 +38,11 @@ export default function CaseSelect(props) {
 
   useEffect(() => {
     pageLoad();
-    // Set Is Case Type Available As True
-    dispatch(actionData(true, "CASE_TYPE_PROPERTY"));
-    let caseTypes = caseTypesByEntityData.applicationData.caseTypes;
+    let caseTypes = reducerState.applicationData.caseTypes;
     if (caseTypes && caseTypes.length) {
       setCaseTypeData(caseTypes);
     }
-  }, [caseTypesByEntityData.applicationData.caseTypes]);
+  }, [reducerState.applicationData.caseTypes]);
 
   const disableEnableCaseTypeDropDown = (value) => {
     setCaseTypeDisable(value);

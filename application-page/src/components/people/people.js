@@ -10,7 +10,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
@@ -164,6 +164,7 @@ export default function Peoples() {
       ></PeoplePreview>
       <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
         <Grid item xs={12} container spacing={2}>
+          
           <Grid item lg={3} md={3} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id="demo-simple-select-outlined-label">
@@ -228,7 +229,29 @@ export default function Peoples() {
             <ComponentLoader type="rect" />
           </div>
         ) : (
-          <div className={classes.mt_one}>
+          <div>
+            {peopleData.length ? (
+              <>
+                {recordLength !== maxCount ? (
+                  <div onClick={handlePrevClick}>
+                    <div className="slick-prev slick-arrow"></div>
+                  </div>
+                ) : (
+                  ""
+                )}
+
+                {peopleData.length >= maxCount ? (
+                  <div
+                    className="slick-next slick-arrow"
+                    onClick={handleNextClick}
+                  ></div>
+                ) : (
+                  ""
+                )}
+              </>
+            ) : (
+              ""
+            )}
             <Grid container spacing={3}>
               {peopleData.length ? (
                 peopleData.map((people) => (
@@ -278,48 +301,6 @@ export default function Peoples() {
             </Grid>
           </div>
         )}
-
-        {peopleData.length ? (
-          <Grid container spacing={3}>
-            {recordLength !== maxCount ? (
-              <Grid
-                item
-                lg={6}
-                md={6}
-                xs={6}
-                sm={6}
-                style={{
-                  textAlign: peopleData.length >= maxCount ? "right" : "",
-                }}
-              >
-                <Button variant="contained" onClick={handlePrevClick}>
-                  Prev
-                </Button>
-              </Grid>
-            ) : (
-              ""
-            )}
-            {peopleData.length >= maxCount ? (
-              <Grid
-                item
-                lg={6}
-                md={6}
-                xs={6}
-                sm={6}
-                style={{ textAlign: "left" }}
-              >
-                <Button variant="contained" onClick={handleNextClick}>
-                  Next
-                </Button>
-              </Grid>
-            ) : (
-              ""
-            )}
-          </Grid>
-        ) : (
-          ""
-        )}
-        {/* </Slider> */}
       </Box>
     </>
   );
