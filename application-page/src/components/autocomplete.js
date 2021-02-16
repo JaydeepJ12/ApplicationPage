@@ -1,4 +1,5 @@
-import { Avatar, CircularProgress, TextField } from "@material-ui/core";
+
+import { CircularProgress, Icon, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import React, { Fragment, useEffect, useRef, useState } from "react";
@@ -118,14 +119,14 @@ export default function UserAutocomplete(props) {
   const renderUserImage = (userName) => {
     if (userName) {
       return (
-        <Avatar
-          // className={classes.avt_small}
+        <img
           onError={(event) => addDefaultSrc(event)}
-          // variant="rounded"
           src={
             "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=" +
             userName
           }
+          height={50}
+          width={50}
         />
       );
     } else {
@@ -141,10 +142,7 @@ export default function UserAutocomplete(props) {
 
   return (
     <div>
-      <div
-        style={{ width: "auto", marginTop: ".5em" }}
-        className={classes.form}
-      >
+      <div style={{ width: "auto", marginTop: ".5em" }} className={classes.form}>
         {" "}
         {
           <Autocomplete
@@ -155,13 +153,11 @@ export default function UserAutocomplete(props) {
             renderOption={(option) => {
               return (
                 <Fragment>
-                  {renderUserImage(option?.username)}
-                  <span className={classes.ml_one}>
-                    {option?.displayName +
-                      (option.primaryJobTitle
-                        ? " (" + option.primaryJobTitle + ")"
-                        : "")}
-                  </span>
+                  <Icon>{renderUserImage(option?.username)}</Icon>
+                  {option?.displayName +
+                    (option.primaryJobTitle
+                      ? " (" + option.primaryJobTitle + ")"
+                      : "")}
                 </Fragment>
               );
             }}
@@ -186,31 +182,33 @@ export default function UserAutocomplete(props) {
               setOpen(false);
             }}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                label={
-                  selectedUser
-                    ? selectedUser
-                    : "Default Hopper- " + defaultHopper
-                }
-                placeholder="Search User"
-                variant="outlined"
-                fullWidth={true}
-                InputLabelProps={{
-                  style: { fontWeight: "bold", color: "black" },
-                }}
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <React.Fragment>
-                      {loading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </React.Fragment>
-                  ),
-                }}
-              />
+            
+                <TextField
+                  {...params}
+                  label={
+                    selectedUser
+                      ? selectedUser
+                      : "Default Hopper- " + defaultHopper
+                  }
+                  placeholder="Search User"
+                  variant="outlined"
+                  fullWidth={true}
+                  InputLabelProps={{
+                    style: { fontWeight: "bold", color: "black" },
+                  }}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <React.Fragment>
+                        {loading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </React.Fragment>
+                    ),
+                  }}
+                />
+             
             )}
           />
         }

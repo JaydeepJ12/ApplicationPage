@@ -80,11 +80,6 @@ a {
   }
 /* float end  */
 
-/* border csss */
-.sm-border-left {
-  border-right: 2px solid #444;
-}
-/* border css end  */
 /* input form  */
 .MuiInput-underline:before {
   border-bottom: 1px solid #cccccc !important;
@@ -258,7 +253,6 @@ header.MuiPaper-elevation4 {
 .MuiFormLabel-root.Mui-disabled {
   color: #333333 !important;
 }
-
 /* case card  */
 .card-user-case:hover {
   background: rgb(3 218 197) !important;
