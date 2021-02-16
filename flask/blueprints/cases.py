@@ -356,3 +356,14 @@ def getFilterValuesByCaseTypeIds():
    data = request.json
    df = db.get_filter_values_by_caseTypeIds(data['caseTypeIds'])
    return df.to_json(orient='records') #
+
+
+@bp.route('/case_activity_log_test', methods=['POST'])
+def case_activity_log_test():
+    if request.method == 'POST':
+        data = request.json
+        if not data['username']:
+            return json.dumps({'error_status': 400, 'error': "please pass the username"})
+        df = db.case_activity_log_track(data['application_type'], data['username'], data['skipCount'], data['maxCount'])
+        return df.to_json(orient='records')
+
