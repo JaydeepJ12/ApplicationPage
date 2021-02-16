@@ -594,6 +594,7 @@ where a.IS_ACTIVE = 'Y'
 
     def case_activity_log_track(self, application_type, username, skipCount, maxCount):
         try:
+            '''case activity track query'''
             if application_type == "entity":
                 query = f'''
                                 SELECT [ENTITY_ID] As ID
