@@ -1,3 +1,4 @@
+
 from stemmons import Stemmons_Dash_App
 import pandas as pd
 import plotly.express as px
@@ -11,10 +12,10 @@ class CasesSQL:
 
     def tuplefy(self, id):
         if isinstance(id, list) and len(id) > 1:
-            # print(f'APP THING: {id}')
+            #print(f'APP THING: {id}')
             id = tuple(id)
         else:
-            # print(f'APP NOT THING: {id}')
+            #print(f'APP NOT THING: {id}')
             id = f'({id[0]})'
 
         return id
@@ -607,46 +608,6 @@ where a.IS_ACTIVE = 'Y'
         '''
         return self.db.execQuery(query)
         
-
-    def case_activity_log_track(self, application_type, username, skipCount, maxCount):
-        try:
-            if application_type == "entity":
-                query = f'''
-                                SELECT [ENTITY_ID] As ID
-                ,'Entity' as application_name
-                ,ea.[ENTITY_ACTIVITY_TYPE_ID] As [ACTIVITY_TYPE_ID]
-                ,[NOTE] as note
-                ,[NAME]
-                ,ea.[CREATED_BY]
-                ,ea.[CREATED_DATETIME]
-                ,eat.[DESCRIPTION]
-                FROM [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY] ea With(Nolock)
-                inner join  [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY_TYPE] eat  With(Nolock) on 
-                ea.ENTITY_ACTIVITY_TYPE_ID = eat.ENTITY_ACTIVITY_TYPE_ID 
-                WHERE ea.[CREATED_BY]='{username}'
-                order by [CREATED_DATETIME] desc
-                OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY'''
-                return self.db.execQuery(query)
-
-            elif application_type == "cases":
-                query = f'''SELECT [CASE_ID] As ID
-                    ,'Case' as application_name
-                    ,ea.[ACTIVITY_TYPE_ID] As [ACTIVITY_TYPE_ID]
-                    ,[NOTE] as note
-                    ,[NAME]
-                    ,ea.[CREATED_BY]
-                    ,ea.[CREATED_DATETIME]
-                    ,eat.[DESCRIPTION]
-                    FROM [BOXER_CME].[dbo].[CASE_ACTIVITY] ea With(Nolock)
-                    inner join [BOXER_CME].[dbo].[CASE_ACTIVITY_TYPE] eat  With(Nolock) on ea.ACTIVITY_TYPE_ID = 
-                    eat.CASE_ACTIVITY_TYPE_ID
-                    WHERE ea.[CREATED_BY]='{username}'
-                    order by [CREATED_DATETIME] desc
-                    OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY
-                    '''
-                return self.db.execQuery(query)
-        except Exception as exe:
-            print("errr===>", exe)
 
 
 class AppSql:
