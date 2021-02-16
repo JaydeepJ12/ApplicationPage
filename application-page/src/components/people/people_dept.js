@@ -6,6 +6,7 @@ import {
   Card,
   CardHeader,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -19,13 +20,16 @@ import {
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { useTheme } from "@material-ui/core/styles";
-import FilterListIcon from "@material-ui/icons/FilterList";
+// table library
+import { DataGrid } from "@material-ui/data-grid";
+import { FilterList, RotateLeft } from "@material-ui/icons";
 import { navigate } from "@reach/router";
 import axios from "axios";
 import clsx from "clsx";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SwipeableViews from "react-swipeable-views";
+// end table library
 import {
   default as useStyles,
   default as useStylesBase
@@ -56,6 +60,7 @@ function TabPanel(props) {
     </div>
   );
 }
+
 function a11yProps(index) {
   return {
     id: `full-width-tab-${index}`,
@@ -73,47 +78,68 @@ export default function PeopleDepartment(props) {
   var classes = useStyles();
   const classesBase = useStylesBase();
   const [value, setValue] = React.useState(0);
+
+  // all loading
   const [componentLoader, setComponentLoader] = useState(false);
   const [taskLoader, setTaskLoader] = useState(false);
+  const [activityLoader, setActivityLogLoader] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [dataInfoLoaded, setInfoDataLoaded] = useState(true);
-  const [InfoCall, setInfoCall] = useState(true);
+  const [dataInfoLoaded, setInfoDataLoaded] = useState(false);
+  const [noDataFound, setNoDataFound] = useState(false);
+  // end  all loading
+
+  // all data set
   const [peopleData, setPeopleData] = useState([]);
-  const [peopleInfo, setPeopleInfoData] = useState([]);
-  const [peopleCases, setPeopleCasesData] = useState([]);
+  const [peopleInfo, setPeopleInfoData] = useState("");
   const [caseListData, setCaseListData] = useState([]);
+  const [caseHistoryData, setCaseHistoryLogData] = useState([]);
+  const [caseIds, setCaseIds] = useState(0);
   const [userManager, setUserManager] = React.useState("");
-  const [maxCount, setMaxCount] = useState(10);
+
   const [recordCount, setRecordCount] = useState(0);
+  // end all data set
+
+  // for Filters
+  const [maxCount, setMaxCount] = useState(10);
   const [pageSize, setPageSize] = useState(10);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
+  // end for Filters
+
+  // For Fill Dropdown
   const [topLevelDrpData, setTopLevelDrpData] = useState([]);
   const [basicNameDrpData, setBasicNameDrpData] = useState([]);
   const [subDepartmentDrpData, setSubDepartmentDrpData] = useState([]);
+  const [jobFunctionDrpData, setJobFunctionDrpData] = useState([]);
+  const [jobTitleDrpData, setJobTitleDrpData] = useState([]);
+  const [companyDrpData, setCompanyDrpData] = useState([]);
+  const [empTypeDrpData, setEmployeeDrpData] = useState([]);
 
-  const [state, setState] = React.useState({
-    age: "",
-    name: "hai",
-  });
+  const [topLevelDrpValue, setTopLevelDrpValue] = useState(0);
+  const [basicNameDrpValue, setBasicNameDrpValue] = useState(0);
+  const [subDepartmentDrpValue, setSubDepartmentDrpValue] = useState(0);
+  const [jobFunctionDrpValue, setJobFunctionDrpValue] = useState(0);
+  const [jobTitleDrpValue, setJobTitleDrpValue] = useState(0);
+  const [companyDrpValue, setCompanyDrpValue] = useState(0);
+  const [empTypeDrpValue, setEmployeeTypeDrpValue] = useState(0);
+  const [empStatusDrpValue, setEmployeeStatusDrpValue] = useState("Active");
+  const [provisionedDrpValue, setProvisionedDrpValue] = useState("Yes");
 
-  // filter value set
+  // end For Fill Dropdown
 
-  const [TopFilterValue, setTopFilterValue] = React.useState(0);
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
+  const fixedHeightPaperTask = clsx(classes.paper, classes.fixedHeightCard);
+  const valueRef = useRef(""); //creating a refernce for TextField Component
   const inputLabel = React.useRef(null);
-  // end filter value set
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-  const handleCasePreviewClick = (caseId, caseData) => {};
-  // filter start
-  const handleFilterChange = (event, value) => {
-    setTopFilterValue(value);
-  };
-  // filter end
-  const GetDepartmentPeopleList = async (searchText = "", skipCount = 0) => {
+
+  // Start  all API call
+  const getDepartmentPeopleList = async (searchText = "", skipCount = 0) => {
+    setInfoDataLoaded(false);
     setDataLoaded(false);
     setComponentLoader(true);
+    setPeopleInfoData("");
+    setPeopleData([]);
+    setNoDataFound(false);
     var jsonData = {
       maxCount: maxCount + skipCount,
       searchText: searchText,
@@ -126,11 +152,10 @@ export default function PeopleDepartment(props) {
     await axios(config)
       .then(function (response) {
         setDataLoaded(true);
-
         setComponentLoader(false);
-        if (response.data && InfoCall) {
+        if (response.data.length) {
           setPeopleInfoData(response.data[0]);
-          setInfoDataLoaded(false);
+          setInfoDataLoaded(true);
 
           let manager = response.data[0]?.MANAGER_LDAP_PATH;
           if (manager) {
@@ -138,15 +163,18 @@ export default function PeopleDepartment(props) {
 
             setUserManager(manager);
           }
+          setPeopleData(response.data);
+        } else {
+          setNoDataFound(true);
         }
-        setPeopleData(response.data);
       })
       .catch(function (error) {
         console.log(error);
       });
   };
-
-  const GetDepartmentPeopleInfo = async (employee_id) => {
+  const getDepartmentPeopleInfo = async (employee_id) => {
+    setInfoDataLoaded(false);
+    setNoDataFound(false);
     var jsonData = {
       EMPLOYEE_ID: employee_id,
     };
@@ -159,168 +187,113 @@ export default function PeopleDepartment(props) {
 
     await axios(config)
       .then(function (response) {
-        let peopleInfoData = response.data[0];
-        setPeopleInfoData(peopleInfoData);
-        setInfoDataLoaded(false);
-        let manager = peopleInfoData?.MANAGER_LDAP_PATH;
-        if (manager) {
-          manager = manager.split("=")[1]?.split(",")[0];
+        if (response.data.length) {
+          let peopleInfoData = response.data[0];
+          setPeopleInfoData(peopleInfoData);
+          setInfoDataLoaded(true);
+          setNoDataFound(true);
+          let manager = peopleInfoData?.MANAGER_LDAP_PATH;
+          if (manager) {
+            manager = manager.split("=")[1]?.split(",")[0];
 
-          setUserManager(manager);
+            setUserManager(manager);
+          }
         }
       })
       .catch(function (error) {
         console.log(error);
       });
   };
-
-  // for GetDropdownFilters
-
-  const GetDropdownFilters = async () => {
+  const getDropdownFilters = async (parentName, parentID) => {
+    var jsonData = {
+      parentName: parentName ? parentName : "",
+      parentID: parentID ? parentID : 0,
+    };
     var config = {
-      method: "GET",
+      method: "post",
       url: "/cases/getDepartmentEmpFilterValues",
+      data: jsonData,
     };
     await axios(config)
       .then(function (response) {
         // for top level dropdown
-        let DrpTopLevelData = response.data.filter(
-          (x) => x.level === "TOP LEVEL"
+        let drpTopLevelData = response.data.filter(
+          (x) => x.Level === "TOP LEVEL"
         );
-        if (DrpTopLevelData) {
-          setTopLevelDrpData(DrpTopLevelData);
+        if (drpTopLevelData.length) {
+          setTopLevelDrpData(drpTopLevelData);
         }
         // for basic name dropdown
-        let DrpBasicNameData = response.data.filter(
-          (x) => x.level === "BASIC NAME"
+        let drpBasicNameData = response.data.filter(
+          (x) => x.Level === "BASIC NAME"
         );
-        if (DrpBasicNameData) {
-          setBasicNameDrpData(DrpBasicNameData);
+        if (drpBasicNameData.length) {
+          setBasicNameDrpData(drpBasicNameData);
         }
         // for SUB DEPARTMENT dropdown
-        let DrpSubDepartmentData = response.data.filter(
-          (x) => x.level === "SUB DEPARTMENT"
+        let drpSubDepartmentData = response.data.filter(
+          (x) => x.Level === "SUB DEPARTMENT"
         );
-        if (DrpSubDepartmentData) {
-          setSubDepartmentDrpData(DrpSubDepartmentData);
+        if (drpSubDepartmentData.length) {
+          setSubDepartmentDrpData(drpSubDepartmentData);
+        }
+        // for JOB FUNCTION dropdown
+        let drpJobFunctionData = response.data.filter(
+          (x) => x.Level === "JOB FUNCTION"
+        );
+        if (drpJobFunctionData.length) {
+          setJobFunctionDrpData(drpJobFunctionData);
+        }
+        // for JOB Title dropdown
+        let drpJobTitleData = response.data.filter(
+          (x) => x.Level === "JOB TITLE"
+        );
+        if (drpJobTitleData.length) {
+          setJobTitleDrpData(drpJobTitleData);
         }
       })
       .catch(function (error) {
         console.log(error);
       });
   };
-
-  // people image set
-  const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../../assets/images/default-userimage.png");
-    if (userDefaultImage) {
-      event.target.src = userDefaultImage;
-    }
+  const getCompanyList = async () => {
+    var config = {
+      method: "POST",
+      url: "/cases/getCompanyData",
+    };
+    await axios(config)
+      .then(function (response) {
+        if (response?.data?.length) {
+          setCompanyDrpData(response.data);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
-  const renderUserImage = (fullName) => {
-    if (fullName) {
-      return (
-        <Avatar
-          className={classes.large}
-          onError={(event) => addDefaultSrc(event)}
-          src={process.env.REACT_APP_USER_ICON.concat(fullName)}
-          className={classes.avt_large}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          src="../../assets/images/default-userimage.png"
-          className={classes.avt_large}
-        />
-      );
-    }
+  const getEmployeeTypeList = async (searchText = "") => {
+    var jsonData = {
+      searchText: searchText,
+    };
+    var config = {
+      method: "POST",
+      url: "/cases/getEmployeeTypeData",
+      data: jsonData,
+    };
+    await axios(config)
+      .then(function (response) {
+        if (response?.data?.length) {
+          setEmployeeDrpData(response.data);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
-  const handlePeopleInfo = (employee_id) => {
-    setInfoDataLoaded(true);
-    setInfoCall(false);
-    if (!dataInfoLoaded) {
-      GetDepartmentPeopleInfo(employee_id);
-    }
-  };
-  // scroll event to get data onscroll
-  const onScroll = (peopleData, event) => {
-    const bottom =
-      event.target.scrollHeight - event.target.scrollTop ===
-      event.target.clientHeight;
-    if (bottom && dataLoaded) {
-      //   alert('bottom');
-      GetDepartmentPeopleList("", peopleData?.length, true);
-    }
-  };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
-  const fixedHeightPaperTask = clsx(classes.paper, classes.fixedHeightCard);
-  const renderPeopleImage = (UserName) => {
-    if (UserName) {
-      return (
-        <Avatar
-          error
-          className={classes.ex_large}
-          alt={UserName}
-          src={process.env.REACT_APP_USER_ICON + UserName}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          error
-          className={classes.ex_large}
-          alt="Test"
-          src="https://material-ui.com/static/images/avatar/1.jpg"
-        />
-      );
-    }
-  };
-
-  const handleNextClick = () => {
-    setComponentLoader(true);
-    setPeopleData([]);
-  };
-  const handleTaskClick = (userName, filter, taskCount, caseId, caseTypeId) => {
-    if (taskCount <= 0) {
-      notification.toast.warning("No task available...!!");
-      return false;
-    }
-    navigate("tasks", {
-      state: {
-        userName: userName,
-        filter: filter,
-        taskCount: taskCount,
-        replace: true,
-        isParent: true,
-        caseId: caseId,
-        caseTypeId: caseTypeId,
-      },
-    });
-  };
-
-  // popup over
-  const handleClick = (event) => {
-    GetDropdownFilters();
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const onTaskScroll = (people_info, caseListData, recordCount, event) => {
-    const bottom =
-      event.target.scrollHeight - event.target.scrollTop ===
-      event.target.clientHeight;
-
-    if (bottom && taskLoader && recordCount >= maxCount) {
-      caseList(people_info, caseListData?.length, true);
-    }
-  };
-
   const caseList = async (people, skipCount = 0, loadMore) => {
     setTaskLoader(false);
     setCaseListData([]);
+    setCaseIds(0);
     setRecordCount(0);
     var jsonData = {
       Username: people.SHORT_USER_NAME ? people.SHORT_USER_NAME : "dixitms",
@@ -355,23 +328,315 @@ export default function PeopleDepartment(props) {
         console.log(error);
       });
   };
+  const CaseActivityLogList = async (people) => {
+    setActivityLogLoader(false);
+    setCaseHistoryLogData([]);
+
+    let caseIdList = caseListData?.map((x) => {
+      return x.caseID;
+    });
+
+    let caseIds = caseIdList?.map((x) => JSON.stringify(x)).join();
+    var config = {
+      method: "get",
+      url: "/cases/case_activity_log?caseIds=" + caseIds,
+    };
+
+    axios(config)
+      .then(function (response) {
+        if (response?.data?.values?.length) {
+          setCaseHistoryLogData(response?.data?.values);
+          setActivityLogLoader(true);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+  // END   all API call
+
+  // all handle function
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  const handleFilterChange = (parentName, parentID) => {
+    handleClearChildOnParentChange(parentName, parentID);
+    if (
+      parentName == "topLevel" ||
+      parentName == "basicName" ||
+      parentName == "subDepartment" ||
+      parentName == "jobFunction"
+    ) {
+      getDropdownFilters(parentName, parentID);
+    } else {
+      handleSetParentDrpValue(parentName, parentID);
+    }
+  };
+
+  const handleSetParentDrpValue = (parentName, parentValue = "") => {
+    switch (parentName) {
+      case "jobTitle":
+        setJobTitleDrpValue(Number(parentValue));
+        break;
+      case "employeeStatus":
+        setEmployeeStatusDrpValue(parentValue);
+        break;
+      case "provisioned":
+        setProvisionedDrpValue(parentValue);
+        break;
+      case "company":
+        setCompanyDrpValue(Number(parentValue));
+        break;
+      case "employeeType":
+        setEmployeeTypeDrpValue(Number(parentValue));
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleClearChildOnParentChange = (parentName, parentId = 0) => {
+    switch (parentName) {
+      case "topLevel":
+        setTopLevelDrpValue(Number(parentId));
+        setBasicNameDrpData([]);
+        setSubDepartmentDrpData([]);
+        setJobFunctionDrpData([]);
+        setJobTitleDrpData([]);
+        break;
+      case "basicName":
+        setBasicNameDrpValue(Number(parentId));
+        setSubDepartmentDrpData([]);
+        setJobFunctionDrpData([]);
+        setJobTitleDrpData([]);
+        break;
+      case "subDepartment":
+        setSubDepartmentDrpValue(Number(parentId));
+        setJobFunctionDrpData([]);
+        setJobTitleDrpData([]);
+        break;
+      case "jobFunction":
+        setJobFunctionDrpValue(Number(parentId));
+        setJobTitleDrpData([]);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handlePeopleInfo = (employee_id) => {
+    setValue(0);
+    setInfoDataLoaded(false);
+    if (!dataInfoLoaded) {
+      notification.toast.warning("Please wait. Your Data is loading...!!");
+      return false;
+    }
+    getDepartmentPeopleInfo(employee_id);
+  };
+  const handleTaskClick = (userName, filter, taskCount, caseId, caseTypeId) => {
+    if (taskCount <= 0) {
+      notification.toast.warning("No task available...!!");
+      return false;
+    }
+    navigate("tasks", {
+      state: {
+        userName: userName,
+        filter: filter,
+        taskCount: taskCount,
+        replace: true,
+        isParent: true,
+        caseId: caseId,
+        caseTypeId: caseTypeId,
+      },
+    });
+  };
+  const handleOnScroll = (peopleData, event) => {
+    const bottom =
+      event.target.scrollHeight - event.target.scrollTop ===
+      event.target.clientHeight;
+    if (bottom && dataLoaded) {
+      //   alert('bottom');
+      getDepartmentPeopleList("", peopleData?.length, true);
+    }
+  };
+  const handleFilterClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    // if (topLevelDrpData.length) {
+    //   return false;
+    // }
+    getDropdownFilters();
+    getEmployeeTypeList();
+    getCompanyList();
+  };
+  const handleFilterResetClick = () => {
+    setValue(0);
+    getDepartmentPeopleList();
+    handleFilterClear();
+  };
+
+  const handleFilterClear = () => {
+    setValue(0);
+    setBasicNameDrpData([]);
+    setSubDepartmentDrpData([]);
+    setJobFunctionDrpData([]);
+    setJobTitleDrpData([]);
+    setCompanyDrpValue(0);
+    setEmployeeTypeDrpValue(0);
+    setEmployeeStatusDrpValue("Active");
+    setProvisionedDrpValue("Yes");
+  };
+
+  const handleClose = () => {
+    // alert("--close");
+    setAnchorEl(null);
+  };
+  const handleOnTaskScroll = (
+    people_info,
+    caseListData,
+    recordCount,
+    event
+  ) => {
+    const bottom =
+      event.target.scrollHeight - event.target.scrollTop ===
+      event.target.clientHeight;
+
+    if (bottom && taskLoader && recordCount >= maxCount) {
+      caseList(people_info, caseListData?.length, true);
+    }
+  };
+  const handleFilterSubmit = (event) => {
+    event.preventDefault();
+    setValue(0);
+    setCaseListData([]);
+    setCaseHistoryLogData([]);
+    let fields = {};
+    var submitted = true;
+    Object.entries(event.target.elements).forEach(([name, input]) => {
+      if (input.type != "submit") {
+        if (input.name != "" && input.value != "") {
+          submitted = true;
+          fields[input.name] = input.value;
+        }
+      }
+    });
+
+    if (submitted == true && fields !== undefined) {
+      notification.toast.success("Filter Apply successfully..!!!");
+
+      getDepartmentPeopleList(fields.searchText, 0);
+    }
+  };
+  // end all handle function
 
   useEffect(() => {
-    GetDepartmentPeopleList();
+    getDepartmentPeopleList();
   }, []);
 
+  const addDefaultSrc = (event) => {
+    let userDefaultImage = require("../../assets/images/default-userimage.png");
+    if (userDefaultImage) {
+      event.target.src = userDefaultImage;
+    }
+  };
+  const renderUserImage = (fullName) => {
+    if (fullName) {
+      return (
+        <Avatar
+          className={classes.large}
+          onError={(event) => addDefaultSrc(event)}
+          src={process.env.REACT_APP_USER_ICON.concat(fullName)}
+          className={classes.avt_large}
+        />
+      );
+    } else {
+      return (
+        <Avatar
+          src="../../assets/images/default-userimage.png"
+          className={classes.avt_large}
+        />
+      );
+    }
+  };
+  const renderPeopleImage = (UserName) => {
+    if (UserName) {
+      return (
+        <Avatar
+          error
+          className={classes.ex_large}
+          alt={UserName}
+          src={process.env.REACT_APP_USER_ICON + UserName}
+        />
+      );
+    } else {
+      return (
+        <Avatar
+          error
+          className={classes.ex_large}
+          alt="Test"
+          src="https://material-ui.com/static/images/avatar/1.jpg"
+        />
+      );
+    }
+  };
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+  const columns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "case_id", headerName: "Case ID", width: 120 },
+    { field: "created_date_time", headerName: "Date and Time", width: 120 },
+    { field: "activity_type", headerName: "Activity Type", width: 120 },
+    { field: "activity_note", headerName: "Event", width: 300 },
+    { field: "created_by", headerName: "User", width: 100 },
+    {
+      field: "activity_description",
+      headerName: "Activity Description",
+      width: 300,
+    },
+    { field: "created_by", headerName: "User", width: 100 },
+  ];
+
+  var rows = [];
+  if (caseHistoryData.length) {
+    for (var i in caseHistoryData) {
+      rows.push({
+        id: caseHistoryData[i].activity_id,
+        case_id: caseHistoryData[i].case_id,
+        created_date_time: dateFormat(
+          caseHistoryData[i].created_datetime,
+          "mm/dd/yyyy h:MM:ss TT"
+        ),
+        activity_type: caseHistoryData[i].activity_type,
+        activity_note: caseHistoryData[i].activity_note,
+        created_by: caseHistoryData[i].created_by,
+        activity_description: caseHistoryData[i].activity_description,
+      });
+    }
+  }
+
   return (
     <div className="page" id="page-department">
       <Grid container spacing={3}>
         <Grid item lg={3} md={4} xs={12} sm={12}>
           <AppBar position="position" className={classes.appBar}>
-            <Toolbar>
-              <FilterListIcon
-                onClick={handleClick}
-                style={{ cursor: "pointer" }}
-              />
+            <Toolbar className="st-inline">
+              <div>
+                <IconButton
+                  className={classes.button}
+                  aria-label="filter"
+                  onClick={handleFilterClick}
+                >
+                  <FilterList style={{ cursor: "pointer" }} />
+                </IconButton>
+                <div className="st-float-end">
+                  <IconButton
+                    className={classes.button}
+                    aria-label="reset"
+                    onClick={handleFilterResetClick}
+                  >
+                    <RotateLeft style={{ cursor: "pointer" }} />
+                  </IconButton>
+                </div>
+              </div>
             </Toolbar>
           </AppBar>
 
@@ -398,309 +663,278 @@ export default function PeopleDepartment(props) {
             }}
           >
             <Grid className={"card-filter " + classesBase.m_one}>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  variant="outlined"
-                  style={{ width: "-webkit-fill-available" }}
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel
-                    htmlFor="outlined-filter-native-simple"
-                    shrink
-                    ref={inputLabel}
+              <form onSubmit={handleFilterSubmit} className="">
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    Top Level
-                  </InputLabel>
-                  <Select label="Top Level" fullWidth={true}>
-                    {topLevelDrpData.length
-                      ? topLevelDrpData.map((option) => (
-                          <MenuItem>{option.NAME}</MenuItem>
-                        ))
-                      : []}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  variant="outlined"
-                  style={{ width: "-webkit-fill-available" }}
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel
-                    htmlFor="outlined-filter-native-simple"
-                    shrink
-                    ref={inputLabel}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Top Level
+                    </InputLabel>
+                    <Select
+                      name="topLevel"
+                      className="input-dropdown"
+                      label="topLevel"
+                      defaultValue={topLevelDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("topLevel", e.target.value)
+                      }
+                    >
+                      <MenuItem value="">None</MenuItem>
+                      {topLevelDrpData.length
+                        ? topLevelDrpData.map((option) => (
+                            <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    Basic Name
-                  </InputLabel>
-                  <Select label="Basic Name" fullWidth={true}>
-                    {basicNameDrpData.length
-                      ? basicNameDrpData.map((option) => (
-                          <MenuItem>{option.NAME}</MenuItem>
-                        ))
-                      : []}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  variant="outlined"
-                  style={{ width: "-webkit-fill-available" }}
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel
-                    htmlFor="outlined-filter-native-simple"
-                    shrink
-                    ref={inputLabel}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Basic Name
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="basicName"
+                      label="basicName"
+                      defaultValue={basicNameDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("basicName", e.target.value)
+                      }
+                    >
+                      {basicNameDrpData.length
+                        ? basicNameDrpData.map((option) => (
+                            <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    Sub Department
-                  </InputLabel>
-                  <Select label="Sub Department" fullWidth={true}>
-                    {subDepartmentDrpData.length
-                      ? subDepartmentDrpData.map((option) => (
-                          <MenuItem>{option.NAME}</MenuItem>
-                        ))
-                      : []}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Sub Department
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Sub Department
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="subDepartment"
+                      label="subDepartment"
+                      defaultValue={subDepartmentDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("subDepartment", e.target.value)
+                      }
+                    >
+                      {subDepartmentDrpData.length
+                        ? subDepartmentDrpData.map((option) => (
+                            <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Job Function
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Job Function
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="jobFunction"
+                      label="JobFunction"
+                      defaultValue={jobFunctionDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("jobFunction", e.target.value)
+                      }
+                    >
+                      {jobFunctionDrpData.length
+                        ? jobFunctionDrpData.map((option) => (
+                            <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Job Title
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Job Title
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="jobTitle"
+                      label="JobTitle"
+                      defaultValue={jobTitleDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("jobTitle", e.target.value)
+                      }
+                    >
+                      {jobTitleDrpData.length
+                        ? jobTitleDrpData.map((option) => (
+                            <MenuItem value={option.ID}>{option.NAME}</MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Employee Status
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Employee Status
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="employeeStatus"
+                      label="EmployeeStatus"
+                      value={empStatusDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("employeeStatus", e.target.value)
+                      }
+                    >
+                      <MenuItem value="Active">Active</MenuItem>
+                      <MenuItem value="INACTIVE">INACTIVE</MenuItem>
+                      <MenuItem value="both">both</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Provisioned
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Provisioned
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="provisioned"
+                      label="Provisioned"
+                      value={provisionedDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("provisioned", e.target.value)
+                      }
+                    >
+                      <MenuItem value="Yes">Yes</MenuItem>
+                      <MenuItem value="No">NO</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Search by Name
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Company
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="company"
+                      label="Company"
+                      value={companyDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("company", e.target.value)
+                      }
+                    >
+                      <MenuItem aria-label="None" value="" />
+                      {companyDrpData.length
+                        ? companyDrpData.map((option) => (
+                            <MenuItem value={option.COMPANY_ID}>
+                              {option.COMPANY_NAME}
+                            </MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <FormControl
+                    fullWidth={true}
+                    variant="outlined"
+                    className={classesBase.mb_one}
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Company
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    <InputLabel id="demo-controlled-open-select-label">
+                      Employee Type
+                    </InputLabel>
+                    <Select
+                      className="input-dropdown"
+                      name="employeeType"
+                      label=" EmployeeType"
+                      value={empTypeDrpValue}
+                      onChange={(e) =>
+                        handleFilterChange("employeeType", e.target.value)
+                      }
+                    >
+                      {empTypeDrpData.length
+                        ? empTypeDrpData.map((option) => (
+                            <MenuItem value={option.EMPLOYEE_TYPE_ID}>
+                              {option.EMPLOYEE_TYPE_NAME}
+                            </MenuItem>
+                          ))
+                        : []}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <TextField
+                    InputLabelProps={{ shrink: true }}
+                    id="search"
+                    label="Search"
+                    name="searchText"
+                    placeholder="Search"
+                    variant="outlined"
+                    className={classesBase.mb_one}
+                  />
+                </Grid>
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classesBase.mr_one}
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <FormControl
-                  fullWidth={true}
-                  variant="outlined"
-                  className={classesBase.mb_one}
-                >
-                  <InputLabel id="demo-controlled-open-select-label">
-                    Employee Type
-                  </InputLabel>
-                  <Select
-                    native
-                    value={TopFilterValue}
-                    onChange={handleFilterChange}
-                    inputProps={{
-                      name: "age",
-                      id: "filled-age-native-simple",
-                    }}
+                    Filter
+                  </Button>
+                  <Button
+                    type="reset"
+                    onClick={handleFilterClear}
+                    variant="contained"
+                    color="secondary"
                   >
-                    <option aria-label="None" value="" />
-                    <option value={10}>Ten</option>
-                    <option value={20}>Twenty</option>
-                    <option value={30}>Thirty</option>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item lg={12} md={12} xs={12} sm={12}>
-                <TextField
-                  id="outlined-basic"
-                  label="Outlined"
-                  className={classesBase.mb_one}
-                  variant="outlined"
-                />
-              </Grid>
-
-              <Grid
-                item
-                lg={12}
-                md={12}
-                xs={12}
-                sm={12}
-                className={classesBase.mb_one}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classesBase.mr_one}
-                >
-                  Filter
-                </Button>
-                <Button variant="contained" color="secondary">
-                  Clear
-                </Button>
-              </Grid>
+                    Clear
+                  </Button>
+                </Grid>
+              </form>
             </Grid>
           </Popover>
 
           <div
             className={fixedHeightPaper}
-            onScroll={(event) => onScroll(peopleData, event)}
+            onScroll={(event) => handleOnScroll(peopleData, event)}
           >
             <Box boxShadow={0} className="card bg-secondary" borderRadius={5}>
               {peopleData.length ? (
@@ -717,7 +951,6 @@ export default function PeopleDepartment(props) {
                           className={"card-user-case"}
                           onClick={(event) => {
                             handlePeopleInfo(people.EMPLOYEE_ID);
-                            caseList(people, 0, false);
                           }}
                         >
                           <CardHeader
@@ -727,27 +960,23 @@ export default function PeopleDepartment(props) {
                           />
                         </Card>
                       ) : (
-                        <ComponentLoader type="rect" />
+                        <>
+                          {noDataFound ? (
+                            <div>No Peoples Found </div>
+                          ) : (
+                            <ComponentLoader type="rect" />
+                          )}
+                        </>
                       )}
                     </Box>
                   ))}
                 </>
               ) : (
                 <>
-                  {(componentLoader ? Array.from(new Array(4)) : Array(2)).map(
-                    (item, index) => (
-                      <Box key={index} width="100%" padding={0.5}>
-                        {item ? (
-                          <img
-                            style={{ width: "100%", height: 118 }}
-                            alt={item.title}
-                            src={item.src}
-                          />
-                        ) : (
-                          <ComponentLoader type="rect" />
-                        )}
-                      </Box>
-                    )
+                  {noDataFound ? (
+                    <div>No Peoples Found </div>
+                  ) : (
+                    <ComponentLoader type="rect" />
                   )}
                 </>
               )}
@@ -755,8 +984,14 @@ export default function PeopleDepartment(props) {
           </div>
         </Grid>
         <Grid item lg={9} md={8} xs={12} sm={12}>
-          {dataInfoLoaded ? (
-            <ComponentLoader type="rect" />
+          {!dataInfoLoaded ? (
+            <Box boxShadow={0} className="card bg-secondary" borderRadius={5}>
+              {noDataFound ? (
+                <div>No Data Found </div>
+              ) : (
+                <ComponentLoader type="rect" />
+              )}
+            </Box>
           ) : (
             <Grid container spacing={3}>
               <Grid item lg={2} md={3} xs={12} sm={12}>
@@ -781,13 +1016,13 @@ export default function PeopleDepartment(props) {
                     </Grid>
                     <Grid item lg={8} md={8} xs={8} sm={8}>
                       {" "}
-                      <Typography>{peopleInfo.FULL_NAME}</Typography>
+                      <Typography>{peopleInfo?.FULL_NAME}</Typography>
                     </Grid>
                     <Grid item lg={4} md={4} xs={4} sm={4}>
                       <Typography color={"primary"}>Job: </Typography>
                     </Grid>
                     <Grid item lg={8} md={8} xs={8} sm={8}>
-                      {peopleInfo.JOB_TITLE}
+                      {peopleInfo?.JOB_TITLE}
                     </Grid>
                     <Grid item lg={4} md={4} xs={4} sm={4}>
                       <Typography color={"primary"}>Department: </Typography>
@@ -847,15 +1082,29 @@ export default function PeopleDepartment(props) {
                   aria-label="full width tabs example"
                 >
                   <Tab className="nav-tab" label="Info" {...a11yProps(0)} />
+                  {peopleInfo != "undefined" &&
+                  peopleInfo != null &&
+                  peopleInfo !== "" ? (
+                    <Tab
+                      onClick={(event) => {
+                        caseList(peopleInfo, 0, false);
+                      }}
+                      className="nav-tab"
+                      label="Task"
+                      {...a11yProps(1)}
+                    />
+                  ) : (
+                    <Tab className="nav-tab" label="Task" {...a11yProps(1)} />
+                  )}
+
                   <Tab
-                    onClick={(event) => {
-                      caseList(peopleInfo, 0, false);
-                    }}
                     className="nav-tab"
-                    label="Task"
-                    {...a11yProps(1)}
+                    onClick={(event) => {
+                      CaseActivityLogList(peopleInfo);
+                    }}
+                    label="Acivity"
+                    {...a11yProps(2)}
                   />
-                  <Tab className="nav-tab" label="Acivity" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
             </Paper>
@@ -871,177 +1120,187 @@ export default function PeopleDepartment(props) {
                   borderRadius={5}
                 >
                   <Grid container>
-                    <Grid item xs={6}>
-                      {dataInfoLoaded ? (
-                        <ComponentLoader type="rect" />
-                      ) : (
-                        <form className={classes.form_root}>
-                          <Grid container spacing={3}>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Display Name"
-                                defaultValue={peopleInfo.FULL_NAME}
-                                InputLabelProps={{
-                                  classes: {
-                                    root: classes.inputLabel,
-                                  },
-                                }}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Legal First Name"
-                                defaultValue={peopleInfo.FIRST_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Legal Last Name"
-                                defaultValue={peopleInfo.LAST_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Short User Name"
-                                defaultValue={peopleInfo.SHORT_USER_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Job Title"
-                                defaultValue={peopleInfo.JOB_TITLE}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Employee Type"
-                                defaultValue={peopleInfo.EMPLOYEE_TYPE_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office Street Address"
-                                defaultValue={peopleInfo.STREET_ADDRESS}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office State"
-                                defaultValue={peopleInfo.STATE}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office City"
-                                defaultValue={peopleInfo.CITY}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Home Phone/Cell Number"
-                                defaultValue={peopleInfo.HOME_PHONE_NUMBER}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Hire Date"
-                                defaultValue={dateFormat(
-                                  peopleInfo.HIRE_DATE,
-                                  "m/dd/yyyy"
-                                )}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Birth Date"
-                                defaultValue={peopleInfo.BIRTH_DATE}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Gender"
-                                defaultValue={
-                                  (peopleInfo.GENDER = "M" ? "Male" : "Female")
-                                }
-                              />
-                            </Grid>
+                    {!dataInfoLoaded ? (
+                      <>
+                        {noDataFound ? (
+                          <Grid item xs={12}>
+                            No Information Found{" "}
                           </Grid>
-                        </form>
-                      )}
-                    </Grid>
-                    <Grid item xs={6}>
-                      {dataInfoLoaded ? (
-                        <ComponentLoader type="rect" />
-                      ) : (
-                        <form className={classes.form_root}>
-                          <Grid container spacing={3}>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="(Preferred) Full Name"
-                                defaultValue={peopleInfo.FULL_NAME}
-                                InputLabelProps={{
-                                  classes: {
-                                    root: classes.inputLabel,
-                                  },
-                                }}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Email Address"
-                                defaultValue={peopleInfo.EMAIL_ADDRESS}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Department Name"
-                                defaultValue={peopleInfo.DEPARTMENT_NAME}
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                disabled
-                                id="outlined-disabled"
-                                label="Office Zip Code"
-                                defaultValue={peopleInfo.ZIP_CODE}
-                              />
-                            </Grid>
+                        ) : (
+                          <Grid item xs={12}>
+                            <ComponentLoader type="rect" />
                           </Grid>
-                        </form>
-                      )}
-                    </Grid>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <Grid item xs={6}>
+                          <form className={classes.form_root}>
+                            <Grid container spacing={3}>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Display Name"
+                                  defaultValue={peopleInfo.FULL_NAME}
+                                  InputLabelProps={{
+                                    classes: {
+                                      root: classes.inputLabel,
+                                    },
+                                  }}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Legal First Name"
+                                  defaultValue={peopleInfo.FIRST_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Legal Last Name"
+                                  defaultValue={peopleInfo.LAST_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Short User Name"
+                                  defaultValue={peopleInfo.SHORT_USER_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Job Title"
+                                  defaultValue={peopleInfo.JOB_TITLE}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Employee Type"
+                                  defaultValue={peopleInfo.EMPLOYEE_TYPE_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office Street Address"
+                                  defaultValue={peopleInfo.STREET_ADDRESS}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office State"
+                                  defaultValue={peopleInfo.STATE}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office City"
+                                  defaultValue={peopleInfo.CITY}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Home Phone/Cell Number"
+                                  defaultValue={peopleInfo.HOME_PHONE_NUMBER}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Hire Date"
+                                  defaultValue={dateFormat(
+                                    peopleInfo.HIRE_DATE,
+                                    "m/dd/yyyy"
+                                  )}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Birth Date"
+                                  defaultValue={peopleInfo.BIRTH_DATE}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Gender"
+                                  defaultValue={
+                                    (peopleInfo.GENDER = "M"
+                                      ? "Male"
+                                      : "Female")
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </form>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <form className={classes.form_root}>
+                            <Grid container spacing={3}>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="(Preferred) Full Name"
+                                  defaultValue={peopleInfo.FULL_NAME}
+                                  InputLabelProps={{
+                                    classes: {
+                                      root: classes.inputLabel,
+                                    },
+                                  }}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Email Address"
+                                  defaultValue={peopleInfo.EMAIL_ADDRESS}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Department Name"
+                                  defaultValue={peopleInfo.DEPARTMENT_NAME}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  disabled
+                                  id="outlined-disabled"
+                                  label="Office Zip Code"
+                                  defaultValue={peopleInfo.ZIP_CODE}
+                                />
+                              </Grid>
+                            </Grid>
+                          </form>
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
                 </Box>
               </TabPanel>
@@ -1049,7 +1308,12 @@ export default function PeopleDepartment(props) {
                 <div
                   className={fixedHeightPaperTask}
                   onScroll={(event) =>
-                    onTaskScroll(peopleInfo, caseListData, recordCount, event)
+                    handleOnTaskScroll(
+                      peopleInfo,
+                      caseListData,
+                      recordCount,
+                      event
+                    )
                   }
                 >
                   <Box
@@ -1080,7 +1344,6 @@ export default function PeopleDepartment(props) {
                               >
                                 {peopleCase ? (
                                   <CasePreview
-                                    // handleCasePreviewClick={handleCasePreviewClick}
                                     caseId={peopleCase.caseID}
                                     caseData={peopleCase}
                                     firstCaseId={peopleCase.caseID}
@@ -1098,7 +1361,7 @@ export default function PeopleDepartment(props) {
                           {!taskLoader ? (
                             <>
                               {(!taskLoader
-                                ? Array.from(new Array(4))
+                                ? Array.from(new Array(3))
                                 : Array(2)
                               ).map((item, index) => (
                                 <Grid item xs={4}>
@@ -1135,7 +1398,29 @@ export default function PeopleDepartment(props) {
                 </div>
               </TabPanel>
               <TabPanel value={value} index={2} dir={theme.direction}>
-                Activity
+                {!activityLoader ? (
+                  <>
+                    {noDataFound ? (
+                      <Box
+                        boxShadow={0}
+                        className="card bg-secondary"
+                        borderRadius={5}
+                      >
+                        <Grid container>
+                          <Grid item xs={12}>
+                            No Activity Data Found
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    ) : (
+                      <ComponentLoader type="rect" />
+                    )}
+                  </>
+                ) : (
+                  <div style={{ height: 400, width: "100%" }}>
+                    <DataGrid rows={rows} columns={columns} pageSize={20} />
+                  </div>
+                )}
               </TabPanel>
             </SwipeableViews>
           </div>

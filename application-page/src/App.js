@@ -1,6 +1,6 @@
 import {
   createGenerateClassName,
-  StylesProvider,
+  StylesProvider
 } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import axios from "axios";
@@ -24,7 +24,6 @@ axios.defaults.baseURL = process.env.REACT_APP_AXIOS_PREFIX;
 const basePath = process.env.REACT_APP_BASE_PATH;
 
 function App() {
-  const [isCaseTypesAvailable, setIsCaseTypesAvailable] = React.useState(false);
   const reducerState = useSelector((state) => state);
   const [pageNotFound, setPageNotFound] = React.useState(false);
   const dispatch = useDispatch();
@@ -38,25 +37,16 @@ function App() {
     }
 
     //id should always be second from last rgardless of prefix
-
-    console.log(appId);
     return Number(appId);
   };
+  
   const app_id = id_from_url();
 
   React.useEffect(() => {
     let isPageNotFound = reducerState.applicationData.isPageNotFound;
     setPageNotFound(isPageNotFound);
     dispatch(actionData(app_id, "APP_ID"));
-    let isCaseTypesAvailable =
-      reducerState.applicationData.isCaseTypesAvailable;
-    if (isCaseTypesAvailable) {
-      setIsCaseTypesAvailable(isCaseTypesAvailable);
-    }
-  }, [
-    reducerState.applicationData.isCaseTypesAvailable,
-    reducerState.applicationData.isPageNotFound,
-  ]);
+  }, [reducerState.applicationData.isPageNotFound]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -66,7 +56,7 @@ function App() {
         ) : (
           <PageNotFound></PageNotFound>
         )}
-        {isCaseTypesAvailable ? <ReducerData></ReducerData> : ""}
+        <ReducerData></ReducerData>
       </StylesProvider>
     </ThemeProvider>
   );

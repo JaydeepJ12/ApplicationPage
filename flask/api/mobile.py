@@ -143,6 +143,9 @@ class Mobile:
                                                 "userClosedby": "string"
                                             } '''
         return self.post(self.url +'/api/Case/GetRelatedCasesCount', json=data)
+
+    def get_application_list(self):
+        return self.get(self.url +'/api/Home/GetApplicationList')
 '''
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
 

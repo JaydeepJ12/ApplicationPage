@@ -24,7 +24,7 @@ export default function CaseTypeStatusGraph(props) {
       .catch((error) => {
         console.log("catch", error);
       });
-  }, [casetype]);
+  }, []);
   console.log("casetype===>", casetype);
   return (
     <div className="grpah">
