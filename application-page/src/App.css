@@ -73,12 +73,18 @@ a {
 /*  start float  */
 
 .st-float-start {
-  float:left;
- }
- .st-float-end {
-   float:right;
-  }
+  float: left;
+}
+.st-float-end {
+  float: right;
+}
 /* float end  */
+
+/* border csss */
+.sm-border-left {
+  border-right: 2px solid #444;
+}
+/* border css end  */
 
 /* input form  */
 .MuiInput-underline:before {
