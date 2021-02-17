@@ -33,4 +33,10 @@ def entity_link():
     print(data)
     df = db.entity_data(data['entityIds'])
     print(df)
-    return df.to_json(orient='records')  #
+    return df.to_json(orient='records')
+
+
+@bp1.route('/entity_systemcode_count', methods=['GET'])
+def entity_systemcode_count():
+    df = db.system_code_count()
+    return df.to_json(orient='records')
