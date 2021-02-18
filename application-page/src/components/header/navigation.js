@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
@@ -54,18 +54,25 @@ export default function Navigation(props) {
       var parts = path.split(appId);
       path = parts[parts.length - 1];
 
-      let isLogin = path === "login";
+      let isLogin = path === "/login";
+      let isError = path === "/error";
+
       let page = menuItems.find((x) => x.menuPath === path);
       if (page) {
         dispatch(actionData(false, "PAGE_NOT_FOUND"));
         setCurrentPage(page.pageTitle);
-      } else if (!isLogin) {
+      } else if (!isLogin && !isError) {
         dispatch(actionData(true, "PAGE_NOT_FOUND"));
         setCurrentPage("");
       }
 
       if (isLogin) {
         setIsLogin(true);
+      }
+
+      if (isError) {
+        dispatch(actionData(true, "ERROR_PAGE"));
+        setCurrentPage("Error");
       }
     }
   };
