@@ -658,6 +658,42 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             print("errr===>", exe)
 
+    def entity_data(self, Ids):
+        query = f'''
+                    SELECT ENTITY_ID, [TEXT] as ID, b.SYSTEM_CODE 
+                      FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT] a
+                          left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type] b
+                        on a.[ENTITY_ASSOC_TYPE_ID] = b.[ENTITY_ASSOC_TYPE_ID]
+                    
+                      where entity_id in ({Ids})
+                      and 
+                      a.is_active = 'Y'
+                      and
+                      a.[ENTITY_ASSOC_TYPE_ID] in  (
+                      SELECT ENTITY_ASSOC_TYPE_ID
+                      FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type]
+                      where entity_type_id in (select top 1 
+                                                ENTITY_TYPE_ID 
+                                                from [BOXER_ENTITIES].[dbo].entity_list 
+                                                where entity_id in ({Ids}) )
+                                                and 
+                    (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL')))'''
+        return self.db.execQuery(query)
+
+    def system_code_count(self):
+        try:
+            query = '''
+            SELECT
+            count(eat.[SYSTEM_CODE]) AS total_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'sttus' THEN 1 ELSE 0 END) AS sttus_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'CATEG' THEN 1 ELSE 0 END) AS category_count
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat 
+            left join  [BOXER_ENTITIES].[dbo].[ENTITY_TYPE] et
+            on eat.ENTITY_TYPE_ID = et.ENTITY_TYPE_ID
+            '''
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
 
 class AppSql:
     # need a call that gives application entity 0ds, name and icon urls
