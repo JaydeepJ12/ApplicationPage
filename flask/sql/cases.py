@@ -619,6 +619,7 @@ where a.IS_ACTIVE = 'Y'
                 ,[NOTE] as note
                 ,[NAME]
                 ,ea.[CREATED_BY]
+                ,ea.[ENTITY_ACTIVITY_ID] As ACTIVITY_ID
                 ,ea.[CREATED_DATETIME]
                 ,eat.[DESCRIPTION]
                 FROM [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY] ea With(Nolock)
@@ -627,7 +628,11 @@ where a.IS_ACTIVE = 'Y'
                 WHERE ea.[CREATED_BY]='{username}'
                 order by [CREATED_DATETIME] desc
                 OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY'''
-                return self.db.execQuery(query)
+                query1 = f'''select count(*) as total_count FROM [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY]  WHERE 
+                                           [CREATED_BY]='{username}' '''
+
+                return {"total": self.db.execQuery(query1).to_dict(orient="records")[0]['total_count'],
+                        "data": self.db.execQuery(query).to_dict(orient="records")}
 
             elif application_type == "cases":
                 query = f'''SELECT [CASE_ID] As ID
@@ -637,6 +642,7 @@ where a.IS_ACTIVE = 'Y'
                     ,[NAME]
                     ,ea.[CREATED_BY]
                     ,ea.[CREATED_DATETIME]
+                     ,ea.[CASE_ACTIVITY_ID] As ACTIVITY_ID
                     ,eat.[DESCRIPTION]
                     FROM [BOXER_CME].[dbo].[CASE_ACTIVITY] ea With(Nolock)
                     inner join [BOXER_CME].[dbo].[CASE_ACTIVITY_TYPE] eat  With(Nolock) on ea.ACTIVITY_TYPE_ID = 
@@ -645,7 +651,10 @@ where a.IS_ACTIVE = 'Y'
                     order by [CREATED_DATETIME] desc
                     OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY
                     '''
-                return self.db.execQuery(query)
+                query1 = f'''select count(*) as total_count FROM [BOXER_CME].[dbo].[CASE_ACTIVITY]  WHERE 
+                            [CREATED_BY]='{username}' '''
+                return {"total": self.db.execQuery(query1).to_dict(orient="records")[0]['total_count'],
+                        "data": self.db.execQuery(query).to_dict(orient="records")}
         except Exception as exe:
             print("errr===>", exe)
 

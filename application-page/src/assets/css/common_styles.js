@@ -69,7 +69,7 @@ export default makeStyles(
         overflow: "auto",
       },
       fixedHeightCard: {
-        height: "70vh",
+        height: "75vh",
         overflow: "auto",
       },
       // use for side by side form field
