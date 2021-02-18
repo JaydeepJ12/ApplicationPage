@@ -86,6 +86,14 @@ export default function PeoplePreview(props) {
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
 
+  const navigateToErrorPage = (message) => {
+    navigate("error", {
+      state: {
+        errorMessage: message,
+      },
+    });
+  };
+
   const getUserInfo = async () => {
     var jsonData = {
       userShortName: props.userName,
@@ -110,6 +118,7 @@ export default function PeoplePreview(props) {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message);
       });
   };
 
@@ -148,13 +157,11 @@ export default function PeoplePreview(props) {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message);
       });
   };
 
   const handleTaskClick = (userName, filter, taskCount) => {
-    console.log("-------userName",userName);
-    console.log("-------filter",filter);
-    console.log("-------taskCount",taskCount);
     if (taskCount <= 0) {
       notification.toast.warning("No task available...!!");
       return false;
@@ -253,7 +260,11 @@ export default function PeoplePreview(props) {
                     <Box
                       className={classes.cursor}
                       onClick={() =>
-                        handleTaskClick(userName, 1,relatedCasesCountData?.assignedCases)
+                        handleTaskClick(
+                          userName,
+                          1,
+                          relatedCasesCountData?.assignedCases
+                        )
                       }
                     >
                       <Typography
@@ -348,7 +359,9 @@ export default function PeoplePreview(props) {
                         variant="h5"
                         align="center"
                       >
-                        {relatedCasesCountData?.relatedItems}
+                        {relatedCasesCountData?.myHoppers +
+                          relatedCasesCountData?.myAssociations +
+                          relatedCasesCountData?.entityRoleAssociations}
                       </Typography>
                       <Typography
                         align="center"
