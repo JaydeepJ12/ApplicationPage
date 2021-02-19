@@ -11,14 +11,18 @@ import {
 } from "@material-ui/core";
 import axios from "axios";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import useStyles from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader";
 import ActiveEntity from "../../components/react_graph/activeEntity";
 
 export default function ItemOverview() {
   var classes = useStyles();
+  const reducerState = useSelector((state) => state);
   const [componentLoader, setComponentLoader] = useState(false);
+  const [noDataFound, setNoDataFound] = React.useState(false);
   const [entityCount, setEntityCount] = React.useState({});
+  const [entityTypes, setEntityTypes] = React.useState([]);
   React.useEffect(() => {
     async function getEntityCount() {
       setComponentLoader(true);
@@ -37,9 +41,67 @@ export default function ItemOverview() {
           console.log(error);
         });
     }
+
     getEntityCount();
     return () => {};
   }, []);
+  React.useEffect(() => {
+    async function getEntityTypes(Ids) {
+      console.log(
+        "getEntityTypesgetEntityTypesgetEntityTypesgetEntityTypes-------",
+        Ids
+      );
+      var data = JSON.stringify({ entityIds: Ids });
+      var config = {
+        method: "post",
+        url: "/entity/entity_link",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+
+      await axios(config)
+        .then(function (response) {
+          if (response.data.length) {
+            console.log(
+              "response.dataresponse.dataresponse.dataresponse.dataresponse.dataresponse.data----------",
+              response.data
+            );
+            setEntityTypes(response.data);
+          } else {
+            setNoDataFound(true);
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    var entityData = reducerState.applicationData.applicationElements.filter(
+      (x) => x.SYSTEM_CODE === "ASSET"
+    );
+    if (entityData) {
+      let entityIds = entityData
+        .map(function (x) {
+          return x.EXID;
+        })
+        .join(",");
+      if (entityIds) {
+        getEntityTypes(entityIds);
+      } else {
+        setNoDataFound(true);
+      }
+    }
+  }, [reducerState.applicationData.caseTypes]);
+
+  const handleClickItem = (Id) => {
+    // setOpen(!open);
+    if (Id) {
+      window.open(process.env.REACT_APP_ASSOCIATED_ENTITY_TYPES + Id, "_blank");
+      return;
+    }
+  };
 
   return (
     <Box
@@ -63,9 +125,24 @@ export default function ItemOverview() {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
+              {entityTypes?.length ? (
+                entityTypes.map((entityType) => (
+                  <MenuItem
+                    value={entityType.ID}
+                    key={entityType.ENTITY_ID}
+                    onClick={() => handleClickItem(entityType.NAME)}
+                  >
+                    {entityType.ID}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem value="">
+                  <em>No Data Available</em>
+                </MenuItem>
+              )}
+              {/* <MenuItem value={10}>Ten</MenuItem>
               <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem> */}
             </Select>
           </FormControl>
         </Grid>

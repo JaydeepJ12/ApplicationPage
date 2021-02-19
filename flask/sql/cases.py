@@ -678,7 +678,9 @@ where a.IS_ACTIVE = 'Y'
                                                 from [BOXER_ENTITIES].[dbo].entity_list 
                                                 where entity_id in ({Ids}) )
                                                 and 
-                    (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL', 'TITLE')))'''
+                    (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL', 'TITLE')))
+                    order by SYSTEM_CODE,ENTITY_ID
+                    '''
         return self.db.execQuery(query)
 
     def system_code_count(self):
