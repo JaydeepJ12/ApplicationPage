@@ -141,7 +141,6 @@ header.MuiPaper-elevation4 {
 .card-user-case {
   background: rgba(196, 196, 196, 0.25);
   box-shadow: none !important;
-  margin-bottom: 0.8em;
 }
 .card-background-color {
   background: lightskyblue;
@@ -367,4 +366,8 @@ header.MuiPaper-elevation4 {
   -o-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+.MuiDataGrid-footer,
+.MuiDataGrid-columnsContainer {
+  background-color: #e5e5e5 !important;
 }

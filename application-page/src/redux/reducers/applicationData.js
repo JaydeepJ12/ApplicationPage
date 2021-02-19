@@ -8,6 +8,8 @@ const initialSate = {
   applicationList: [],
   applicationName: "",
   applicationElements: [],
+  isErrorPage: false,
+  errorPageMessage: "",
 };
 export default function (state = initialSate, action) {
   switch (action.type) {
@@ -30,6 +32,20 @@ export default function (state = initialSate, action) {
       return {
         ...state,
         isPageNotFound: content,
+      };
+    }
+    case "ERROR_PAGE": {
+      const { content } = action.payload;
+      return {
+        ...state,
+        isErrorPage: content,
+      };
+    }
+    case "ERROR_PAGE_MESSAGE": {
+      const { content } = action.payload;
+      return {
+        ...state,
+        errorPageMessage: content,
       };
     }
     case actions.APPLICATION_LIST: {

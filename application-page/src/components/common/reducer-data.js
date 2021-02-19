@@ -1,3 +1,4 @@
+import { navigate } from "@reach/router";
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -14,6 +15,15 @@ const id_from_url = () => {
 
 export default function ReducerData() {
   const dispatch = useDispatch();
+
+  const navigateToErrorPage = (message) => {
+    navigate(process.env.REACT_APP_ERROR_PAGE, {
+      state: {
+        errorMessage: message,
+      },
+    });
+  };
+
   const entitiesByEntityId = async () => {
     let path = window.location.pathname;
     let entityId = 0;
@@ -51,6 +61,7 @@ export default function ReducerData() {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message);
       });
   };
 
@@ -71,6 +82,7 @@ export default function ReducerData() {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message);
       });
   };
 

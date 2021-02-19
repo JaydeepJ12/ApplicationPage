@@ -1,5 +1,5 @@
 import { Card, Container, Grid, MenuItem, TextField } from "@material-ui/core";
-import { createHistory } from "@reach/router";
+import { navigate } from "@reach/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SecureLS from "secure-ls";
@@ -7,7 +7,6 @@ import GotoBackButton from "../../components/common/BackButton.js";
 import CaseCreator from "./case_creator.js";
 
 export default function CaseSelect(props) {
-  let history = createHistory(window);
   const [caseType, setCaseType] = useState(0);
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [disableCaseType, setCaseTypeDisable] = useState(false);
@@ -53,6 +52,14 @@ export default function CaseSelect(props) {
     setCaseType(caseTypeId);
   };
 
+  const navigateToErrorPage = (message) => {
+    navigate(process.env.REACT_APP_ERROR_PAGE, {
+      state: {
+        errorMessage: message,
+      },
+    });
+  };
+
   return (
     <div id="page-case-select" className="page">
       <Container className="">
@@ -91,6 +98,7 @@ export default function CaseSelect(props) {
                 caseTypeId={caseType}
                 caseTypeData={caseTypeData}
                 disableEnableCaseTypeDropDown={disableEnableCaseTypeDropDown}
+                navigateToErrorPage={navigateToErrorPage}
               ></CaseCreator>
             </form>
           </Card>

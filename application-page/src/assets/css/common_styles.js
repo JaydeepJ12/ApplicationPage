@@ -68,11 +68,11 @@ export default makeStyles(
         flexDirection: "column",
       },
       fixedHeight: {
-        height: "70vh",
+        height: "60vh",
         overflow: "auto",
       },
       fixedHeightCard: {
-        height: "70vh",
+        height: "75vh",
         overflow: "auto",
       },
       // use for side by side form field
