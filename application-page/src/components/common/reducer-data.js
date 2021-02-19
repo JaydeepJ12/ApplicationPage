@@ -1,29 +1,35 @@
+import { navigate } from "@reach/router";
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { actionData } from "../../redux/action.js";
 
-
-const id_from_url = () =>{
+const id_from_url = () => {
   let path = window.location.pathname;
-  let split= path.split('/')
+  let split = path.split("/");
   //id should always be second from last rgardless of prefix
-  
-  console.log(split[split.length - 2])
-  return Number(split[split.length - 2])
-}
 
-
+  console.log(split[split.length - 2]);
+  return Number(split[split.length - 2]);
+};
 
 export default function ReducerData() {
   const dispatch = useDispatch();
+
+  const navigateToErrorPage = (message) => {
+    navigate(process.env.REACT_APP_ERROR_PAGE, {
+      state: {
+        errorMessage: message,
+      },
+    });
+  };
+
   const entitiesByEntityId = async () => {
-   
     let path = window.location.pathname;
     let entityId = 0;
     if (path) {
       //entityId = Number(path.split("SearchID=")[1]?.split("/")[0]);
-      entityId = id_from_url()
+      entityId = id_from_url();
     }
     if (!entityId) {
       entityId = 0;
@@ -55,6 +61,7 @@ export default function ReducerData() {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message);
       });
   };
 
@@ -75,6 +82,7 @@ export default function ReducerData() {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message);
       });
   };
 

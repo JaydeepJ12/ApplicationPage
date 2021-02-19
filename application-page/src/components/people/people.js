@@ -38,7 +38,7 @@ export default function Peoples() {
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
 
   const navigateToErrorPage = (message) => {
-    navigate("error", {
+    navigate(process.env.REACT_APP_ERROR_PAGE, {
       state: {
         errorMessage: message,
       },

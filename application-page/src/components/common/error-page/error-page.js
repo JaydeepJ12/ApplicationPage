@@ -26,7 +26,7 @@ export default function ErrorPage(props) {
 
   const handleRedirect = () => {
     dispatch(actionData(false, "ERROR_PAGE"));
-    navigate("overview", {});
+    navigate(process.env.REACT_APP_HOME_PAGE, {});
   };
 
   let errorPageImage = require("../../../assets/images/error-page-image.png");
