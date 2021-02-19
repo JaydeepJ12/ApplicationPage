@@ -33,10 +33,14 @@ def after_request(r):
 def entity_link():
     data = request.json
     df = db.entity_data(data['entityIds'])
-    df_id = df.groupby('ENTITY_ID').ID.agg([('ID', ', '.join)])
-    df_system_code = df.groupby('ENTITY_ID').SYSTEM_CODE.agg([('SYSTEM_CODE', ', '.join)])
-    final_dataframe = pd.merge(df_id, df_system_code, on="ENTITY_ID")
-    return final_dataframe.to_json(orient='records')
+    ENTITY_ID=df['ENTITY_ID'].to_list()
+    ENTITY_ID=list(set(ENTITY_ID))
+    ENTITY_ID.sort()
+    ID=df['ID'].to_list()
+    name=ID[:len(ENTITY_ID)]
+    url=ID[len(ENTITY_ID):]
+    EntityDict=[{"ENTITY_ID": ENTITY_ID[i], "ID": url[i],  "NAME": name[i]} for i in range(len(ENTITY_ID))]
+    return json.dumps(EntityDict)
 
 
 @bp1.route('/entity_systemcode_count', methods=['GET'])
