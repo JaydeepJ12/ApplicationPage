@@ -68,7 +68,7 @@ export default makeStyles(
         flexDirection: "column",
       },
       fixedHeight: {
-        height: "70vh",
+        height: "60vh",
         overflow: "auto",
       },
       fixedHeightCard: {
