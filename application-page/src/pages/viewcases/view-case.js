@@ -192,6 +192,7 @@ export default function ViewCase(props) {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message)
       });
   };
 
@@ -348,6 +349,7 @@ export default function ViewCase(props) {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message)
       });
   };
 
@@ -451,6 +453,15 @@ export default function ViewCase(props) {
       }
     }
   };
+
+  const navigateToErrorPage = (message) => {
+    navigate(process.env.REACT_APP_ERROR_PAGE, {
+      state: {
+        errorMessage: message,
+      },
+    });
+  };
+
   return (
     <div className="page" id="page-view-case">
       {taskCount ? <GotoBackButton navigateCount={-2} /> : ""}
@@ -633,6 +644,7 @@ export default function ViewCase(props) {
                   caseData={caseData}
                   handleCaseLoaded={handleCaseLoaded}
                   handleDocumentList={handleDocumentList}
+                  navigateToErrorPage={navigateToErrorPage}
                 ></CaseViewer>
               ) : (
                 ""
