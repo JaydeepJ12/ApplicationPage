@@ -13,3 +13,10 @@ export const applicationList = (content) => ({
     content,
   },
 });
+
+export const applicationElements = (content) => ({
+  type: actions.APPLICATION_ELEMENTS,
+  payload: {
+    content,
+  },
+});
