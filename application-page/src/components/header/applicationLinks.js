@@ -149,7 +149,7 @@ function ApplicationLinks() {
                     key={applink.ENTITY_ID}
                     onClick={() => handleClickList(applink.ID)}
                   >
-                    <ListItemText primary={applink.ENTITY_ID} />
+                    <ListItemText primary={applink.NAME} />
                   </StyledMenuItem>
                 ))
               : []}

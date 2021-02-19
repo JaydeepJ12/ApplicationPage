@@ -87,10 +87,9 @@ function ApplicationListDropdown(props) {
     if (appId && appId > 0) {
       let applicationList = [...reducerState.applicationData.applicationList];
       if (applicationList?.length) {
-        let index = applicationList.findIndex((app) => app.id == appId);
-        if (index > 0) {
-          const appData = applicationList[index];
-          setAppName(appData.name);
+        let application = applicationList.find((app) => app.id == appId);
+        if (application) {
+          setAppName(application.name);
         } else {
           setAppName("Application Page");
         }
