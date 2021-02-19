@@ -19,9 +19,9 @@ import {
 } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import { useTheme } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 // table library
-import { DataGrid } from "@material-ui/data-grid";
+import { DataGrid, GridOverlay } from "@material-ui/data-grid";
 import { FilterList, RotateLeft } from "@material-ui/icons";
 import { navigate } from "@reach/router";
 import axios from "axios";
@@ -38,9 +38,29 @@ import ComponentLoader from "../../components/common/component-loader.js";
 import * as notification from "../../components/common/toast";
 import CasePreview from "../../pages/viewcases/case-preview.js";
 
+
 const basePath = process.env.REACT_APP_BASE_PATH;
 
 var dateFormat = require("dateformat");
+
+const columns = [
+  { field: "id", headerName: "ID", resizable: false, hide: true },
+  {
+    field: "date_time",
+    headerName: "Date and Time",
+    width: 200,
+    resizable: false,
+  },
+  { field: "case_id", headerName: "Case ID", width: 120, resizable: false },
+  { field: "activity_type", headerName: "Activity Type", width: 170 },
+  { field: "event", headerName: "Event", width: 450 },
+  { field: "user", headerName: "User", width: 100, resizable: false },
+  {
+    field: "activity_description",
+    headerName: "Activity Description",
+    width: 250,
+  },
+];
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,7 +73,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={3}>
+        <Box p={1} style={{ marginTop: "1rem" }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -73,6 +93,79 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
+const useNoRowStyles = makeStyles((theme) => ({
+  root: {
+    flexDirection: "column",
+    "& .ant-empty-img-1": {
+      fill: theme.palette.type === "light" ? "#aeb8c2" : "#262626",
+    },
+    "& .ant-empty-img-2": {
+      fill: theme.palette.type === "light" ? "#f5f5f7" : "#595959",
+    },
+    "& .ant-empty-img-3": {
+      fill: theme.palette.type === "light" ? "#dce0e6" : "#434343",
+    },
+    "& .ant-empty-img-4": {
+      fill: theme.palette.type === "light" ? "#fff" : "#1c1c1c",
+    },
+    "& .ant-empty-img-5": {
+      fillOpacity: theme.palette.type === "light" ? "0.8" : "0.08",
+      fill: theme.palette.type === "light" ? "#f5f5f5" : "#fff",
+    },
+  },
+  label: {
+    marginTop: theme.spacing(1),
+  },
+}));
+function CustomNoRowsOverlay() {
+  const classes = useNoRowStyles();
+
+  return (
+    <GridOverlay className={classes.root}>
+      <svg
+        width="120"
+        height="100"
+        viewBox="0 0 184 152"
+        aria-hidden
+        focusable="false"
+      >
+        <g fill="none" fillRule="evenodd">
+          <g transform="translate(24 31.67)">
+            <ellipse
+              className="ant-empty-img-5"
+              cx="67.797"
+              cy="106.89"
+              rx="67.797"
+              ry="12.668"
+            />
+            <path
+              className="ant-empty-img-1"
+              d="M122.034 69.674L98.109 40.229c-1.148-1.386-2.826-2.225-4.593-2.225h-51.44c-1.766 0-3.444.839-4.592 2.225L13.56 69.674v15.383h108.475V69.674z"
+            />
+            <path
+              className="ant-empty-img-2"
+              d="M33.83 0h67.933a4 4 0 0 1 4 4v93.344a4 4 0 0 1-4 4H33.83a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4z"
+            />
+            <path
+              className="ant-empty-img-3"
+              d="M42.678 9.953h50.237a2 2 0 0 1 2 2V36.91a2 2 0 0 1-2 2H42.678a2 2 0 0 1-2-2V11.953a2 2 0 0 1 2-2zM42.94 49.767h49.713a2.262 2.262 0 1 1 0 4.524H42.94a2.262 2.262 0 0 1 0-4.524zM42.94 61.53h49.713a2.262 2.262 0 1 1 0 4.525H42.94a2.262 2.262 0 0 1 0-4.525zM121.813 105.032c-.775 3.071-3.497 5.36-6.735 5.36H20.515c-3.238 0-5.96-2.29-6.734-5.36a7.309 7.309 0 0 1-.222-1.79V69.675h26.318c2.907 0 5.25 2.448 5.25 5.42v.04c0 2.971 2.37 5.37 5.277 5.37h34.785c2.907 0 5.277-2.421 5.277-5.393V75.1c0-2.972 2.343-5.426 5.25-5.426h26.318v33.569c0 .617-.077 1.216-.221 1.789z"
+            />
+          </g>
+          <path
+            className="ant-empty-img-3"
+            d="M149.121 33.292l-6.83 2.65a1 1 0 0 1-1.317-1.23l1.937-6.207c-2.589-2.944-4.109-6.534-4.109-10.408C138.802 8.102 148.92 0 161.402 0 173.881 0 184 8.102 184 18.097c0 9.995-10.118 18.097-22.599 18.097-4.528 0-8.744-1.066-12.28-2.902z"
+          />
+          <g className="ant-empty-img-4" transform="translate(149.65 15.383)">
+            <ellipse cx="20.654" cy="3.167" rx="2.849" ry="2.815" />
+            <path d="M5.698 5.63H0L2.898.704zM9.259.704h4.985V5.63H9.259z" />
+          </g>
+        </g>
+      </svg>
+      <div className={classes.label}>No Rows</div>
+    </GridOverlay>
+  );
+}
+
 export default function PeopleDepartment(props) {
   const theme = useTheme();
   var classes = useStyles();
@@ -82,7 +175,7 @@ export default function PeopleDepartment(props) {
   // all loading
   const [componentLoader, setComponentLoader] = useState(false);
   const [taskLoader, setTaskLoader] = useState(false);
-  const [activityLoader, setActivityLogLoader] = useState(false);
+  const [activityLoader, setActivityLogLoader] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [dataInfoLoaded, setInfoDataLoaded] = useState(false);
   const [noDataFound, setNoDataFound] = useState(false);
@@ -93,14 +186,15 @@ export default function PeopleDepartment(props) {
   const [peopleInfo, setPeopleInfoData] = useState("");
   const [caseListData, setCaseListData] = useState([]);
   const [caseHistoryData, setCaseHistoryLogData] = useState([]);
+  const [caseHistoryRowCount, setTotalCaseHistoryData] = useState(0);
   const [caseIds, setCaseIds] = useState(0);
   const [userManager, setUserManager] = React.useState("");
-
   const [recordCount, setRecordCount] = useState(0);
   // end all data set
 
   // for Filters
   const [maxCount, setMaxCount] = useState(10);
+  const [activityLogMaxCount, setActivityLogMaxCount] = useState(20);
   const [pageSize, setPageSize] = useState(10);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -128,16 +222,25 @@ export default function PeopleDepartment(props) {
   // end For Fill Dropdown
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
-  const fixedHeightPaperTask = clsx(classes.paper, classes.fixedHeightCard);
-  const valueRef = useRef(""); //creating a refernce for TextField Component
+  const fixedHeightPaperTask = clsx(classes.paper, classes.fixedHeight);
   const inputLabel = React.useRef(null);
 
+  const [page, setPage] = React.useState(0);
+  const [rows, setRows] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [gridSkipCount, setGridSkipCount] = useState(0);
+
   // Start  all API call
-  const getDepartmentPeopleList = async (searchText = "", skipCount = 0) => {
-    setInfoDataLoaded(false);
+  const getDepartmentPeopleList = async (
+    searchText = "",
+    skipCount = 0,
+    isScroll
+  ) => {
+    if (!isScroll) {
+      setInfoDataLoaded(false);
+    }
     setDataLoaded(false);
     setComponentLoader(true);
-    setPeopleInfoData("");
     setPeopleData([]);
     setNoDataFound(false);
     var jsonData = {
@@ -154,15 +257,18 @@ export default function PeopleDepartment(props) {
         setDataLoaded(true);
         setComponentLoader(false);
         if (response.data.length) {
-          setPeopleInfoData(response.data[0]);
-          setInfoDataLoaded(true);
+          if (!isScroll) {
+            setPeopleInfoData(response.data[0]);
+            setInfoDataLoaded(true);
 
-          let manager = response.data[0]?.MANAGER_LDAP_PATH;
-          if (manager) {
-            manager = manager.split("=")[1]?.split(",")[0];
+            let manager = response.data[0]?.MANAGER_LDAP_PATH;
+            if (manager) {
+              manager = manager.split("=")[1]?.split(",")[0];
 
-            setUserManager(manager);
+              setUserManager(manager);
+            }
           }
+
           setPeopleData(response.data);
         } else {
           setNoDataFound(true);
@@ -328,25 +434,60 @@ export default function PeopleDepartment(props) {
         console.log(error);
       });
   };
-  const CaseActivityLogList = async (people) => {
-    setActivityLogLoader(false);
-    setCaseHistoryLogData([]);
 
-    let caseIdList = caseListData?.map((x) => {
-      return x.caseID;
-    });
+  const handlePageChange = (params) => {
+    let isPrev = params.page === page - 1;
+    setPage(params.page);
+    CaseActivityLogList(gridSkipCount, peopleInfo, isPrev);
+  };
 
-    let caseIds = caseIdList?.map((x) => JSON.stringify(x)).join();
+  const CaseActivityLogList = async (skipCount = 0, people, isPrev = false) => {
+    setLoading(true);
+    if (isPrev) {
+      skipCount = gridSkipCount - activityLogMaxCount * 2;
+    }
+    setRows([]);
+    var jsonData = {
+      username: people.SHORT_USER_NAME ? people.SHORT_USER_NAME : "dixitms",
+      application_type: "cases",
+      skipCount: skipCount,
+      maxCount: activityLogMaxCount,
+    };
     var config = {
-      method: "get",
-      url: "/cases/case_activity_log?caseIds=" + caseIds,
+      method: "POST",
+      url: "/cases/case_activity_log_test",
+      data: jsonData,
     };
 
     axios(config)
       .then(function (response) {
-        if (response?.data?.values?.length) {
-          setCaseHistoryLogData(response?.data?.values);
-          setActivityLogLoader(true);
+        if (response?.data?.data.length) {
+          var rows = [];
+          var caseHistoryData = response?.data?.data;
+          setTotalCaseHistoryData(response?.data?.total);
+          if (isPrev) {
+            setGridSkipCount(gridSkipCount - activityLogMaxCount);
+          } else {
+            setGridSkipCount(gridSkipCount + activityLogMaxCount);
+          }
+
+          for (var i in caseHistoryData) {
+            rows.push({
+              id: caseHistoryData[i].ACTIVITY_ID,
+              date_time: dateFormat(
+                caseHistoryData[i].CREATED_DATETIME,
+                "mm/dd/yyyy h:MM TT"
+              ),
+              case_id: caseHistoryData[i].ID,
+              activity_type: caseHistoryData[i].NAME,
+              event: caseHistoryData[i].note,
+              user: caseHistoryData[i].CREATED_BY,
+              activity_description: caseHistoryData[i].DESCRIPTION,
+            });
+          }
+
+          setRows(rows);
+          setLoading(false);
         }
       })
       .catch(function (error) {
@@ -578,40 +719,9 @@ export default function PeopleDepartment(props) {
       );
     }
   };
+
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-  const columns = [
-    { field: "id", headerName: "ID", width: 100 },
-    { field: "case_id", headerName: "Case ID", width: 120 },
-    { field: "created_date_time", headerName: "Date and Time", width: 120 },
-    { field: "activity_type", headerName: "Activity Type", width: 120 },
-    { field: "activity_note", headerName: "Event", width: 300 },
-    { field: "created_by", headerName: "User", width: 100 },
-    {
-      field: "activity_description",
-      headerName: "Activity Description",
-      width: 300,
-    },
-    { field: "created_by", headerName: "User", width: 100 },
-  ];
-
-  var rows = [];
-  if (caseHistoryData.length) {
-    for (var i in caseHistoryData) {
-      rows.push({
-        id: caseHistoryData[i].activity_id,
-        case_id: caseHistoryData[i].case_id,
-        created_date_time: dateFormat(
-          caseHistoryData[i].created_datetime,
-          "mm/dd/yyyy h:MM:ss TT"
-        ),
-        activity_type: caseHistoryData[i].activity_type,
-        activity_note: caseHistoryData[i].activity_note,
-        created_by: caseHistoryData[i].created_by,
-        activity_description: caseHistoryData[i].activity_description,
-      });
-    }
-  }
 
   return (
     <div className="page" id="page-department">
@@ -948,7 +1058,7 @@ export default function PeopleDepartment(props) {
                         <Card
                           padding={0.5}
                           style={{ cursor: "pointer" }}
-                          className={"card-user-case"}
+                          className={peopleData.length > 1 ? 'card-user-case '+classes.mb_one:'card-user-case'}
                           onClick={(event) => {
                             handlePeopleInfo(people.EMPLOYEE_ID);
                           }}
@@ -1100,7 +1210,7 @@ export default function PeopleDepartment(props) {
                   <Tab
                     className="nav-tab"
                     onClick={(event) => {
-                      CaseActivityLogList(peopleInfo);
+                      CaseActivityLogList(0, peopleInfo);
                     }}
                     label="Acivity"
                     {...a11yProps(2)}
@@ -1399,26 +1509,38 @@ export default function PeopleDepartment(props) {
               </TabPanel>
               <TabPanel value={value} index={2} dir={theme.direction}>
                 {!activityLoader ? (
-                  <>
+                  <Box
+                    boxShadow={0}
+                    className="card bg-secondary"
+                    borderRadius={5}
+                  >
                     {noDataFound ? (
-                      <Box
-                        boxShadow={0}
-                        className="card bg-secondary"
-                        borderRadius={5}
-                      >
-                        <Grid container>
-                          <Grid item xs={12}>
-                            No Activity Data Found
-                          </Grid>
+                      <Grid container>
+                        <Grid item xs={12}>
+                          No Activity Data Found
                         </Grid>
-                      </Box>
+                      </Grid>
                     ) : (
                       <ComponentLoader type="rect" />
                     )}
-                  </>
+                  </Box>
                 ) : (
-                  <div style={{ height: 400, width: "100%" }}>
-                    <DataGrid rows={rows} columns={columns} pageSize={20} />
+                  <div style={{ height: 480, width: "100%" }}>
+                    <DataGrid
+                      disableSingleSelection={true}
+                      rowHeight={35}
+                      rows={rows}
+                      columns={columns}
+                      components={{
+                        NoRowsOverlay: CustomNoRowsOverlay,
+                      }}
+                      pagination
+                      pageSize={activityLogMaxCount}
+                      rowCount={caseHistoryRowCount}
+                      paginationMode="server"
+                      onPageChange={handlePageChange}
+                      loading={loading}
+                    />
                   </div>
                 )}
               </TabPanel>

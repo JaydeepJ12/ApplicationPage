@@ -13,12 +13,14 @@ import {
   Typography
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
+import { navigate } from "@reach/router";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import useStyles from "../../assets/css/common_styles";
 import ComponentLoader from "../common/component-loader";
 import headerStyles from "../header/header_styles";
 import PeoplePreview from "./people-preview";
+
 export default function Peoples() {
   const classes = useStyles();
   const sharedClasses = headerStyles();
@@ -34,6 +36,15 @@ export default function Peoples() {
 
   const timeoutRef = useRef(null);
   let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
+
+  const navigateToErrorPage = (message) => {
+    navigate("error", {
+      state: {
+        errorMessage: message,
+      },
+    });
+  };
+
   const searchPeople = (searchText) => {
     if (timeoutRef.current !== null) {
       // IF THERE'S A RUNNING TIMEOUT
@@ -95,6 +106,7 @@ export default function Peoples() {
       })
       .catch(function (error) {
         console.log(error);
+        navigateToErrorPage(error?.message);
       });
   };
 
@@ -164,7 +176,6 @@ export default function Peoples() {
       ></PeoplePreview>
       <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
         <Grid item xs={12} container spacing={2}>
-          
           <Grid item lg={3} md={3} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id="demo-simple-select-outlined-label">

@@ -103,11 +103,17 @@ function ApplicationListDropdown(props) {
 
   const [open, setOpen] = React.useState(false);
 
-  const handleClickList = (appId, appName) => {
+  const handleClickList = (appId, appName, overrideUrl) => {
     setOpen(!open);
-    if (appId && appId > 0) {
+    if (overrideUrl) {
+      // window.open(overrideUrl, "_blank");
+      // return;
+    } else if (appId && appId > 0) {
+      let path = window.location.pathname;
+      var parts = path.split("/");
+      path = parts[parts.length - 1];
       const basePath = process.env.REACT_APP_BASE_PATH;
-      window.location.href = basePath + `${appId}/overview`;
+      window.location.href = basePath + `${appId}/${path}`;
       setAppName(appName);
     }
   };
@@ -163,7 +169,11 @@ function ApplicationListDropdown(props) {
                   <StyledMenuItem
                     key={application.id}
                     onClick={() =>
-                      handleClickList(application.id, application.name)
+                      handleClickList(
+                        application.id,
+                        application.name,
+                        application.overrideUrl
+                      )
                     }
                     selected={appId === application.id}
                   >

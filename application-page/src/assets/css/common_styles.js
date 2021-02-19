@@ -16,6 +16,9 @@ export default makeStyles(
       mr_one: {
         marginRight: theme.spacing(2),
       },
+      ml_one: {
+        marginLeft: theme.spacing(2),
+      },
       // padding class
       pt_zero: {
         paddingTop: theme.spacing(0),
@@ -69,7 +72,7 @@ export default makeStyles(
         overflow: "auto",
       },
       fixedHeightCard: {
-        height: "70vh",
+        height: "75vh",
         overflow: "auto",
       },
       // use for side by side form field

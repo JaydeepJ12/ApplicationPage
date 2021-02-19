@@ -619,6 +619,7 @@ where a.IS_ACTIVE = 'Y'
                 ,[NOTE] as note
                 ,[NAME]
                 ,ea.[CREATED_BY]
+                ,ea.[ENTITY_ACTIVITY_ID] As ACTIVITY_ID
                 ,ea.[CREATED_DATETIME]
                 ,eat.[DESCRIPTION]
                 FROM [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY] ea With(Nolock)
@@ -642,6 +643,7 @@ where a.IS_ACTIVE = 'Y'
                     ,[NAME]
                     ,ea.[CREATED_BY]
                     ,ea.[CREATED_DATETIME]
+                     ,ea.[CASE_ACTIVITY_ID] As ACTIVITY_ID
                     ,eat.[DESCRIPTION]
                     FROM [BOXER_CME].[dbo].[CASE_ACTIVITY] ea With(Nolock)
                     inner join [BOXER_CME].[dbo].[CASE_ACTIVITY_TYPE] eat  With(Nolock) on ea.ACTIVITY_TYPE_ID = 
