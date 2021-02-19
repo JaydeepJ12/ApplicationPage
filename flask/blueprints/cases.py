@@ -355,7 +355,7 @@ def get_user_info():
 def getFilterValuesByCaseTypeIds():
    data = request.json
    df = db.get_filter_values_by_caseTypeIds(data['caseTypeIds'])
-   return df.to_json(orient='records') #
+   return df.to_json(orient='records')
 
 
 @bp.route('/case_activity_log_test', methods=['POST'])
