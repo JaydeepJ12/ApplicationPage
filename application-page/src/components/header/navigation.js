@@ -24,6 +24,7 @@ import HeaderRight from "../header/header_right";
 import menuItems from "../header/menu_items";
 import Login from "../Login/index.js";
 import ApplicationPageDropDown from "./applicationList";
+import ApplicationLinks from "./applicationLinks";
 import useStyles from "./header_styles";
 
 export default function Navigation(props) {
@@ -116,6 +117,10 @@ export default function Navigation(props) {
               <Typography variant="h6" noWrap>
                 <ApplicationPageDropDown currentPage={currentPage} />
               </Typography>
+              <Typography variant="h6" noWrap>
+                <ApplicationLinks />
+              </Typography>
+
               <HeaderRight />
             </Toolbar>
           </AppBar>

@@ -7,6 +7,7 @@ const initialSate = {
   isPageNotFound: false,
   applicationList: [],
   applicationName: "",
+  applicationElements: [],
 };
 export default function (state = initialSate, action) {
   switch (action.type) {
@@ -43,6 +44,13 @@ export default function (state = initialSate, action) {
       return {
         ...state,
         applicationName: content,
+      };
+    }
+    case actions.APPLICATION_ELEMENTS: {
+      const { content } = action.payload;
+      return {
+        ...state,
+        applicationElements: content,
       };
     }
     default:
