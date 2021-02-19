@@ -44,7 +44,7 @@ const basePath = process.env.REACT_APP_BASE_PATH;
 var dateFormat = require("dateformat");
 
 const columns = [
-  { field: "id", headerName: "ID", resizable: false, hide: true },
+  { field: "id", headerName: "ID", resizable: false, hide: false },
   {
     field: "date_time",
     headerName: "Date and Time",
@@ -194,7 +194,7 @@ export default function PeopleDepartment(props) {
 
   // for Filters
   const [maxCount, setMaxCount] = useState(10);
-  const [activityLogMaxCount, setActivityLogMaxCount] = useState(20);
+  const [activityLogMaxCount, setActivityLogMaxCount] = useState(100);
   const [pageSize, setPageSize] = useState(10);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -398,7 +398,6 @@ export default function PeopleDepartment(props) {
   };
   const caseList = async (people, skipCount = 0, loadMore) => {
     setTaskLoader(false);
-    setCaseListData([]);
     setCaseIds(0);
     setRecordCount(0);
     var jsonData = {
@@ -419,6 +418,7 @@ export default function PeopleDepartment(props) {
       .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
         let caseHeadersData = response?.data?.responseContent;
+     
         setRecordCount(caseHeadersData?.length);
         if (caseHeadersData.length && !loadMore) {
           setCaseListData(caseHeadersData);
@@ -1083,12 +1083,28 @@ export default function PeopleDepartment(props) {
                 </>
               ) : (
                 <>
-                  {noDataFound ? (
-                    <div>No Peoples Found </div>
-                  ) : (
-                    <ComponentLoader type="rect" />
-                  )}
-                </>
+                {componentLoader ? (
+                  <>
+                    {(componentLoader ? Array.from(new Array(4)) : Array(2)).map(
+                      (item, index) => (
+                        <Box key={index} width="100%" padding={0.5}>
+                          {item ? (
+                            <img
+                              style={{ width: "100%", height: 100 }}
+                              alt={item.title}
+                              src={item.src}
+                            />
+                          ) : (
+                            <ComponentLoader type="rect" />
+                          )}
+                        </Box>
+                      )
+                    )}
+                  </>
+                ) : (
+                  <div>No Peoples Found </div>
+                )}
+              </>
               )}
             </Box>
           </div>
@@ -1247,7 +1263,7 @@ export default function PeopleDepartment(props) {
                         <Grid item xs={6}>
                           <form className={classes.form_root}>
                             <Grid container spacing={3}>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1260,7 +1276,7 @@ export default function PeopleDepartment(props) {
                                   }}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1268,7 +1284,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.FIRST_NAME}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1276,7 +1292,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.LAST_NAME}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1284,7 +1300,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.SHORT_USER_NAME}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1292,7 +1308,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.JOB_TITLE}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1300,7 +1316,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.EMPLOYEE_TYPE_NAME}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1308,7 +1324,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.STREET_ADDRESS}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1316,7 +1332,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.STATE}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1324,7 +1340,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.CITY}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1332,7 +1348,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.HOME_PHONE_NUMBER}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1343,7 +1359,7 @@ export default function PeopleDepartment(props) {
                                   )}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1369,7 +1385,7 @@ export default function PeopleDepartment(props) {
                         <Grid item xs={6}>
                           <form className={classes.form_root}>
                             <Grid container spacing={3}>
-                              <Grid item xs={6}>
+                            <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1382,7 +1398,7 @@ export default function PeopleDepartment(props) {
                                   }}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1390,7 +1406,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.EMAIL_ADDRESS}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1398,7 +1414,7 @@ export default function PeopleDepartment(props) {
                                   defaultValue={peopleInfo.DEPARTMENT_NAME}
                                 />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item  lg={6} md={6} xs={12} sm={12} >
                                 <TextField
                                   disabled
                                   id="outlined-disabled"
@@ -1438,7 +1454,7 @@ export default function PeopleDepartment(props) {
                             ? Array.from(new Array(caseListData.length))
                             : caseListData
                           ).map((peopleCase, index) => (
-                            <Grid item xs={4}>
+                            <Grid item  lg={4} md={4} xs={12} sm={12}>
                               <Box
                                 key={index}
                                 width="100%"
@@ -1474,7 +1490,7 @@ export default function PeopleDepartment(props) {
                                 ? Array.from(new Array(3))
                                 : Array(2)
                               ).map((item, index) => (
-                                <Grid item xs={4}>
+                                <Grid item  lg={4} md={4} xs={12} sm={12}>
                                   <Box key={index} width="100%" padding={0.5}>
                                     {item ? (
                                       <img
@@ -1527,6 +1543,7 @@ export default function PeopleDepartment(props) {
                 ) : (
                   <div style={{ height: 480, width: "100%" }}>
                     <DataGrid
+                    disableColumnSelector={false}
                       disableSingleSelection={true}
                       rowHeight={35}
                       rows={rows}

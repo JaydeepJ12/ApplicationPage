@@ -364,3 +364,7 @@ header.MuiPaper-elevation4 {
   -moz-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+.MuiDataGrid-footer,
+.MuiDataGrid-columnsContainer {
+  background-color: #e5e5e5 !important;
+}
