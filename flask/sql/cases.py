@@ -628,6 +628,7 @@ where a.IS_ACTIVE = 'Y'
                 WHERE ea.[CREATED_BY]='{username}'
                 order by [CREATED_DATETIME] desc
                 OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY'''
+
                 query1 = f'''select count(*) as total_count FROM [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY]  WHERE 
                                            [CREATED_BY]='{username}' '''
 
@@ -677,7 +678,7 @@ where a.IS_ACTIVE = 'Y'
                                                 from [BOXER_ENTITIES].[dbo].entity_list 
                                                 where entity_id in ({Ids}) )
                                                 and 
-                    (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL')))'''
+                    (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL', 'TITLE')))'''
         return self.db.execQuery(query)
 
     def system_code_count(self):
