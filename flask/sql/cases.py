@@ -627,7 +627,12 @@ where a.IS_ACTIVE = 'Y'
                 WHERE ea.[CREATED_BY]='{username}'
                 order by [CREATED_DATETIME] desc
                 OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY'''
-                return self.db.execQuery(query)
+
+                query1 = f'''select count(*) as total_count FROM [BOXER_ENTITIES].[dbo].[ENTITY_ACTIVITY]  WHERE 
+                                           [CREATED_BY]='{username}' '''
+
+                return {"total": self.db.execQuery(query1).to_dict(orient="records")[0]['total_count'],
+                        "data": self.db.execQuery(query).to_dict(orient="records")}
 
             elif application_type == "cases":
                 query = f'''SELECT [CASE_ID] As ID
@@ -645,7 +650,10 @@ where a.IS_ACTIVE = 'Y'
                     order by [CREATED_DATETIME] desc
                     OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY
                     '''
-                return self.db.execQuery(query)
+                query1 = f'''select count(*) as total_count FROM [BOXER_CME].[dbo].[CASE_ACTIVITY]  WHERE 
+                            [CREATED_BY]='{username}' '''
+                return {"total": self.db.execQuery(query1).to_dict(orient="records")[0]['total_count'],
+                        "data": self.db.execQuery(query).to_dict(orient="records")}
         except Exception as exe:
             print("errr===>", exe)
 
@@ -668,7 +676,7 @@ where a.IS_ACTIVE = 'Y'
                                                 from [BOXER_ENTITIES].[dbo].entity_list 
                                                 where entity_id in ({Ids}) )
                                                 and 
-                    (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL')))'''
+                    (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL', 'TITLE')))'''
         return self.db.execQuery(query)
 
     def system_code_count(self):
