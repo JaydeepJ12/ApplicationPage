@@ -7,6 +7,7 @@ import PeopleDepartment from "../components/people/people_dept";
 import CaseSelect from "../pages/create-case/case_select";
 import OverView from "../pages/overview/overview";
 import ViewCase from "../pages/viewcases/view-case";
+import Insights from '../pages/insights/insightboard'
 
 const basePath = process.env.REACT_APP_BASE_PATH;
 //3570310
@@ -18,6 +19,7 @@ const rootRoute = (
       <CaseTypeForm path="/:app_id/case-type-form"></CaseTypeForm>
       <PeopleDepartment path="/:app_id/people_dept" />
       <ViewCase path="/:app_id/tasks"></ViewCase>
+      <Insights path='/:app_id/insights' />
       <Login path="/:app_id/login" />
       <ErrorPage path="/:app_id/error" />
     </Router>

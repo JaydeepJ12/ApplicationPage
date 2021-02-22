@@ -36,6 +36,7 @@ import OverView from "./overview";
 import Test from "./test";
 import ViewCase from "./view-case";
 import Example from "./react_graph/common_graph";
+import Insights from '../pages/insights/insightboard'
 
 const drawerWidth = 240;
 // styles
@@ -283,6 +284,7 @@ export default function Navigation(props) {
               <CaseSelect path="/case-select" />
               <OverView path="/overview" />
               <Test path="/test"></Test>
+              <Insights path='/insights'/>
               <CaseTypeForm path="/case-type-form"></CaseTypeForm>
               <ViewCase path="/viewcase"></ViewCase>
               <Example path="/graph"></Example>
