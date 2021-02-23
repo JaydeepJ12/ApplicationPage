@@ -2,7 +2,7 @@ import { navigate } from "@reach/router";
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { actionData } from "../../redux/action.js";
+import { actionData, applicationElements } from "../../redux/action.js";
 
 const id_from_url = () => {
   let path = window.location.pathname;
@@ -46,8 +46,8 @@ export default function ReducerData() {
 
     await axios(config)
       .then(function (response) {
+        dispatch(applicationElements(response.data));
         var entityData = response.data.filter((x) => x.SYSTEM_CODE === "ASSCT");
-
         if (entityData) {
           let entityIds = entityData
             .map(function (x) {
