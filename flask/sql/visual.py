@@ -24,7 +24,7 @@ class VisualSQL:
 
         query = f'''
        SELECT top 100
-[LIST_CASE_ID] as [Case ID]
+        [LIST_CASE_ID] as [Case ID]
       ,[LIST_CASE_ID] as [Count]
 	  ,[LIST_CASE_TYPE_NAME] as [Case Type]
 	  ,[LIST_CASE_TITLE] as [Case Title]
@@ -39,7 +39,6 @@ class VisualSQL:
 	  ,[LIST_CASE_DUE] as [Due Date]
 	  ,[LIST_CASE_STATUS_VALUE]  as [Status]
 	  ,[LIST_CASE_PRIORITY_VALUE] as [Priority]
-	  ,[LIST_CASE_ASSGN_TO_SAM] as [Assigned To SAM]
       ,[LIST_CASE_ASSGN_TO_DISPLAY_NAME] as [Assigned To]    
 	  ,[LIST_CASE_CREATED_BY_SAM]  as [Created By SAM]
       ,[LIST_CASE_CREATED_BY_DISPLAY_NAME] as [Created By]
@@ -48,7 +47,6 @@ class VisualSQL:
 		
   FROM [BOXER_CME].[dbo].[CASE_LIST]
 	where [LIST_CASE_CLOSED_DATETIME] is null
-	and [LIST_CASE_TYPE_ID]={id}
+	and [LIST_CASE_TYPE_ID] in {id}
   '''   
-        print(query)
         return self.db.execQuery(query)
