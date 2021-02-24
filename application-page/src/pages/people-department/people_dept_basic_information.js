@@ -3,7 +3,7 @@ import React from "react";
 import {
   default as useStyles
 } from "../../assets/css/common_styles";
-import ComponentLoader from "../common/component-loader";
+import ComponentLoader from "../../components/common/component-loader";
 function PeopleBasicInfoTab(props) {
   var classes = useStyles();
   const renderPeopleImage = (UserName) => {

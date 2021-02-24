@@ -20,8 +20,8 @@ import {
   default as useStyles,
   default as useStylesBase,
 } from "../../assets/css/common_styles";
-import * as notification from "../common/toast";
-import * as API from '../api_base/path-config';
+import * as notification from "../../components/common/toast";
+import * as API from '../../components/api_base/path-config';
 function PeopleDepartmentFilter(props) {
   var classes = useStyles();
   const [value, setValue] = React.useState(0);
@@ -231,6 +231,7 @@ function PeopleDepartmentFilter(props) {
     setValue(0);
     props.setCaseListData([]);
     props.setCaseHistoryLogData([]);
+
     let fields = {};
     var submitted = true;
     Object.entries(event.target.elements).forEach(([name, input]) => {
@@ -241,7 +242,7 @@ function PeopleDepartmentFilter(props) {
         }
       }
     });
-
+   
     if (submitted == true && fields !== undefined) {
       notification.toast.success("Filter Apply successfully..!!!");
 

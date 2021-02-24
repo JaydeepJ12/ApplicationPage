@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Grid, TextField } from "@material-ui/core";
-import ComponentLoader from "../common/component-loader";
+import ComponentLoader from "../../components/common/component-loader";
 import { default as useStyles } from "../../assets/css/common_styles";
 
 var dateFormat = require("dateformat");
