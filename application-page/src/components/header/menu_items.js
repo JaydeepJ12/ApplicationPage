@@ -36,6 +36,12 @@ const menuItems = [
       pageTitle: "People Department",
     },
     {
+      menuName: "Application Item",
+      menuIcon: <Dvr />,
+      menuPath: "/application_item",
+      pageTitle: "Application Item",
+    },
+    {
       menuName: "Items",
       menuIcon: <ViewList />,
       menuPath: "/items",

@@ -2,23 +2,19 @@ import { createMuiTheme } from '@material-ui/core';
 import React,{useState} from 'react'
 import { HexColorPicker } from "react-colorful";
 import "react-colorful/dist/index.css";
-
-export const theme = createMuiTheme({
-    palette: {
-      primary: {
-        main: '#ff0000',
-      },
-      secondary: {
-        main: '#f44336',
-      },
-    },
-  })
+import theme from '../../../components/theme';
 
 export default function ColorSetter(){
-    const [color, setColor] = useState();
 
+    const [color, setColor] = useState();
+    
+    localStorage.removeItem('themeColor');
+    localStorage.setItem('themeColor', color);
     return(
         <div>
+          <theme color={color}/>
+
+      
             <HexColorPicker color={color} onChange={setColor} />
         </div>
         
