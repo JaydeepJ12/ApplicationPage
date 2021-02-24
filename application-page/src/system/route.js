@@ -8,7 +8,7 @@ import CaseSelect from "../pages/create-case/case_select";
 import OverView from "../pages/overview/overview";
 import ViewCase from "../pages/viewcases/view-case";
 import Insights from '../pages/insights/insightboard'
-
+import Example from "../components/react_graph/common_graph"
 const basePath = process.env.REACT_APP_BASE_PATH;
 //3570310
 const rootRoute = (
@@ -25,5 +25,7 @@ const rootRoute = (
     </Router>
   </div>
 );
+
+
 
 export default rootRoute;

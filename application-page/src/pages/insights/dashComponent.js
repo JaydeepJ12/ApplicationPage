@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react'
 
+// need to implement remove added scripts 
+// on unmount
 export default function DashComponent(props){
     const [loaded, setLoaded] = React.useState(false)
     const [scriptPaths, setscriptPaths] = React.useState(null)

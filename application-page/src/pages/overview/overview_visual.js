@@ -119,12 +119,8 @@ export default function VisualOverview(props) {
                 onChangeIndex={handleChangeIndex}
               >
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                  <Carousel interval={125250000}>
-                    <CaseTypeStatusGraph />
-                    <Example />
-                    <AssigendCase />
-                    <AssignedCaseTypeSupervisor />
-                  </Carousel>
+                  
+                    <Example caseTypes={[6,19]} />
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
                   Tab-2
