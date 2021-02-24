@@ -68,7 +68,7 @@ export default makeStyles(
         flexDirection: "column",
       },
       fixedHeight: {
-        height: "70vh",
+        height: "60vh",
         overflow: "auto",
       },
       fixedHeightCard: {
@@ -108,6 +108,18 @@ export default makeStyles(
       skeletonWidth: {
         width: 200,
         height: 50,
+      },
+
+      activityGraph: {
+        width: "100%",
+        height: 250,
+      },
+      w_100: {
+        width: "100%",
+        margin: theme.spacing(2),
+      },
+      h3_text: {
+        fontSize: "2.8vw",
       },
     };
   },

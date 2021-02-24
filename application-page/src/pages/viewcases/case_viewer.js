@@ -82,6 +82,7 @@ export default function CaseViewer(props) {
       })
       .catch(function (error) {
         console.log(error);
+        props.navigateToErrorPage(error?.message);
       });
   };
 
@@ -136,6 +137,7 @@ export default function CaseViewer(props) {
         // cancel the request
         // cancel();
         console.log(error);
+        props.navigateToErrorPage(error?.message);
       });
   };
 
@@ -174,6 +176,7 @@ export default function CaseViewer(props) {
           })
           .catch(function (error) {
             console.log(error);
+            props.navigateToErrorPage(error?.message);
           });
       }
     }
@@ -352,6 +355,7 @@ export default function CaseViewer(props) {
           })
           .catch(function (error) {
             console.log(error);
+            props.navigateToErrorPage(error?.message);
           });
       }
     }
@@ -433,6 +437,7 @@ export default function CaseViewer(props) {
         })
         .catch(function (error) {
           console.log(error);
+          props.navigateToErrorPage(error?.message);
         });
     }
   };
@@ -506,6 +511,7 @@ export default function CaseViewer(props) {
             })
             .catch(function (error) {
               console.log(error);
+              props.navigateToErrorPage(error?.message);
             });
         }
       }
