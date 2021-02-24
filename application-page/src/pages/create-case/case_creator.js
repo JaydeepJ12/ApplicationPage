@@ -73,35 +73,45 @@ export default function CaseCreator(props) {
       );
     }
 
-    axios.get("/cases/config?CaseTypeID=".concat(caseTypeId)).then((resp) => {
-      if (localFieldData !== JSON.stringify(resp.data)) {
-        setData(resp.data);
-        setLoaded(true);
-        ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
-        fieldData = resp.data;
-      }
+    axios
+      .get("/cases/config?CaseTypeID=".concat(caseTypeId))
+      .then((resp) => {
+        if (localFieldData !== JSON.stringify(resp.data)) {
+          setData(resp.data);
+          setLoaded(true);
+          ls.set("CaseType-" + caseTypeId, JSON.stringify(resp.data)); // set encrypted CaseType fields
+          fieldData = resp.data;
+        }
 
-      if (fieldData.length > 0) {
-        axios
-          .get("/cases/caseassoctypecascade?CaseTypeID=".concat(caseTypeId))
-          .then((resp) => {
-            if (localParentChildData !== JSON.stringify(resp.data)) {
-              setParentChildData(resp.data);
-              ls.set(
-                "ParentChildData-" + caseTypeId,
-                JSON.stringify(resp.data)
-              );
-              // if (resp.data && resp.data.length) {
-              //   ls.set(
-              //     "ParentChildData-" + caseTypeId,
-              //     JSON.stringify(resp.data)
-              //   );
-              // }
-              loadParentDropDown(resp.data, fieldData, caseTypeId);
-            }
-          });
-      }
-    });
+        if (fieldData.length > 0) {
+          axios
+            .get("/cases/caseassoctypecascade?CaseTypeID=".concat(caseTypeId))
+            .then((resp) => {
+              if (localParentChildData !== JSON.stringify(resp.data)) {
+                setParentChildData(resp.data);
+                ls.set(
+                  "ParentChildData-" + caseTypeId,
+                  JSON.stringify(resp.data)
+                );
+                // if (resp.data && resp.data.length) {
+                //   ls.set(
+                //     "ParentChildData-" + caseTypeId,
+                //     JSON.stringify(resp.data)
+                //   );
+                // }
+                loadParentDropDown(resp.data, fieldData, caseTypeId);
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+              props.navigateToErrorPage(error?.message);
+            });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        props.navigateToErrorPage(error?.message);
+      });
   };
 
   const loadParentDropDown = async (responseData, fieldData, caseTypeId) => {
@@ -162,6 +172,7 @@ export default function CaseCreator(props) {
           })
           .catch(function (error) {
             console.log(error);
+            props.navigateToErrorPage(error?.message);
           });
       }
     }
@@ -241,6 +252,7 @@ export default function CaseCreator(props) {
         })
         .catch(function (error) {
           console.log(error);
+          props.navigateToErrorPage(error?.message);
         });
     }
   };
@@ -304,6 +316,7 @@ export default function CaseCreator(props) {
             })
             .catch(function (error) {
               console.log(error);
+              props.navigateToErrorPage(error?.message);
             });
         }
       }

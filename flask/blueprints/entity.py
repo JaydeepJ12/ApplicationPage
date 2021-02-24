@@ -6,6 +6,7 @@ from operator import itemgetter
 import pandas as pd
 import json
 import time
+from flask_cors import CORS, cross_origin
 
 bp1 = Blueprint('entity', __name__, url_prefix='/entity')
 db = CasesSQL()
@@ -28,6 +29,7 @@ def after_request(r):
 
 
 @bp1.route('/entity_link', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def entity_link():
     data = request.json
     df = db.entity_data(data['entityIds'])

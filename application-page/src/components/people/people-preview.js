@@ -87,7 +87,7 @@ export default function PeoplePreview(props) {
   const [maxWidth, setMaxWidth] = React.useState("sm");
 
   const navigateToErrorPage = (message) => {
-    navigate("error", {
+    navigate(process.env.REACT_APP_ERROR_PAGE, {
       state: {
         errorMessage: message,
       },

@@ -3,7 +3,7 @@ import React from "react";
 import CaseTypeForm from "../components/case_type_form/index";
 import ErrorPage from "../components/common/error-page/error-page";
 import Login from "../components/Login/index";
-import PeopleDepartment from "../components/people/people_dept";
+import PeopleDepartment from "../components/people/people_department";
 import CaseSelect from "../pages/create-case/case_select";
 import OverView from "../pages/overview/overview";
 import ViewCase from "../pages/viewcases/view-case";
