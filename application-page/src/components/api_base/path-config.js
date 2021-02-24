@@ -11,3 +11,8 @@ export const BASE_ROUTE_PATH = "/react/SearchID=3570310";
   export const API_GET_PEOPLE_DEPARTMENT_COMPANY_LIST = '/cases/getCompanyData';
   export const API_GET_PEOPLE_DEPARTMENT_EMPLOYEE_LIST = '/cases/getEmployeeTypeData';
 // Enn People Department ALL API
+
+
+// People Department ALL API
+export const API_GET_ENTITY_LIST = '/cases/getDepartmentPeoples';
+// Enn People Department ALL API

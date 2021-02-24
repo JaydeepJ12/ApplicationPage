@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, Grid, Typography, Avatar, TextField } from "@material-ui/core";
-import ComponentLoader from "../common/component-loader";
-import * as notification from "../common/toast";
-import CasePreview from "../../pages/viewcases/case-preview.js";
+import { Box, Grid, Typography } from "@material-ui/core";
+import ComponentLoader from "../../components/common/component-loader";
+import * as notification from "../../components/common/toast";
+import CasePreview from "../viewcases/case-preview.js";
 import { navigate } from "@reach/router";
 
 function PeopleTaskTab(props) {

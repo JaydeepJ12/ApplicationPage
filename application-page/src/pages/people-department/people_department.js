@@ -8,9 +8,9 @@ import React, { useEffect, useState } from "react";
 import {
   default as useStyles,
 } from "../../assets/css/common_styles";
-import * as notification from "../common/toast";
+import * as notification from "../../components/common/toast";
 
-import * as API from '../api_base/path-config';
+import * as API from '../../components/api_base/path-config';
 import PeopleBasicInfo from "./people_dept_basic_information";
 import PeopleMainTab from "./people_dept_main_tab";
 import PeopleDepartmentFilter from "./people_dept_filter";
