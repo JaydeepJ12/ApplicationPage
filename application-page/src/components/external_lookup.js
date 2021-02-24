@@ -12,7 +12,7 @@ export default function ExternalLookup(props) {
   const [selectedDataValue, setSelectedDataValue] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef(null);
+  const timeoutRef = useRef(null);props
   const [selectedData, setSelectedData] = useState("");
 
   let timeoutVal = 1000;

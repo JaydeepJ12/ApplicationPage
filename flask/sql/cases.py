@@ -698,6 +698,61 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             return str(exe)
 
+    def department_fetch(self):
+        try:
+            query = '''USE [DEPARTMENTS].[dbo].[vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER]
+                        GO
+                        DECLARE
+                        @TOPLEVEL VARCHAR(1000) 
+                        ,@BASIC_LEVEL_NAME VARCHAR(1000)
+                        ,@SUB_DEPARTMENT VARCHAR(1000) 
+                        ,@JOB_FUNCTION VARCHAR(1000)
+                        ,@JOB_TITLE VARCHAR(1000) 
+                        ,@STATE VARCHAR(1000) 
+                        ,@PROVISIONED VARCHAR(1000) 
+                        ,@NAME VARCHAR(1000)  = 'Nischay Solanki'
+                        ,@COMPANY VARCHAR(1000) 
+                        ,@EMPTYPE VARCHAR(1000) 
+                        
+                        --FULL NAME 
+                        SELECT 
+                        EMPLOYEEID AS EMPLOYEE_ID
+                        ,EmpDisplayName AS Display_Name
+                        ,EMP_DEPARTMENT_TOP_LEVEL AS TOP_LEVEL_NAME
+                        ,Emp_DEPARTMENT_TOP_LEVEL_ID
+                        ,EMP_DEPARTMENT_BASIC_NAME AS BASIC_LEVEL_NAME
+                        ,Emp_DEPARTMENT_BASIC_NAME_ID
+                        ,DEPARTMENT AS SUB_DEPARTMENT
+                        ,DepartmentID AS SUB_DEPARTMENT_ID
+                        ,Emp_JOB_FUNCTION_NAME AS JOB_FUNCTION
+                        ,Emp_DEPARTMENT_JOB_FUNCTION_ID
+                        ,Emp_JOB_TITLE_NAME AS JOB_TITLE
+                        ,Emp_DEPARTMENT_JOB_TITLE_ID
+                        ,EmpState AS STATE
+                        ,Company_ID
+                        ,EMPT.EMPLOYEE_TYPE_ID
+                        ,DSEM.SHORT_USER_NAME
+                        ,EmpEmail AS EMAIL_ADDRESS
+                        ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
+                        FROM [DEPARTMENTS].[dbo].[vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSJT
+                        INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM WITH(NOLOCK) ON DSEM.EMPLOYEE_GUID = DSJT.EMPLOYEE_GUID 
+                        LEFT JOIN EMPLOYEE_TYPE EMPT WITH(NOLOCK) ON DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID  
+                        WHERE (@TOPLEVEL IS NULL OR Emp_DEPARTMENT_TOP_LEVEL_ID IN (SELECT ID FROM DBO.Fun_SplitString(@TOPLEVEL, ',')))  
+                        AND (@BASIC_LEVEL_NAME IS NULL OR Emp_DEPARTMENT_BASIC_NAME_ID IN (SELECT ID FROM DBO.Fun_SplitString(@BASIC_LEVEL_NAME, ',')))
+                        AND (@SUB_DEPARTMENT IS NULL OR DepartmentID IN (SELECT ID FROM DBO.Fun_SplitString(@SUB_DEPARTMENT, ',')))
+                        AND (@JOB_FUNCTION IS NULL OR Emp_DEPARTMENT_JOB_FUNCTION_ID IN (SELECT ID FROM DBO.Fun_SplitString(@JOB_FUNCTION, ',')))  
+                        AND (@JOB_TITLE IS NULL OR Emp_DEPARTMENT_JOB_TITLE_ID IN (SELECT ID FROM DBO.Fun_SplitString(@JOB_TITLE, ',')))
+                        AND (@STATE IS NULL OR EmpState IN (SELECT ID FROM DBO.Fun_SplitString(@STATE, ',')))  
+                        AND (@PROVISIONED IS NULL OR (@PROVISIONED IS NULL AND IS_PROFILE_UPDATED IS NULL ) OR IS_PROFILE_UPDATED IN (SELECT ID FROM DBO.Fun_SplitString(@PROVISIONED, ',')))  
+                        AND (@NAME IS NULL OR DSEM.FULL_NAME IN (SELECT ID FROM DBO.Fun_SplitString(@NAME, ',')))
+                        AND (@COMPANY IS NULL OR Company_ID IN (SELECT ID FROM DBO.Fun_SplitString(@COMPANY, ',')))
+                        AND (@EMPTYPE IS NULL OR EMPT.EMPLOYEE_TYPE_ID IN (SELECT ID FROM DBO.Fun_SplitString(@EMPTYPE, ',')))
+                    '''
+            return self.db.execQuery(query)
+        except Exception as exe:
+            print("erroroooo===>", exe)
+            return str(exe)
+
 class AppSql:
     # need a call that gives application entity 0ds, name and icon urls
     def __init__(self):

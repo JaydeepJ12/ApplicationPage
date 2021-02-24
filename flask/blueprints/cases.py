@@ -368,3 +368,9 @@ def case_activity_log_test():
         df = db.case_activity_log_track(data['application_type'], data['username'], data['skipCount'], data['maxCount'])
         return df
 
+
+@bp.route('/department_fetch', methods=['GET'])
+def department_fetch():
+    df = db.department_fetch()
+    return df
+
