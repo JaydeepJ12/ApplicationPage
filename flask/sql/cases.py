@@ -1,4 +1,3 @@
-
 from stemmons import Stemmons_Dash_App
 import pandas as pd
 import plotly.express as px
@@ -12,10 +11,10 @@ class CasesSQL:
 
     def tuplefy(self, id):
         if isinstance(id, list) and len(id) > 1:
-            #print(f'APP THING: {id}')
+            # print(f'APP THING: {id}')
             id = tuple(id)
         else:
-            #print(f'APP NOT THING: {id}')
+            # print(f'APP NOT THING: {id}')
             id = f'({id[0]})'
 
         return id
@@ -377,29 +376,29 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
-    def get_department_emp_filters(self,parentName,parentID):
-           
-            if parentName == 'topLevel':
-                query = f'''
+    def get_department_emp_filters(self, parentName, parentID):
+
+        if parentName == 'topLevel':
+            query = f'''
                     Select DEPARTMENT_STRUCTURE_BASIC_NAME_ID as ID, NAME , 'BASIC NAME' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_BASIC_NAME] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_TOP_LEVEL_ID={parentID}
                 '''
-            elif parentName == 'basicName':
-                  query = f'''
+        elif parentName == 'basicName':
+            query = f'''
                     Select DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID as ID, NAME ,'SUB DEPARTMENT'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_SUB_DEPARTMENT]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_BASIC_NAME_ID={parentID}
                 '''
-            elif parentName == 'subDepartment':
-                  query = f'''
+        elif parentName == 'subDepartment':
+            query = f'''
                     Select DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID as ID, NAME ,'JOB FUNCTION'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_FUNCTION] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID={parentID}
                 '''
-            elif parentName == 'jobFunction':
-                  query = f'''
+        elif parentName == 'jobFunction':
+            query = f'''
                     Select DEPARTMENT_STRUCTURE_JOB_TITLE_ID as ID, NAME ,'JOB TITLE'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID={parentID}
                 '''
-            else:
-                query = f'''
+        else:
+            query = f'''
                     Select DEPARTMENT_STRUCTURE_TOP_LEVEL_ID as ID ,NAME , 'TOP LEVEL' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_TOP_LEVEL]  WITH(NOLOCK)  WHERE COMMON_DISPLAY ='Y'
                 '''
-            return self.db.execQuery(query)
+        return self.db.execQuery(query)
 
     def get_department_company_list(self):
         query = f'''
@@ -411,7 +410,7 @@ class CasesSQL:
         query = f'''
            	select * from [DEPARTMENTS].[dbo].[employee_type] WHERE IS_ACTIVE ='Y'
         '''
-        return self.db.execQuery(query)    
+        return self.db.execQuery(query)
 
     def get_department_people(self, maxCount, searchText=''):
         query = f'''
@@ -698,60 +697,58 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             return str(exe)
 
-    def department_fetch(self):
+    def department_fetch(self, empName, topLevel, basicName, subDepartment, jobFunction, jobTitle, companyName,
+                         employeeStatus, empType, all_data):
         try:
-            query = '''USE [DEPARTMENTS].[dbo].[vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER]
-                        GO
-                        DECLARE
-                        @TOPLEVEL VARCHAR(1000) 
-                        ,@BASIC_LEVEL_NAME VARCHAR(1000)
-                        ,@SUB_DEPARTMENT VARCHAR(1000) 
-                        ,@JOB_FUNCTION VARCHAR(1000)
-                        ,@JOB_TITLE VARCHAR(1000) 
-                        ,@STATE VARCHAR(1000) 
-                        ,@PROVISIONED VARCHAR(1000) 
-                        ,@NAME VARCHAR(1000)  = 'Nischay Solanki'
-                        ,@COMPANY VARCHAR(1000) 
-                        ,@EMPTYPE VARCHAR(1000) 
-                        
-                        --FULL NAME 
+            status = 1
+            if all_data.get('empStatus') == "inactive":
+                status = 0
+            if all_data.get('empStatus') == "both":
+                status = '0 OR ACTIVE = 1'
+            if all_data.get("provisioned") == "yes":
+                min_query = f"DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID > 1"
+            if all_data.get("provisioned") == "no":
+                min_query = f"DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID = null"
+            all_data.pop('empStatus', None)
+            all_data.pop('provisioned', None)
+            query = f'''
                         SELECT 
                         EMPLOYEEID AS EMPLOYEE_ID
-                        ,EmpDisplayName AS Display_Name
-                        ,EMP_DEPARTMENT_TOP_LEVEL AS TOP_LEVEL_NAME
+                        ,EmpDisplayName AS Display_name
+                        ,EMP_DEPARTMENT_TOP_LEVEL AS Top_level_name
                         ,Emp_DEPARTMENT_TOP_LEVEL_ID
-                        ,EMP_DEPARTMENT_BASIC_NAME AS BASIC_LEVEL_NAME
+                        ,EMP_DEPARTMENT_BASIC_NAME AS BasicName
                         ,Emp_DEPARTMENT_BASIC_NAME_ID
-                        ,DEPARTMENT AS SUB_DEPARTMENT
+                        ,DEPARTMENT AS subDepartment
                         ,DepartmentID AS SUB_DEPARTMENT_ID
-                        ,Emp_JOB_FUNCTION_NAME AS JOB_FUNCTION
+                        ,Emp_JOB_FUNCTION_NAME AS jobFunction
                         ,Emp_DEPARTMENT_JOB_FUNCTION_ID
-                        ,Emp_JOB_TITLE_NAME AS JOB_TITLE
+                        ,Emp_JOB_TITLE_NAME AS jobTitle
                         ,Emp_DEPARTMENT_JOB_TITLE_ID
-                        ,EmpState AS STATE
+                        ,EmpState AS employeeStatus
                         ,Company_ID
+						,DSJT.COMPANY_NAME as companyName
+                        ,DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID
+                        ,EMPT.EMPLOYEE_TYPE_NAME as empType
                         ,EMPT.EMPLOYEE_TYPE_ID
                         ,DSEM.SHORT_USER_NAME
                         ,EmpEmail AS EMAIL_ADDRESS
                         ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
                         FROM [DEPARTMENTS].[dbo].[vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSJT
-                        INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM WITH(NOLOCK) ON DSEM.EMPLOYEE_GUID = DSJT.EMPLOYEE_GUID 
-                        LEFT JOIN EMPLOYEE_TYPE EMPT WITH(NOLOCK) ON DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID  
-                        WHERE (@TOPLEVEL IS NULL OR Emp_DEPARTMENT_TOP_LEVEL_ID IN (SELECT ID FROM DBO.Fun_SplitString(@TOPLEVEL, ',')))  
-                        AND (@BASIC_LEVEL_NAME IS NULL OR Emp_DEPARTMENT_BASIC_NAME_ID IN (SELECT ID FROM DBO.Fun_SplitString(@BASIC_LEVEL_NAME, ',')))
-                        AND (@SUB_DEPARTMENT IS NULL OR DepartmentID IN (SELECT ID FROM DBO.Fun_SplitString(@SUB_DEPARTMENT, ',')))
-                        AND (@JOB_FUNCTION IS NULL OR Emp_DEPARTMENT_JOB_FUNCTION_ID IN (SELECT ID FROM DBO.Fun_SplitString(@JOB_FUNCTION, ',')))  
-                        AND (@JOB_TITLE IS NULL OR Emp_DEPARTMENT_JOB_TITLE_ID IN (SELECT ID FROM DBO.Fun_SplitString(@JOB_TITLE, ',')))
-                        AND (@STATE IS NULL OR EmpState IN (SELECT ID FROM DBO.Fun_SplitString(@STATE, ',')))  
-                        AND (@PROVISIONED IS NULL OR (@PROVISIONED IS NULL AND IS_PROFILE_UPDATED IS NULL ) OR IS_PROFILE_UPDATED IN (SELECT ID FROM DBO.Fun_SplitString(@PROVISIONED, ',')))  
-                        AND (@NAME IS NULL OR DSEM.FULL_NAME IN (SELECT ID FROM DBO.Fun_SplitString(@NAME, ',')))
-                        AND (@COMPANY IS NULL OR Company_ID IN (SELECT ID FROM DBO.Fun_SplitString(@COMPANY, ',')))
-                        AND (@EMPTYPE IS NULL OR EMPT.EMPLOYEE_TYPE_ID IN (SELECT ID FROM DBO.Fun_SplitString(@EMPTYPE, ',')))
+                        INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM WITH(NOLOCK) ON 
+                        DSEM.EMPLOYEE_GUID = DSJT.EMPLOYEE_GUID 
+                        INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE] DSKT WITH(NOLOCK) ON 
+                        DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID = Emp_DEPARTMENT_JOB_TITLE_ID 
+                        LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON
+                        DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID WHERE (ACTIVE = {status}) and {min_query}
                     '''
+            for key, value in all_data.items():
+                if value is not None:
+                    query = query + f"AND {key} in ('{value}')"
             return self.db.execQuery(query)
         except Exception as exe:
-            print("erroroooo===>", exe)
             return str(exe)
+
 
 class AppSql:
     # need a call that gives application entity 0ds, name and icon urls
