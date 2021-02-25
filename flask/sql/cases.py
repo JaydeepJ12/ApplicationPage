@@ -756,7 +756,8 @@ where a.IS_ACTIVE = 'Y'
                 return self.db.execQuery(query)
             for key, value in all_data.items():
                 if value is not None:
-                    query = query + f"AND {key} in ('{value}')"
+                    query = query + f"AND {key} like '%{value}%'"
+            print(query)
             return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
