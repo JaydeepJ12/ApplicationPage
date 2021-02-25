@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
 // import API from "../api_base/api";
 import axios from "axios";
 import {
@@ -12,25 +12,32 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+// we get all the data for all of the graphs from teh first call
+// so we should use that every time
+const case_type_data = (ids) => {
+  return axios.get(`visuals/case_overview?case_types=${ids}`)
+}
 
 export default function Example(props) {
-  const [useCanvas, setUseCanvas] = useState(false);
   const [casetype, setCaseType] = useState();
-  const [filter, setfilter] = useState(null);
-  const [hovered, sethovered] = useState(null);
-  const [highlighting, sethighlighting] = useState(false);
+  const [refresh, setRefresh] = useState(0);
+
+  console.log(props.caseTypes)
+
   useEffect(() => {
-    axios
-      .get("cases/case_type?case_type=6,19&color_sequence=red,goldenrod,yellow")
+    case_type_data(props.caseTypes) 
       .then((response) => {
+        console.log(response.data)
         setCaseType(response.data.data);
       })
       .catch((error) => {
         console.log("catch", error);
       });
-  }, []);
+  }, [refresh]);
+
   return (
     <div className="grpah">
+      <Button color="primary" onClick={()=>{setRefresh(refresh+1)}}>Refresh</Button>
       <Typography
         style={{ textAlign: "center" }}
         variant="h5"
