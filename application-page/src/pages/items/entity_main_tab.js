@@ -15,6 +15,7 @@ import { default as useStyles } from "../../assets/css/common_styles";
 import { useTheme } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -54,6 +55,24 @@ function PeopleMainTab(props) {
   var [value, setValue] = React.useState(0);
   const [activityLoader, setActivityLogLoader] = useState(true);
 
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  const handleOnTaskScroll = (
+    people_info,
+    caseListData,
+    recordCount,
+    event
+  ) => {
+    const bottom =
+      event.target.scrollHeight - event.target.scrollTop ===
+      event.target.clientHeight;
+
+    if (bottom && props.taskLoader && recordCount >= props.maxCount) {
+      props.caseList(people_info, caseListData?.length, true);
+    }
+  };
+
   if (props && props.navTab === 0) {
     value = 0;
   }
@@ -63,6 +82,7 @@ function PeopleMainTab(props) {
         <AppBar position="static" elevation={1}>
           <Tabs
             value={value}
+            onChange={handleChange}
             indicatorColor="secondary"
             textColor="secondary"
             variant="fullWidth"
@@ -70,7 +90,9 @@ function PeopleMainTab(props) {
           >
             <Tab className="nav-tab" label="Info" {...a11yProps(0)} />
 
-            <Tab className="nav-tab" label="Acivity" {...a11yProps(2)} />
+            <Tab className="nav-tab" label="Drop Down" {...a11yProps(1)} />
+
+           
           </Tabs>
         </AppBar>
       </Paper>
@@ -79,11 +101,27 @@ function PeopleMainTab(props) {
         axis={theme.direction === "rtl" ? "x-reverse" : "x"}
         index={value}
       >
-        <TabPanel value={value} index={0} dir={theme.direction}></TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction}>
-          <div className={fixedHeightPaperTask}></div>
+        <TabPanel value={value} index={0} dir={theme.direction}>
+          
         </TabPanel>
-        <TabPanel value={value} index={2} dir={theme.direction}></TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
+          <div
+            className={fixedHeightPaperTask}
+            onScroll={(event) =>
+              handleOnTaskScroll(
+                props.peopleInfo,
+                props.caseListData,
+                props.recordCount,
+                event
+              )
+            }
+          >
+         
+          </div>
+        </TabPanel>
+        <TabPanel value={value} index={2} dir={theme.direction}>
+         
+        </TabPanel>
       </SwipeableViews>
     </div>
   );
