@@ -59,9 +59,9 @@ function PeopleCard(props) {
                   }}
                 >
                   <CardHeader
-                    avatar={renderUserImage(people.FULL_NAME)}
-                    title={people.FULL_NAME}
-                    subheader={people.DEPARTMENT_NAME}
+                    avatar={renderUserImage(people.Display_name)}
+                    title={people.Display_name}
+                    subheader={people.subDepartment}
                   />
                 </Card>
               ) : (

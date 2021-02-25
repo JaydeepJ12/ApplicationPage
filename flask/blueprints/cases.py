@@ -384,6 +384,7 @@ def case_activity_log_test():
 
 
 @bp.route('/department_fetch', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def department_fetch():
     if request.method == 'POST':
         data = request.json

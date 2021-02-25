@@ -1,11 +1,15 @@
 import { Avatar, Box, Grid, Typography } from "@material-ui/core";
-import React from "react";
+import React,{ useEffect } from "react";
 import {
   default as useStyles
 } from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader";
 function PeopleBasicInfoTab(props) {
   var classes = useStyles();
+
+  useEffect(() => {
+  }, [props.peopleInfo]);
+
   const renderPeopleImage = (UserName) => {
     if (UserName) {
       return (
@@ -48,8 +52,8 @@ function PeopleBasicInfoTab(props) {
                 borderRight: "2px solid #eeeeee",
               }}
             >
-              {props.peopleInfo?.FULL_NAME
-                ? renderPeopleImage(props.peopleInfo?.FULL_NAME)
+              {props.peopleInfo?.Display_name
+                ? renderPeopleImage(props.peopleInfo?.Display_name)
                 : null}
             </div>
           </Grid>
@@ -61,27 +65,27 @@ function PeopleBasicInfoTab(props) {
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
                   {" "}
-                  <Typography>{props.peopleInfo?.FULL_NAME}</Typography>
+                  <Typography>{props.peopleInfo?.Display_name}</Typography>
                 </Grid>
                 <Grid item lg={4} md={4} xs={4} sm={4}>
                   <Typography color={"primary"}>Job: </Typography>
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
-                  {props.peopleInfo?.JOB_TITLE}
+                  {props.peopleInfo?.jobTitle}
                 </Grid>
                 <Grid item lg={4} md={4} xs={4} sm={4}>
                   <Typography color={"primary"}>Department: </Typography>
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
-                  {props.peopleInfo.DEPARTMENT_NAME}
+                  {props.peopleInfo.BasicName}
                 </Grid>
-                {props.peopleInfo?.PHONE_NUMBER ? (
+                {props.peopleInfo?.EMAIL_ADDRESS ? (
                   <>
                     <Grid item lg={4} md={4} xs={4} sm={4}>
-                      <Typography color={"primary"}>Contact Info: </Typography>
+                      <Typography color={"primary"}>Email: </Typography>
                     </Grid>
                     <Grid item lg={8} md={8} xs={8} sm={8}>
-                      <Typography> {props.peopleInfo?.PHONE_NUMBER}</Typography>
+                      <Typography> {props.peopleInfo?.EMAIL_ADDRESS}</Typography>
                     </Grid>
                   </>
                 ) : null}

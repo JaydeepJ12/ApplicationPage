@@ -50,6 +50,8 @@ function PeopleDepartmentFilter(props) {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
+
+
   const handleFilterClick = (event) => {
     setAnchorEl(event.currentTarget);
 
@@ -210,7 +212,7 @@ function PeopleDepartmentFilter(props) {
     }
   };
   const handleFilterResetClick = () => {
-    setValue(0);
+    props.setNavTab(0)
     props.getDepartmentPeopleList();
     handleFilterClear();
   };
@@ -242,11 +244,12 @@ function PeopleDepartmentFilter(props) {
         }
       }
     });
-   
+
+     
     if (submitted == true && fields !== undefined) {
       notification.toast.success("Filter Apply successfully..!!!");
 
-      props.getDepartmentPeopleList(fields.searchText, 0);
+      props.getDepartmentPeopleList(true,0, false);
     }
   };
   return (

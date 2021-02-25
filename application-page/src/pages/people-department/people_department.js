@@ -53,21 +53,34 @@ export default function PeopleDepartment() {
 
   // Start  all API call
   const getDepartmentPeopleList = async (
-    searchText = "",
+    is_filter,
     skipCount = 0,
     isScroll
-  ) => {
+  ) => { 
     if (!isScroll) {
       setInfoDataLoaded(false);
     }
+
     setDataLoaded(false);
     setComponentLoader(true);
     setPeopleData([]);
     setNoDataFound(false);
     var jsonData = {
       maxCount: maxCount + skipCount,
-      searchText: searchText,
+      employee: "all",
+      provisioned: "yes",
     };
+    if(is_filter){
+       jsonData = {
+        empStatus:"active",
+        provisioned: "yes",
+        Display_name: 'dixit',
+        
+      
+      };
+    }
+
+    console.log("-----jsonData",jsonData)
     var config = {
       method: "post",
       url: API.API_GET_PEOPLE_DEPARTMENTS,
@@ -75,6 +88,7 @@ export default function PeopleDepartment() {
     };
     await axios(config)
       .then(function (response) {
+        console.log('-----response',response);
         setDataLoaded(true);
         setComponentLoader(false);
         if (response.data.length) {
@@ -233,19 +247,20 @@ export default function PeopleDepartment() {
       event.target.clientHeight;
     if (bottom && dataLoaded) {
       //   alert('bottom');
-      getDepartmentPeopleList("", peopleData?.length, true);
+      getDepartmentPeopleList(false,peopleData?.length, true);
     }
   };
 
   useEffect(() => {
     getDepartmentPeopleList();
   }, []);
-
+ console.log("----peopleInfo",peopleInfo);
   return (
     <div className="page" id="page-department">
       <Grid container spacing={3}>
         <Grid item lg={3} md={4} xs={12} sm={12}>
           <PeopleDepartmentFilter
+            setNavTab={setNavTab}
             getDepartmentPeopleList={getDepartmentPeopleList}
             setCaseHistoryLogData={setCaseHistoryLogData}
             setCaseListData={setCaseListData}
@@ -284,7 +299,8 @@ export default function PeopleDepartment() {
                   caseList={caseList}
                   rows={rows}
                   loading={loading}
-                  recordCount={caseHistoryRowCount}
+                  rowCount={caseHistoryRowCount}
+                  recordCount={recordCount}
                   maxCount={maxCount}
                   CaseActivityLogList={CaseActivityLogList}
                   activityLogMaxCount={activityLogMaxCount}

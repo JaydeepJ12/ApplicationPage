@@ -34,7 +34,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Display Name"
-                        defaultValue={props.peopleInfo.FULL_NAME}
+                        defaultValue={props.peopleInfo.Display_name}
                         InputLabelProps={{
                           classes: {
                             root: classes.inputLabel,
@@ -71,7 +71,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Job Title"
-                        defaultValue={props.peopleInfo.JOB_TITLE}
+                        defaultValue={props.peopleInfo.jobTitle}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -79,7 +79,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Employee Type"
-                        defaultValue={props.peopleInfo.EMPLOYEE_TYPE_NAME}
+                        defaultValue={props.peopleInfo.empType}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -87,7 +87,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Office Street Address"
-                        defaultValue={props.peopleInfo.STREET_ADDRESS}
+                        defaultValue={props.peopleInfo.OFFICE_LOCATION}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -111,7 +111,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Home Phone/Cell Number"
-                        defaultValue={props.peopleInfo.HOME_PHONE_NUMBER}
+                        defaultValue={props.peopleInfo.EmpCellPhone}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -154,7 +154,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="(Preferred) Full Name"
-                        defaultValue={props.peopleInfo.FULL_NAME}
+                        defaultValue={props.peopleInfo.Display_name}
                         InputLabelProps={{
                           classes: {
                             root: classes.inputLabel,
@@ -175,7 +175,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Department Name"
-                        defaultValue={props.peopleInfo.DEPARTMENT_NAME}
+                        defaultValue={props.peopleInfo.BasicName}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
