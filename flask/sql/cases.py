@@ -697,6 +697,16 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             return str(exe)
 
+    def entity_list_byId(self, entityIds):
+        try:
+            query = f'''
+            select entity_type_id as EntityType,list_id as ListID,CREATED_DATETIME as CreatedDate from [BOXER_ENTITIES].[dbo].[entity_list] where entity_type_id in ({entityIds}) order by CREATED_DATETIME
+            '''
+            print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
     def department_fetch(self, all_data):
         try:
             status = 1

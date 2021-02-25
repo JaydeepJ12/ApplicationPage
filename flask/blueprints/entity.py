@@ -50,3 +50,10 @@ def entity_systemcode_count():
                       {"sttus_count":df.to_dict(orient='records')[0]['sttus_count']},
                       {"category_count":df.to_dict(orient='records')[0]['category_count']}]
                        )
+
+
+@bp1.route('/entity_list_byId', methods=['POST'])
+def entity_list_byId():
+    data = request.json
+    df = db.entity_list_byId(data.get('entityTypeIds'))
+    return df.to_json(orient='records')
