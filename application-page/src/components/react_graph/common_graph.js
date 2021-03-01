@@ -92,12 +92,14 @@ export default function Example(props) {
       .catch((error) => {
         console.log("catch", error);
       });
-  }, [refresh]);
+  }, []);
 
 
   return (
     <div className="grpah">
-      <Button color="primary" onClick={()=>{setRefresh(refresh+1)}}>Refresh</Button>
+      {
+        //<Button color="primary" onClick={()=>{setRefresh(refresh+1)}}>Refresh</Button>
+      }
       <Typography
         style={{ textAlign: "center" }}
         variant="h5"
