@@ -23,6 +23,9 @@ export default function ItemOverview() {
   const [noDataFound, setNoDataFound] = React.useState(false);
   const [entityCount, setEntityCount] = React.useState({});
   const [entityTypes, setEntityTypes] = React.useState([]);
+  const [entityListId, setEntityListId] = React.useState("");
+  const [state, setState] = useState(0);
+
   React.useEffect(() => {
     async function getEntityCount() {
       setComponentLoader(true);
@@ -47,10 +50,6 @@ export default function ItemOverview() {
   }, []);
   React.useEffect(() => {
     async function getEntityTypes(Ids) {
-      console.log(
-        "getEntityTypesgetEntityTypesgetEntityTypesgetEntityTypes-------",
-        Ids
-      );
       var data = JSON.stringify({ entityIds: Ids });
       var config = {
         method: "post",
@@ -64,11 +63,8 @@ export default function ItemOverview() {
       await axios(config)
         .then(function (response) {
           if (response.data.length) {
-            console.log(
-              "response.dataresponse.dataresponse.dataresponse.dataresponse.dataresponse.data----------",
-              response.data
-            );
             setEntityTypes(response.data);
+            getSetEntityList(response.data);
           } else {
             setNoDataFound(true);
           }
@@ -93,14 +89,37 @@ export default function ItemOverview() {
         setNoDataFound(true);
       }
     }
-  }, [reducerState.applicationData.caseTypes]);
+  }, [
+    reducerState.applicationData.caseTypes,
+    reducerState.applicationData.appId,
+  ]);
 
-  const handleClickItem = (Id) => {
-    // setOpen(!open);
-    if (Id) {
-      window.open(process.env.REACT_APP_ASSOCIATED_ENTITY_TYPES + Id, "_blank");
-      return;
+  const getSetEntityList = (entityTypes) => {
+    if (entityTypes) {
+      let entityIds = entityTypes
+        .map(function (x) {
+          return x.NAME;
+        })
+        .join(",");
+      if (entityIds) {
+        setEntityListId(entityIds);
+      } else {
+        setNoDataFound(true);
+      }
     }
+  };
+  const handleClickItem = (id) => {
+    if (id > 0) {
+      setEntityListId(id);
+    } else {
+      getSetEntityList(entityTypes);
+    }
+    // setEntityListId(Id);
+    // setOpen(!open);
+    // if (Id) {
+    //   window.open(process.env.REACT_APP_ASSOCIATED_ENTITY_TYPES + Id, "_blank");
+    //   return;
+    // }
   };
 
   return (
@@ -111,9 +130,10 @@ export default function ItemOverview() {
       borderRadius={35}
     >
       <Grid item xs={12} container spacing={3}>
-        <Grid item lg={3} md={3} xs={12} sm={12}>
+        <Grid item lg={5} md={5} xs={6} sm={6}>
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel id="demo-simple-select-outlined-label">
+              {" "}
               Items
             </InputLabel>
             <Select
@@ -121,36 +141,39 @@ export default function ItemOverview() {
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
               label="Items"
+              defaultValue={0}
+              onChange={(event) => handleClickItem(event.target.value)}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               {entityTypes?.length ? (
-                entityTypes.map((entityType) => (
-                  <MenuItem
-                    value={entityType.ID}
-                    key={entityType.ENTITY_ID}
-                    onClick={() => handleClickItem(entityType.NAME)}
-                  >
+                <MenuItem
+                  value={0}
+                  key="0"
+                  onChange={() => getSetEntityList(entityTypes)}
+                >
+                  <em>All</em>
+                </MenuItem>
+              ) : (
+                []
+              )}
+
+              {entityTypes?.length ? (
+                entityTypes?.map((entityType) => (
+                  <MenuItem key={entityType.NAME} value={entityType.NAME}>
                     {entityType.ID}
                   </MenuItem>
                 ))
               ) : (
-                <MenuItem value="">
+                <MenuItem value={-1}>
                   <em>No Data Available</em>
                 </MenuItem>
               )}
-              {/* <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem> */}
             </Select>
           </FormControl>
         </Grid>
-
         <Grid
           item
-          lg={9}
-          md={9}
+          lg={7}
+          md={7}
           xs={12}
           sm={12}
           style={{ "text-align": "right" }}
@@ -205,7 +228,7 @@ export default function ItemOverview() {
                         sm={12}
                         className={`sm-border-left ` + classes.activityGraph}
                       >
-                        <ActiveEntity />
+                        <ActiveEntity entityListId={entityListId} />
                       </Grid>
                     </Grid>
                   </Container>
