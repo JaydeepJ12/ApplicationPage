@@ -23,7 +23,7 @@ class VisualSQL:
         id = self.tuplefy(id)
 
         query = f'''
-       SELECT top 100
+       SELECT top 10000
         [LIST_CASE_ID] as [Case ID]
       ,[LIST_CASE_ID] as [Count]
 	  ,[LIST_CASE_TYPE_NAME] as [Case Type]
