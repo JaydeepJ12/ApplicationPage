@@ -1,5 +1,9 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
+  BarChart,
+  Bar,
+  Cell,
   LineChart,
   Line,
   XAxis,
@@ -9,85 +13,103 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import Skeleton from "@material-ui/lab/Skeleton";
+import useStyles from "../../assets/css/common_styles";
+import { navigate } from "@reach/router";
+const lodashObject = require("lodash");
+var dateFormat = require("dateformat");
 
-const data = [
-  {
-    name: "2015",
-    uv: 85,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "2016",
-    uv: 134,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "2017",
-    uv: 808,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "2018",
-    uv: 83821,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "2019",
-    uv: 86056,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "2020",
-    uv: 90225,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "2021",
-    uv: 120615,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: "2022",
-    uv: 1637579,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+function ActiveEntity(props) {
+  const classes = useStyles();
+  const [noDataFound, setNoDataFound] = React.useState(false);
+  const [graphData, setGraphData] = useState([]);
+  React.useEffect(() => {
+    console.log("props.entityListIdprops.entityListId---", props.entityListId);
+    async function getEntitiesList(Ids) {
+      setNoDataFound(false);
+      var data = JSON.stringify({ entityTypeIds: Ids });
+      var config = {
+        method: "post",
+        url: "/entity/entity_list_byId",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
 
-function ActiveEntity() {
-  const [entityData, setEntityData] = useState(data);
+      await axios(config)
+        .then(function (response) {
+          if (response.data.length) {
+            let filterData = response.data.map(
+              ({ ListID, ...keepAttrs }) => keepAttrs
+            );
+            filterData = filterData.map(
+              (x) =>
+                (x = { ...x, CreatedDate: dateFormat(x.CreatedDate, "yyyy") })
+            );
+            getSetGraphData(filterData);
+          } else {
+            setNoDataFound(true);
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          // navigateToErrorPage(error?.message);
+        });
+    }
+    getEntitiesList(props.entityListId);
+  }, [props.entityListId]);
+
+  const getSetGraphData = (data) => {
+    const graphArray = data.reduce((total, value) => {
+      total[value.CreatedDate] = (total[value.CreatedDate] || 0) + 1;
+      return total;
+    }, []);
+    var graphObject = Object.keys(graphArray).map((e) => ({
+      name: e,
+      Count: graphArray[e],
+    }));
+    let sum = 0;
+    const cumulativeData = graphObject.map(function (data) {
+      return { name: data.name, Count: (sum += data.Count) };
+    }, []);
+    setGraphData(cumulativeData);
+  };
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <LineChart
-        data={data}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        {/* <CartesianGrid strokeDasharray="3 3" /> */}
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        {/* <Legend /> */}
-        {/* <Line
-          type="monotone"
-          dataKey="pv"
-          stroke="#8884d8"
-          activeDot={{ r: 8 }}
-        /> */}
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-      </LineChart>
-    </ResponsiveContainer>
+    <>
+      {graphData?.length ? (
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={graphData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            {/* <CartesianGrid strokeDasharray="3 3" /> */}
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            {/* <Legend /> */}
+            <Bar dataKey="pv" stackId="a" fill="#8884d8" />
+            <Bar dataKey="Count" stackId="a" fill="#82ca9d" />
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <>
+          {noDataFound ? (
+            <>No Data Found</>
+          ) : (
+            <div>
+              <Skeleton className={classes.skeletonWidth} />
+            </div>
+          )}
+        </>
+      )}
+    </>
   );
 }
 
