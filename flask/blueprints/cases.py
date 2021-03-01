@@ -383,10 +383,10 @@ def case_activity_log_test():
         return df
 
 
-@bp.route('/department_fetch', methods=['GET'])
+@bp.route('/department_fetch', methods=['POST'])
 def department_fetch():
-    data = request.json
-    df = db.department_fetch(data.get('empName'), data.get('topLevel'), data.get('basicName'),
-                             data.get('subDepartment'), data.get('jobFunction'), data.get('jobTitle'),
-                             data.get('companyName'), data.get('employeeStatus'), data.get('empType'), data)
-    return df.to_json(orient='records')
+    if request.method == 'POST':
+        data = request.json
+        print(data)
+        df = db.department_fetch(data)
+        return df.to_json(orient='records')
