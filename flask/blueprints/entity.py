@@ -46,9 +46,9 @@ def entity_link():
 @bp1.route('/entity_systemcode_count', methods=['GET'])
 def entity_systemcode_count():
     df = db.system_code_count()
-    return json.dumps([{"total_count":df.to_dict(orient='records')[0]['total_count']},
-                      {"sttus_count":df.to_dict(orient='records')[0]['sttus_count']},
-                      {"category_count":df.to_dict(orient='records')[0]['category_count']}]
+    return json.dumps([{"Title":"COUNT OF ITEMS", "Count": df.to_dict(orient='records')[0]['total_count']},
+                      {"Title": "COUNT OF ITEMS BY STATUS", "Count": df.to_dict(orient='records')[0]['sttus_count']},
+                      {"Title":"COUNT OF ITEMS BY CATEGORY", "Count":df.to_dict(orient='records')[0]['category_count']}]
                        )
 
 
