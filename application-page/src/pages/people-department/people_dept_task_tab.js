@@ -1,9 +1,9 @@
-import React from "react";
 import { Box, Grid, Typography } from "@material-ui/core";
+import { navigate } from "@reach/router";
+import React from "react";
 import ComponentLoader from "../../components/common/component-loader";
 import * as notification from "../../components/common/toast";
 import CasePreview from "../viewcases/case-preview.js";
-import { navigate } from "@reach/router";
 
 function PeopleTaskTab(props) {
   const handleTaskClick = (userName, filter, taskCount, caseId, caseTypeId) => {
@@ -39,7 +39,6 @@ function PeopleTaskTab(props) {
                     key={index}
                     width="100%"
                     onClick={() => {
-                      
                       handleTaskClick(
                         props.SHORT_USER_NAME,
                         1,

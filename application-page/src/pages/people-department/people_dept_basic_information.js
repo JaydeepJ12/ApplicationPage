@@ -1,32 +1,13 @@
 import { Avatar, Box, Grid, Typography } from "@material-ui/core";
-import React from "react";
-import {
-  default as useStyles
-} from "../../assets/css/common_styles";
+import React, { useEffect } from "react";
+import { default as useStyles } from "../../assets/css/common_styles";
+import CommonAvatar from "../../components/common/avatar";
 import ComponentLoader from "../../components/common/component-loader";
 function PeopleBasicInfoTab(props) {
   var classes = useStyles();
-  const renderPeopleImage = (UserName) => {
-    if (UserName) {
-      return (
-        <Avatar
-          error
-          className={classes.ex_large}
-          alt={UserName}
-          src={process.env.REACT_APP_USER_ICON + UserName}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          error
-          className={classes.ex_large}
-          alt="Test"
-          src={process.env.DEFAULT_IMAGE_PATH}
-        />
-      );
-    }
-  };
+
+  useEffect(() => {}, [props.peopleInfo]);
+
   return (
     <div className="page" id="people-basic-information">
       {!props.dataInfoLoaded ? (
@@ -48,9 +29,9 @@ function PeopleBasicInfoTab(props) {
                 borderRight: "2px solid #eeeeee",
               }}
             >
-              {props.peopleInfo?.FULL_NAME
-                ? renderPeopleImage(props.peopleInfo?.FULL_NAME)
-                : null}
+              {props.peopleInfo?.Display_name ? (
+                <CommonAvatar name={props.peopleInfo?.Display_name} sizeClass={classes.avt_large} />
+              ) : null}
             </div>
           </Grid>
           <Grid item lg={8} md={9} xs={12} sm={12}>
@@ -61,27 +42,30 @@ function PeopleBasicInfoTab(props) {
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
                   {" "}
-                  <Typography>{props.peopleInfo?.FULL_NAME}</Typography>
+                  <Typography>{props.peopleInfo?.Display_name}</Typography>
                 </Grid>
                 <Grid item lg={4} md={4} xs={4} sm={4}>
                   <Typography color={"primary"}>Job: </Typography>
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
-                  {props.peopleInfo?.JOB_TITLE}
+                  {props.peopleInfo?.jobTitle}
                 </Grid>
                 <Grid item lg={4} md={4} xs={4} sm={4}>
                   <Typography color={"primary"}>Department: </Typography>
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
-                  {props.peopleInfo.DEPARTMENT_NAME}
+                  {props.peopleInfo.BasicName}
                 </Grid>
-                {props.peopleInfo?.PHONE_NUMBER ? (
+                {props.peopleInfo?.EMAIL_ADDRESS ? (
                   <>
                     <Grid item lg={4} md={4} xs={4} sm={4}>
-                      <Typography color={"primary"}>Contact Info: </Typography>
+                      <Typography color={"primary"}>Email: </Typography>
                     </Grid>
                     <Grid item lg={8} md={8} xs={8} sm={8}>
-                      <Typography> {props.peopleInfo?.PHONE_NUMBER}</Typography>
+                      <Typography>
+                        {" "}
+                        {props.peopleInfo?.EMAIL_ADDRESS}
+                      </Typography>
                     </Grid>
                   </>
                 ) : null}

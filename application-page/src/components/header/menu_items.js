@@ -8,6 +8,7 @@ import {
     Streetview,
     Timeline,
     ViewList,
+    DataUsage
   } from "@material-ui/icons";
 
 const menuItems = [
@@ -37,7 +38,7 @@ const menuItems = [
     },
     {
       menuName: "Application Item",
-      menuIcon: <Dvr />,
+      menuIcon: <DataUsage />,
       menuPath: "/application_item",
       pageTitle: "Application Item",
     },

@@ -66,7 +66,7 @@ export default function PeopleDepartment() {
     };
     var config = {
       method: "post",
-      url: API.API_GET_PEOPLE_DEPARTMENTS,
+      url: '/cases/getDepartmentPeoples',
       data: jsonData,
     };
     await axios(config)

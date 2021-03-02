@@ -68,6 +68,11 @@ a {
 .st-inline {
   display: inline-grid;
 }
+.st-contents {
+  display: contents;
+}
+
+
 /* display end  */
 
 /*  start float  */

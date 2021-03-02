@@ -35,7 +35,10 @@ export default makeStyles(
         width: theme.spacing(15),
         height: theme.spacing(15),
       },
-
+      large: {
+        width: theme.spacing(7),
+        height: theme.spacing(7),
+      },
       form: {
         "& .MuiTextField-root": {
           marginBottom: theme.spacing(1),
@@ -53,12 +56,12 @@ export default makeStyles(
       },
       // avatar
       avt_small: {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
-      },
-      avt_large: {
         width: theme.spacing(7),
         height: theme.spacing(7),
+      },
+      avt_large: {
+        width: theme.spacing(15),
+        height: theme.spacing(15),
       },
       //
       paper: {
