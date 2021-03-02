@@ -465,14 +465,14 @@ class CasesSQL:
         query = f'''
            	SELECT 
                 c.EMPLOYEE_ID,
-				c.FULL_NAME,
-				c.JOB_TITLE,
-				c.DEPARTMENT_NAME,
-				c.HOME_PHONE_NUMBER,
+				c.FULL_NAME as Display_name,
+				c.JOB_TITLE as jobTitle,
+				c.DEPARTMENT_NAME as BasicName,
+				c.PHONE_NUMBER as EmpCellPhone,
 				c.CITY,
 				c.STATE,
 				c.LAST_NAME,
-				c.STREET_ADDRESS,
+				c.STREET_ADDRESS as OFFICE_LOCATION,
 				c.MANAGER_LDAP_PATH,
 				c.BIRTH_DATE,
 				c.FIRST_NAME,
@@ -482,7 +482,7 @@ class CasesSQL:
 				c.MIDDLE_NAME,
 				c.EMAIL_ADDRESS,
 				c.ZIP_CODE,
-                et.EMPLOYEE_TYPE_NAME
+                et.EMPLOYEE_TYPE_NAME as empType
                 			FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID) WHERE c.EMPLOYEE_ID ={EMPLOYEE_ID}
         '''
         return self.db.execQuery(query)
@@ -742,6 +742,15 @@ where a.IS_ACTIVE = 'Y'
                         ,Emp_DEPARTMENT_JOB_TITLE_ID
                         ,EmpState AS employeeStatus
                         ,Company_ID
+                        ,DSJT.empFirstName as FIRST_NAME
+                        ,DSJT.empLastName as LAST_NAME
+                        ,DSJT.MANAGER_LDAP_PATH
+                        ,DSJT.EmpCity as CITY
+                        ,DSJT.OFFICE_LOCATION
+                        ,DSJT.EmpCellPhone
+                        ,DSJT.HIRE_DATE
+                        ,DSJT.ZIP_CODE
+                        ,DSJT.EmpState as STATE
 						,DSJT.COMPANY_NAME as companyName
                         ,DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID
                         ,EMPT.EMPLOYEE_TYPE_NAME as empType
@@ -758,14 +767,17 @@ where a.IS_ACTIVE = 'Y'
                         DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID WHERE (ACTIVE = {status}) and {min_query} 
                     '''
             if all_data.get("employee") == "all":
-                query = query + f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {all_data.get('maxCount')} ROWS ONLY"
+                query = query + \
+                    f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {all_data.get('maxCount')} ROWS ONLY"
                 return self.db.execQuery(query)
             data_count = all_data.pop('maxCount', None)
             for key, value in all_data.items():
                 if value is not None:
                     query = query + f"AND {key} like '%{value}%'"
             query += f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {data_count} ROWS ONLY"
+            print(query)
             return self.db.execQuery(query)
+
         except Exception as exe:
             return str(exe)
 

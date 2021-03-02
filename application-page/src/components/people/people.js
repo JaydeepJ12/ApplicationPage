@@ -128,14 +128,14 @@ export default function Peoples() {
           onClick={() => handleClickOpen(userName, fullName)}
           onError={(event) => addDefaultSrc(event)}
           src={process.env.REACT_APP_USER_ICON.concat(userName)}
-          className={classes.avt_large}
+          className={classes.avt_small}
         />
       );
     } else {
       return (
         <Avatar
           src="../../assets/images/default-userimage.png"
-          className={classes.avt_large}
+          className={classes.avt_small}
         />
       );
     }

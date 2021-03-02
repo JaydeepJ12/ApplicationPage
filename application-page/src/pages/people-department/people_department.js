@@ -1,20 +1,15 @@
-import {
-  Box,
-  Grid,
-} from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
-import {
-  default as useStyles,
-} from "../../assets/css/common_styles";
+import { default as useStyles } from "../../assets/css/common_styles";
+import * as API from "../../components/api_base/path-config";
 import * as notification from "../../components/common/toast";
-
-import * as API from '../../components/api_base/path-config';
 import PeopleBasicInfo from "./people_dept_basic_information";
-import PeopleMainTab from "./people_dept_main_tab";
-import PeopleDepartmentFilter from "./people_dept_filter";
 import PeopleCard from "./people_dept_card";
+import PeopleDepartmentFilter from "./people_dept_filter";
+import PeopleMainTab from "./people_dept_main_tab";
+
 
 var dateFormat = require("dateformat");
 
@@ -27,6 +22,7 @@ export default function PeopleDepartment() {
   const [componentLoader, setComponentLoader] = useState(false);
   const [taskLoader, setTaskLoader] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [filterValue, setFilterData] = useState("");
   const [dataInfoLoaded, setInfoDataLoaded] = useState(false);
   const [noDataFound, setNoDataFound] = useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -39,8 +35,11 @@ export default function PeopleDepartment() {
   const [caseListData, setCaseListData] = useState([]);
   const [caseHistoryData, setCaseHistoryLogData] = useState([]);
   const [recordCount, setRecordCount] = useState(0);
+  const [peopleCount, setPeopleCount] = useState(0);
+
   const [caseHistoryRowCount, setTotalCaseHistoryData] = useState(0);
   const [activityFilterValue, setActivityFilterDrpValue] = useState("cases");
+  const [searchInput, setSearchInput] = useState({ searchText: "" });
   // end all data set
 
   // for Filters
@@ -52,22 +51,63 @@ export default function PeopleDepartment() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
 
   // Start  all API call
-  const getDepartmentPeopleList = async (
-    searchText = "",
-    skipCount = 0,
-    isScroll
-  ) => {
+  const getDepartmentPeopleList = async (skipCount = 0, filters, isScroll) => {
     if (!isScroll) {
       setInfoDataLoaded(false);
     }
+    setNavTab(0);
     setDataLoaded(false);
     setComponentLoader(true);
     setPeopleData([]);
     setNoDataFound(false);
     var jsonData = {
       maxCount: maxCount + skipCount,
-      searchText: searchText,
     };
+    // this condition to base on api to pass only those filter which will select so it can handle by object merge
+
+    setMaxCount(jsonData.maxCount);
+    if (filters !== undefined && filters !== "") {
+      if (filters.topLevel !== "" && filters.topLevel !== undefined) {
+        Object.assign(jsonData, { EMP_DEPARTMENT_TOP_LEVEL: filters.topLevel });
+      }
+      if (filters.basicName !== "" && filters.basicName !== undefined) {
+        Object.assign(jsonData, {
+          EMP_DEPARTMENT_BASIC_NAME: filters.basicName,
+        });
+      }
+      if (filters.subDepartment !== "" && filters.subDepartment !== undefined) {
+        Object.assign(jsonData, { DEPARTMENT: filters.subDepartment });
+      }
+      if (filters.jobFunction !== "" && filters.jobFunction !== undefined) {
+        Object.assign(jsonData, { Emp_JOB_FUNCTION_NAME: filters.jobFunction });
+      }
+      if (filters.jobTitle !== "" && filters.jobTitle !== undefined) {
+        Object.assign(jsonData, { Emp_JOB_TITLE_NAME: filters.jobTitle });
+      }
+      if (filters.company !== "" && filters.company !== undefined) {
+        Object.assign(jsonData, { "DSJT.COMPANY_NAME": filters.company });
+      }
+      if (filters.employeeType !== "" && filters.employeeType !== undefined) {
+        Object.assign(jsonData, {
+          "EMPT.EMPLOYEE_TYPE_NAME": filters.employeeType,
+        });
+      }
+
+      if (filters.searchText && filters.searchText !== undefined) {
+        Object.assign(jsonData, { Display_name: filters.searchText });
+      }
+
+      Object.assign(jsonData, {
+        empStatus: filters.employeeStatus ? filters.employeeStatus : "active",
+      });
+      Object.assign(jsonData, {
+        provisioned: filters.provisioned ? filters.provisioned : "yes",
+      });
+    } else {
+      Object.assign(jsonData, { employee: "all" });
+      Object.assign(jsonData, { provisioned: "yes" });
+    }
+
     var config = {
       method: "post",
       url: API.API_GET_PEOPLE_DEPARTMENTS,
@@ -75,6 +115,7 @@ export default function PeopleDepartment() {
     };
     await axios(config)
       .then(function (response) {
+     
         setDataLoaded(true);
         setComponentLoader(false);
         if (response.data.length) {
@@ -82,6 +123,7 @@ export default function PeopleDepartment() {
             setPeopleInfoData(response.data[0]);
             setInfoDataLoaded(true);
           }
+          setPeopleCount(response.data.length);
 
           setPeopleData(response.data);
         } else {
@@ -92,6 +134,7 @@ export default function PeopleDepartment() {
         console.log(error);
       });
   };
+   // this action use for get department info when card is particular card is click
   const getDepartmentPeopleInfo = async (employee_id) => {
     setInfoDataLoaded(false);
     setNoDataFound(false);
@@ -118,10 +161,11 @@ export default function PeopleDepartment() {
         console.log(error);
       });
   };
+    // this action use for people case list tab  base on drp Entity and case
   const caseList = async (people, skipCount = 0, loadMore) => {
     setTaskLoader(false);
     setRecordCount(0);
-    
+
     var jsonData = {
       Username: people.SHORT_USER_NAME ? people.SHORT_USER_NAME : "dixitms",
       TypeId: 147,
@@ -161,6 +205,8 @@ export default function PeopleDepartment() {
     setPage(params.page);
     CaseActivityLogList(gridSkipCount, peopleInfo, isPrev);
   };
+
+  // this action use for people all case activity display in   activity tab 
   const CaseActivityLogList = async (skipCount = 0, people, isPrev = false) => {
     setTotalCaseHistoryData(0);
     setLoading(true);
@@ -218,7 +264,7 @@ export default function PeopleDepartment() {
   // end    all API call
 
   const handlePeopleInfo = (employee_id) => {
-    setNavTab(0)
+    setNavTab(0);
     setValue(0);
     setInfoDataLoaded(false);
     if (!dataInfoLoaded) {
@@ -227,13 +273,16 @@ export default function PeopleDepartment() {
     }
     getDepartmentPeopleInfo(employee_id);
   };
+   // this scroll action use for scroll a left bar of people to get more data  
   const handleOnScroll = (peopleData, event) => {
     const bottom =
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight;
+    if (peopleCount < maxCount) {
+      return false;
+    }
     if (bottom && dataLoaded) {
-      //   alert('bottom');
-      getDepartmentPeopleList("", peopleData?.length, true);
+      getDepartmentPeopleList(peopleData?.length, searchInput, true);
     }
   };
 
@@ -246,23 +295,26 @@ export default function PeopleDepartment() {
       <Grid container spacing={3}>
         <Grid item lg={3} md={4} xs={12} sm={12}>
           <PeopleDepartmentFilter
+            setNavTab={setNavTab}
             getDepartmentPeopleList={getDepartmentPeopleList}
             setCaseHistoryLogData={setCaseHistoryLogData}
             setCaseListData={setCaseListData}
+            setFilterData={setFilterData}
+            setSearchInput={setSearchInput}
+            searchInput={searchInput}
           ></PeopleDepartmentFilter>
           <div
             className={fixedHeightPaper}
             onScroll={(event) => handleOnScroll(peopleData, event)}
           >
             <Box boxShadow={0} className="card bg-secondary" borderRadius={5}>
-              <PeopleCard 
-              peopleData={peopleData}
-              peopleInfo={peopleInfo}
-              noDataFound={noDataFound}
-              componentLoader={componentLoader}
-              handlePeopleInfo={handlePeopleInfo}
-              >
-              </PeopleCard>
+              <PeopleCard
+                peopleData={peopleData}
+                peopleInfo={peopleInfo}
+                noDataFound={noDataFound}
+                componentLoader={componentLoader}
+                handlePeopleInfo={handlePeopleInfo}
+              ></PeopleCard>
             </Box>
           </div>
         </Grid>
@@ -274,28 +326,27 @@ export default function PeopleDepartment() {
           ></PeopleBasicInfo>
 
           <div className={classes.mt_one}>
-          <PeopleMainTab
-                  peopleInfo={peopleInfo}
-                  noDataFound={noDataFound}
-                  dataInfoLoaded={dataInfoLoaded}
-                  taskLoader={taskLoader}
-                  SHORT_USER_NAME={peopleInfo.SHORT_USER_NAME}
-                  caseListData={caseListData}
-                  caseList={caseList}
-                  rows={rows}
-                  loading={loading}
-                  recordCount={caseHistoryRowCount}
-                  maxCount={maxCount}
-                  CaseActivityLogList={CaseActivityLogList}
-                  activityLogMaxCount={activityLogMaxCount}
-                  handlePageChange={handlePageChange}
-                  setActivityFilterDrpValue={setActivityFilterDrpValue}
-                  activityFilterValue={activityFilterValue}
-                  navTab={navTab}
-                  setNavTab={setNavTab}
-              ></PeopleMainTab>
-      
-            
+            <PeopleMainTab
+              peopleInfo={peopleInfo}
+              noDataFound={noDataFound}
+              dataInfoLoaded={dataInfoLoaded}
+              taskLoader={taskLoader}
+              SHORT_USER_NAME={peopleInfo.SHORT_USER_NAME}
+              caseListData={caseListData}
+              caseList={caseList}
+              rows={rows}
+              loading={loading}
+              rowCount={caseHistoryRowCount}
+              recordCount={recordCount}
+              maxCount={maxCount}
+              CaseActivityLogList={CaseActivityLogList}
+              activityLogMaxCount={activityLogMaxCount}
+              handlePageChange={handlePageChange}
+              setActivityFilterDrpValue={setActivityFilterDrpValue}
+              activityFilterValue={activityFilterValue}
+              navTab={navTab}
+              setNavTab={setNavTab}
+            ></PeopleMainTab>
           </div>
         </Grid>
       </Grid>
