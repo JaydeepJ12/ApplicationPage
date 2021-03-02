@@ -286,6 +286,8 @@ function PeopleDepartmentFilter(props) {
           { searchText: searchText },
           0
         )
+      }else{
+        props.getDepartmentPeopleList();
       }
     }, timeoutVal);
   };

@@ -203,16 +203,17 @@ export default function PeopleDepartment() {
   const handlePageChange = (params) => {
     let isPrev = params.page === page - 1;
     setPage(params.page);
-    CaseActivityLogList(gridSkipCount, peopleInfo, isPrev);
+    CaseActivityLogList(activityFilterValue,gridSkipCount, peopleInfo, isPrev);
   };
 
   // this action use for people all case activity display in   activity tab 
-  const CaseActivityLogList = async (skipCount = 0, people, isPrev = false) => {
+  const CaseActivityLogList = async (activityFilterValue,skipCount = 0, people, isPrev = false) => {
     setTotalCaseHistoryData(0);
     setLoading(true);
     if (isPrev) {
       skipCount = gridSkipCount - activityLogMaxCount * 2;
     }
+   console.log("-------CaseActivityLogList",activityFilterValue);
     setRows([]);
     var jsonData = {
       username: people.SHORT_USER_NAME ? people.SHORT_USER_NAME : "dixitms",
@@ -289,7 +290,7 @@ export default function PeopleDepartment() {
   useEffect(() => {
     getDepartmentPeopleList();
   }, []);
-
+ 
   return (
     <div className="page" id="page-department">
       <Grid container spacing={3}>

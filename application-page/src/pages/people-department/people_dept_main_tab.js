@@ -62,7 +62,7 @@ function PeopleMainTab(props) {
   };
   
   useEffect(() => {
-  }, [props.peopleInfo]);
+  }, [props.peopleInfo],[props.activityFilterValue]);
 
   const handleOnTaskScroll = (
     people_info,
@@ -114,7 +114,7 @@ function PeopleMainTab(props) {
               className="nav-tab"
               onClick={() => {
                 props.setNavTab(2)
-                props.CaseActivityLogList(0, props.peopleInfo);
+                props.CaseActivityLogList(props.activityFilterValue,0, props.peopleInfo,false);
               }}
               label="Acivity"
               {...a11yProps(2)}

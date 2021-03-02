@@ -2,10 +2,13 @@ import { FormControl, Grid, InputLabel, MenuItem } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid, GridOverlay } from "@material-ui/data-grid";
-import React from "react";
+import React,{useEffect} from "react";
 import {
   default as useStylesBase
 } from "../../assets/css/common_styles";
+
+
+
 function PeopleActivityTab(props) {
   const classesBase = useStylesBase();
 // use for provide column name display in grid 
@@ -104,7 +107,7 @@ function PeopleActivityTab(props) {
 
   const handleActivityFilterChange = (value) => {
     props.setActivityFilterDrpValue(value);
-    props.CaseActivityLogList(0, props.peopleInfo, false);
+    props.CaseActivityLogList(value,0, props.peopleInfo, false);
   };
 
   return (

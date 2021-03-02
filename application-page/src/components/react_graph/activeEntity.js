@@ -16,15 +16,12 @@ import {
 import Skeleton from "@material-ui/lab/Skeleton";
 import useStyles from "../../assets/css/common_styles";
 import { navigate } from "@reach/router";
-const lodashObject = require("lodash");
-var dateFormat = require("dateformat");
 
 function ActiveEntity(props) {
   const classes = useStyles();
   const [noDataFound, setNoDataFound] = React.useState(false);
   const [graphData, setGraphData] = useState([]);
   React.useEffect(() => {
-    console.log("props.entityListIdprops.entityListId---", props.entityListId);
     async function getEntitiesList(Ids) {
       setNoDataFound(false);
       var data = JSON.stringify({ entityTypeIds: Ids });
@@ -40,14 +37,7 @@ function ActiveEntity(props) {
       await axios(config)
         .then(function (response) {
           if (response.data.length) {
-            let filterData = response.data.map(
-              ({ ListID, ...keepAttrs }) => keepAttrs
-            );
-            filterData = filterData.map(
-              (x) =>
-                (x = { ...x, CreatedDate: dateFormat(x.CreatedDate, "yyyy") })
-            );
-            getSetGraphData(filterData);
+            getSetGraphData(response.data);
           } else {
             setNoDataFound(true);
           }
@@ -57,12 +47,14 @@ function ActiveEntity(props) {
           // navigateToErrorPage(error?.message);
         });
     }
-    getEntitiesList(props.entityListId);
+    if (props.entityListId.trim() !== "") {
+      getEntitiesList(props.entityListId);
+    }
   }, [props.entityListId]);
 
   const getSetGraphData = (data) => {
     const graphArray = data.reduce((total, value) => {
-      total[value.CreatedDate] = (total[value.CreatedDate] || 0) + 1;
+      total[value.CreatedDate] = (total[value.CreatedDate] || 0) + value.count;
       return total;
     }, []);
     var graphObject = Object.keys(graphArray).map((e) => ({
