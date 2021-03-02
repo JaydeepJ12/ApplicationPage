@@ -93,7 +93,10 @@ function ApplicationLinks() {
         setNoDataFound(true);
       }
     }
-  }, [reducerState.applicationData.caseTypes]);
+  }, [
+    reducerState.applicationData.caseTypes,
+    reducerState.applicationData.applicationElements,
+  ]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const handleClickAnchor = (event) => {

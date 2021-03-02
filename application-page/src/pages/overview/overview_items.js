@@ -91,7 +91,7 @@ export default function ItemOverview() {
     }
   }, [
     reducerState.applicationData.caseTypes,
-    reducerState.applicationData.appId,
+    reducerState.applicationData.applicationElements,
   ]);
 
   const getSetEntityList = (entityTypes) => {
@@ -228,7 +228,23 @@ export default function ItemOverview() {
                         sm={12}
                         className={`sm-border-left ` + classes.activityGraph}
                       >
-                        <ActiveEntity entityListId={entityListId} />
+                        {entityListId ? (
+                          <ActiveEntity entityListId={entityListId} />
+                        ) : (
+                          <>
+                            {
+                              noDataFound && <>No Data found</>
+                              //  ? (
+                              //   <>No Data found</>
+                              // ) : (
+                              //   <div>
+                              //     <Skeleton className={classes.skeletonWidth} />
+                              //   </div>
+                              // )
+                            }
+                          </>
+                        )}
+                        {/* {!entityListId && <>No Data Found</>} */}
                       </Grid>
                     </Grid>
                   </Container>
