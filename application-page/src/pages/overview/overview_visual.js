@@ -120,7 +120,7 @@ export default function VisualOverview(props) {
               >
                 <TabPanel value={value} index={0} dir={theme.direction}>
                   
-                    <Example caseTypes={[6,19]} />
+                    <Example caseTypes={[9,19]} />
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
                   Tab-2
