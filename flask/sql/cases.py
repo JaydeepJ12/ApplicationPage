@@ -697,6 +697,16 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             return str(exe)
 
+    def entity_list_byId(self, entityIds):
+        try:
+            query = f'''
+            select entity_type_id as EntityType,list_id as ListID,CREATED_DATETIME as CreatedDate from [BOXER_ENTITIES].[dbo].[entity_list] where entity_type_id in ({entityIds}) order by CREATED_DATETIME
+            '''
+            print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
     def department_fetch(self, all_data):
         try:
             status = 1
@@ -748,16 +758,20 @@ where a.IS_ACTIVE = 'Y'
                         INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE] DSKT WITH(NOLOCK) ON 
                         DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID = Emp_DEPARTMENT_JOB_TITLE_ID 
                         LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON
-                        DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID WHERE (ACTIVE = {status}) and {min_query}
+                        DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID WHERE (ACTIVE = {status}) and {min_query} 
                     '''
             if all_data.get("employee") == "all":
                 query = query + \
                     f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {all_data.get('maxCount')} ROWS ONLY"
                 return self.db.execQuery(query)
+            data_count = all_data.pop('maxCount', None)
             for key, value in all_data.items():
                 if value is not None:
                     query = query + f"AND {key} like '%{value}%'"
+            query += f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {data_count} ROWS ONLY"
+            print(query)
             return self.db.execQuery(query)
+
         except Exception as exe:
             return str(exe)
 

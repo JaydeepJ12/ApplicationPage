@@ -1,12 +1,14 @@
-import React from "react";
 import { Box, Grid, TextField } from "@material-ui/core";
-import ComponentLoader from "../../components/common/component-loader";
+import React, { useEffect } from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
+import ComponentLoader from "../../components/common/component-loader";
 
 var dateFormat = require("dateformat");
 
 function PeopleBasicInfoTab(props) {
   var classes = useStyles();
+
+  useEffect(() => {}, [props.peopleInfo]);
 
   return (
     <div className="page" id="people-information-tab">
@@ -34,7 +36,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Display Name"
-                        defaultValue={props.peopleInfo.Display_name}
+                        value={props.peopleInfo.Display_name}
                         InputLabelProps={{
                           classes: {
                             root: classes.inputLabel,
@@ -47,7 +49,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Legal First Name"
-                        defaultValue={props.peopleInfo.FIRST_NAME}
+                        value={props.peopleInfo.FIRST_NAME}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -55,7 +57,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Legal Last Name"
-                        defaultValue={props.peopleInfo.LAST_NAME}
+                        value={props.peopleInfo.LAST_NAME}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -63,7 +65,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Short User Name"
-                        defaultValue={props.peopleInfo.SHORT_USER_NAME}
+                        value={props.peopleInfo.SHORT_USER_NAME}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -71,7 +73,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Job Title"
-                        defaultValue={props.peopleInfo.jobTitle}
+                        value={props.peopleInfo.jobTitle}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -79,7 +81,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Employee Type"
-                        defaultValue={props.peopleInfo.empType}
+                        value={props.peopleInfo.empType}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -87,7 +89,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Office Street Address"
-                        defaultValue={props.peopleInfo.OFFICE_LOCATION}
+                        value={props.peopleInfo.OFFICE_LOCATION}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -95,7 +97,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Office State"
-                        defaultValue={props.peopleInfo.STATE}
+                        value={props.peopleInfo.STATE}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -103,7 +105,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Office City"
-                        defaultValue={props.peopleInfo.CITY}
+                        value={props.peopleInfo.CITY}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -111,7 +113,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Home Phone/Cell Number"
-                        defaultValue={props.peopleInfo.EmpCellPhone}
+                        value={props.peopleInfo.EmpCellPhone}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -119,7 +121,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Hire Date"
-                        defaultValue={dateFormat(
+                        value={dateFormat(
                           props.peopleInfo.HIRE_DATE,
                           "m/dd/yyyy"
                         )}
@@ -130,7 +132,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Birth Date"
-                        defaultValue={props.peopleInfo.BIRTH_DATE}
+                        value={props.peopleInfo.BIRTH_DATE}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -138,7 +140,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Gender"
-                        defaultValue={
+                        value={
                           (props.peopleInfo.GENDER = "M" ? "Male" : "Female")
                         }
                       />
@@ -154,7 +156,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="(Preferred) Full Name"
-                        defaultValue={props.peopleInfo.Display_name}
+                        value={props.peopleInfo.Display_name}
                         InputLabelProps={{
                           classes: {
                             root: classes.inputLabel,
@@ -167,7 +169,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Email Address"
-                        defaultValue={props.peopleInfo.EMAIL_ADDRESS}
+                        value={props.peopleInfo.EMAIL_ADDRESS}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -175,7 +177,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Department Name"
-                        defaultValue={props.peopleInfo.BasicName}
+                        value={props.peopleInfo.BasicName}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>
@@ -183,7 +185,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Office Zip Code"
-                        defaultValue={props.peopleInfo.ZIP_CODE}
+                        value={props.peopleInfo.ZIP_CODE}
                       />
                     </Grid>
                   </Grid>

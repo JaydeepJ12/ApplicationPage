@@ -1,36 +1,13 @@
 import { Avatar, Box, Grid, Typography } from "@material-ui/core";
-import React,{ useEffect } from "react";
-import {
-  default as useStyles
-} from "../../assets/css/common_styles";
+import React, { useEffect } from "react";
+import { default as useStyles } from "../../assets/css/common_styles";
+import CommonAvatar from "../../components/common/avatar";
 import ComponentLoader from "../../components/common/component-loader";
 function PeopleBasicInfoTab(props) {
   var classes = useStyles();
 
-  useEffect(() => {
-  }, [props.peopleInfo]);
+  useEffect(() => {}, [props.peopleInfo]);
 
-  const renderPeopleImage = (UserName) => {
-    if (UserName) {
-      return (
-        <Avatar
-          error
-          className={classes.ex_large}
-          alt={UserName}
-          src={process.env.REACT_APP_USER_ICON + UserName}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          error
-          className={classes.ex_large}
-          alt="Test"
-          src={process.env.DEFAULT_IMAGE_PATH}
-        />
-      );
-    }
-  };
   return (
     <div className="page" id="people-basic-information">
       {!props.dataInfoLoaded ? (
@@ -52,9 +29,9 @@ function PeopleBasicInfoTab(props) {
                 borderRight: "2px solid #eeeeee",
               }}
             >
-              {props.peopleInfo?.Display_name
-                ? renderPeopleImage(props.peopleInfo?.Display_name)
-                : null}
+              {props.peopleInfo?.Display_name ? (
+                <CommonAvatar name={props.peopleInfo?.Display_name} sizeClass={classes.avt_large} />
+              ) : null}
             </div>
           </Grid>
           <Grid item lg={8} md={9} xs={12} sm={12}>
@@ -85,7 +62,10 @@ function PeopleBasicInfoTab(props) {
                       <Typography color={"primary"}>Email: </Typography>
                     </Grid>
                     <Grid item lg={8} md={8} xs={8} sm={8}>
-                      <Typography> {props.peopleInfo?.EMAIL_ADDRESS}</Typography>
+                      <Typography>
+                        {" "}
+                        {props.peopleInfo?.EMAIL_ADDRESS}
+                      </Typography>
                     </Grid>
                   </>
                 ) : null}

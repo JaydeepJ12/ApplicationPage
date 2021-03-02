@@ -114,7 +114,7 @@ export default function Navigation(props) {
                 <Avatar className={classes.avtar}>
                   <img
                     src="http://home.boxerproperty.com/Assets/CommonFiles/New_Images/Main_logo.png"
-                    style={{ "max-width": "100%" }}
+                    style={{ maxWidth: "100%" }}
                     className="header-logo"
                     alt="stemmons-logo"
                   ></img>

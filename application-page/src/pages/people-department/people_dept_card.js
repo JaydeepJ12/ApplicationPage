@@ -1,7 +1,8 @@
-import { Avatar, Box ,Card, CardHeader } from "@material-ui/core";
-import React from "react";
+import { Avatar, Box, Card, CardHeader } from "@material-ui/core";
+import React,{useEffect} from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader";
+import CommonAvatar from "../../components/common/avatar";
 function PeopleCard(props) {
   var classes = useStyles();
 
@@ -11,26 +12,9 @@ function PeopleCard(props) {
       event.target.src = userDefaultImage;
     }
   };
-  
-  const renderUserImage = (fullName) => {
-    if (fullName) {
-      return (
-        <Avatar
-          className={classes.large}
-          onError={(event) => addDefaultSrc(event)}
-          src={process.env.REACT_APP_USER_ICON.concat(fullName)}
-          className={classes.avt_large}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          src="../../assets/images/default-userimage.png"
-          className={classes.avt_large}
-        />
-      );
-    }
-  };
+
+
+
 
   return (
     <div className="page" id="people-card">
@@ -50,16 +34,14 @@ function PeopleCard(props) {
                       ? "card-user-case " + classes.mb_one
                       : "card-user-case"
                   }
-                  
                   onClick={() => {
-                    if(people.EMPLOYEE_ID !== props.peopleInfo.EMPLOYEE_ID){
+                    if (people.EMPLOYEE_ID !== props.peopleInfo.EMPLOYEE_ID) {
                       props.handlePeopleInfo(people.EMPLOYEE_ID);
                     }
-                   
                   }}
                 >
                   <CardHeader
-                    avatar={renderUserImage(people.Display_name)}
+                    avatar={  <CommonAvatar name={people.Display_name} sizeClass={classes.avt_small} />}
                     title={people.Display_name}
                     subheader={people.subDepartment}
                   />
@@ -80,21 +62,22 @@ function PeopleCard(props) {
         <>
           {props.componentLoader ? (
             <>
-              {(props.componentLoader ? Array.from(new Array(4)) : Array(2)).map(
-                (item, index) => (
-                  <Box key={index} width="100%" padding={0.5}>
-                    {item ? (
-                      <img
-                        style={{ width: "100%", height: 100 }}
-                        alt={item.title}
-                        src={item.src}
-                      />
-                    ) : (
-                      <ComponentLoader type="rect" />
-                    )}
-                  </Box>
-                )
-              )}
+              {(props.componentLoader
+                ? Array.from(new Array(4))
+                : Array(2)
+              ).map((item, index) => (
+                <Box key={index} width="100%" padding={0.5}>
+                  {item ? (
+                    <img
+                      style={{ width: "100%", height: 100 }}
+                      alt={item.title}
+                      src={item.src}
+                    />
+                  ) : (
+                    <ComponentLoader type="rect" />
+                  )}
+                </Box>
+              ))}
             </>
           ) : (
             <div>No Peoples Found </div>
