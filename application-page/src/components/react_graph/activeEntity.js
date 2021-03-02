@@ -53,31 +53,18 @@ function ActiveEntity(props) {
   }, [props.entityListId]);
 
   const getSetGraphData = (data) => {
-    console.log("datadatadatadata----------", data);
     const graphArray = data.reduce((total, value) => {
       total[value.CreatedDate] = (total[value.CreatedDate] || 0) + value.count;
       return total;
     }, []);
-    console.log(
-      "graphArraygraphArraygraphArraygraphArray----------",
-      graphArray
-    );
     var graphObject = Object.keys(graphArray).map((e) => ({
       name: e,
       Count: graphArray[e],
     }));
-    console.log(
-      "graphObjectgraphObjectgraphObjectgraphObject----------",
-      graphObject
-    );
     let sum = 0;
     const cumulativeData = graphObject.map(function (data) {
       return { name: data.name, Count: (sum += data.Count) };
     }, []);
-    console.log(
-      "cumulativeDatacumulativeDatacumulativeDatacumulativeData----------",
-      cumulativeData
-    );
     setGraphData(cumulativeData);
   };
 
