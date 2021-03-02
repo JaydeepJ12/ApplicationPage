@@ -377,6 +377,7 @@ def case_activity_log_test():
     '''API Base'''
     if request.method == 'POST':
         data = request.json
+        print(data)
         if not data['username']:
             return json.dumps({'error_status': 400, 'error': "please pass the username"})
         df = db.case_activity_log_track(data['application_type'], data['username'], data['skipCount'], data['maxCount'])
