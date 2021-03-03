@@ -463,29 +463,49 @@ class CasesSQL:
 
     def get_people_info(self, EMPLOYEE_ID):
         query = f'''
-            
-           	# SELECT 
-            #     c.EMPLOYEE_ID,
-			# 	c.FULL_NAME as Display_name,
-			# 	c.JOB_TITLE as jobTitle,
-			# 	c.DEPARTMENT_NAME as BasicName,
-			# 	c.PHONE_NUMBER as EmpCellPhone,
-			# 	c.CITY,
-			# 	c.STATE,
-			# 	c.LAST_NAME,
-			# 	c.STREET_ADDRESS as OFFICE_LOCATION,
-			# 	c.MANAGER_LDAP_PATH,
-			# 	c.BIRTH_DATE,
-			# 	c.FIRST_NAME,
-			# 	c.SHORT_USER_NAME,
-			# 	c.HIRE_DATE,
-			# 	c.GENDER,
-			# 	c.MIDDLE_NAME,
-			# 	c.EMAIL_ADDRESS,
-			# 	c.ZIP_CODE,
-            #     et.EMPLOYEE_TYPE_NAME as empType
-            #     			FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID) WHERE c.EMPLOYEE_ID ={EMPLOYEE_ID}
+                SELECT 
+                c.EMPLOYEE_ID,
+                           c.FULL_NAME as Display_name,
+                           c.JOB_TITLE as jobTitle,
+                           c.DEPARTMENT_NAME as BasicName,
+                           c.PHONE_NUMBER as EmpCellPhone,
+                           c.CITY,
+                           c.STATE,
+                           c.LAST_NAME,
+                           c.STREET_ADDRESS as OFFICE_LOCATION,
+                           c.MANAGER_LDAP_PATH,
+                           c.BIRTH_DATE,
+                           c.FIRST_NAME,
+                           c.SHORT_USER_NAME,
+                           c.HIRE_DATE,
+                           c.GENDER,
+                           c.MIDDLE_NAME,
+                           c.EMAIL_ADDRESS,
+                           c.ZIP_CODE,
+                         Manager.SupervisorId as manager_id
+                                       ,et.EMPLOYEE_TYPE_NAME as empType
+                                  FROM [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] AS c 
+                                                LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] AS et 
+                                                ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID) 
+                                                 OUTER APPLY  
+                                                       (  
+                                                        SELECT TOP 1 D2.EMAIL_Address As SupervisorSId,D2.Employee_ID As SupervisorId,COALESCE(D2.DISPLAY_NAME,D2.First_Name+' '+D2.Last_Name) AS  SUPERVISORNAME   
+                                                        ,D1.Manager_LDAP_Path,d2.SHORT_USER_NAME ,D2.City AS 
+                                                        Manager_City,D2.State as Manager_State 
+                                                        FROM [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] D1 WITH (NOLOCK)  
+                                                        INNER JOIN [Departments].[DBO].[MANAGER_CONFIG] M1 WITH (NOLOCK) ON CONVERT(nvarchar(MAX),D1.Employee_GUID)=CONVERT(nvarchar(MAX),M1.Employee_GUID)  
+                                                          AND D1.Short_User_Name=C.Short_User_Name  
+                                                        INNER JOIN [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] D2 WITH (NOLOCK) ON CONVERT(nvarchar(MAX),D2.Employee_GUID)=CONVERT(nvarchar(MAX),M1.MANAGER_GUID)  
+                                                        INNER JOIN [Departments].[DBO].[USER_ACCOUNT_STATUS_REF] UASR WITH(NOLOCK) ON D1.USER_AD_STATUS =UASR.STATUS_VALUE  
+                                                        INNER JOIN [Departments].[DBO].[USER_ACCOUNT_STATUS_REF] REF WITH (NOLOCK) ON REF.STATUS_VALUE = D1.USER_AD_STATUS  
+                                                          AND REF.STATUS_DISABLED = 'N'  
+                                                           
+                                                        --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
+                                                        ORDER BY M1.IS_Primary DESC  
+                                                       )Manager  
+                                                       WHERE c.EMPLOYEE_ID={EMPLOYEE_ID}
         '''
+        print(query)
         return self.db.execQuery(query)
 
     def get_filter_values_by_caseTypeIds(self, caseTypeIds):
@@ -758,10 +778,27 @@ where a.IS_ACTIVE = 'Y'
                         ,EMPT.EMPLOYEE_TYPE_ID
                         ,DSEM.SHORT_USER_NAME
                         ,EmpEmail AS EMAIL_ADDRESS
+                        ,Manager.SupervisorId as manager_id
                         ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
+                        
                         FROM [DEPARTMENTS].[dbo].[vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSJT
                         INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM WITH(NOLOCK) ON 
                         DSEM.EMPLOYEE_GUID = DSJT.EMPLOYEE_GUID 
+                        OUTER APPLY  
+                                                       (  
+                                                        SELECT TOP 1 D2.EMAIL_Address As SupervisorSId,D2.Employee_ID As SupervisorId,COALESCE(D2.DISPLAY_NAME,D2.First_Name+' '+D2.Last_Name) AS  SUPERVISORNAME   
+                                                        ,D1.Manager_LDAP_Path,d2.SHORT_USER_NAME ,D2.City AS Manager_City,D2.State as Manager_State  
+                                                        FROM [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] D1 WITH (NOLOCK)  
+                                                        INNER JOIN [Departments].[DBO].[MANAGER_CONFIG] M1 WITH (NOLOCK) ON CONVERT(nvarchar(MAX),D1.Employee_GUID)=CONVERT(nvarchar(MAX),M1.Employee_GUID)  
+                                                          AND D1.Short_User_Name=DSEM.Short_User_Name  
+                                                        INNER JOIN [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] D2 WITH (NOLOCK) ON CONVERT(nvarchar(MAX),D2.Employee_GUID)=CONVERT(nvarchar(MAX),M1.MANAGER_GUID)  
+                                                        INNER JOIN [Departments].[DBO].[USER_ACCOUNT_STATUS_REF] UASR WITH(NOLOCK) ON D1.USER_AD_STATUS =UASR.STATUS_VALUE  
+                                                        INNER JOIN [Departments].[DBO].[USER_ACCOUNT_STATUS_REF] REF WITH (NOLOCK) ON REF.STATUS_VALUE = D1.USER_AD_STATUS  
+                                                          AND REF.STATUS_DISABLED = 'N'  
+                                                           
+                                                        --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
+                                                        ORDER BY M1.IS_Primary DESC  
+                                                       )Manager
                         INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE] DSKT WITH(NOLOCK) ON 
                         DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID = Emp_DEPARTMENT_JOB_TITLE_ID 
                         LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON

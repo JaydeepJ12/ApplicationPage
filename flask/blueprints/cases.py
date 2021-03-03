@@ -112,7 +112,6 @@ def getDepartmentPeoples():
 @bp.route('/getPeopleInfo', methods=['POST'])
 def getPeopleInfo():
     data = request.json
-    print(data)
     df = db.get_people_info(data['EMPLOYEE_ID'])
     return df.to_json(orient='records')
 
@@ -382,13 +381,3 @@ def case_activity_log_test():
             return json.dumps({'error_status': 400, 'error': "please pass the username"})
         df = db.case_activity_log_track(data['application_type'], data['username'], data['skipCount'], data['maxCount'])
         return df
-
-
-@bp.route('/department_fetch', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def department_fetch():
-    if request.method == 'POST':
-        data = request.json
-        print(data)
-        df = db.department_fetch(data)
-        return df.to_json(orient='records')
