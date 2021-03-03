@@ -13,9 +13,8 @@ import { navigate } from "@reach/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SwipeableViews from "react-swipeable-views";
-import GotoBackButton from "../../components/common/BackButton.js";
 import ComponentLoader from "../../components/common/component-loader.js";
-import Example from "../../components/react_graph/common_graph";
+import GraphVisuals from "../../components/react_graph/common_graph";
 
 const basePath = process.env.REACT_APP_BASE_PATH;
 
@@ -83,7 +82,6 @@ export default function VisualOverview(props) {
 
   return (
     <div id="page-overview" className="page">
-      <GotoBackButton />
       <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
         <Grid container>
           <Grid
@@ -138,7 +136,7 @@ export default function VisualOverview(props) {
                 >
                   <TabPanel value={value} index={0} dir={theme.direction}>
                     {caseTypeData.length ? (
-                      <Example caseTypes={[caseTypeIds]} />
+                      <GraphVisuals caseTypes={[caseTypeIds]} />
                     ) : (
                       []
                     )}
@@ -150,7 +148,7 @@ export default function VisualOverview(props) {
                       dir={theme.direction}
                     >
                       {caseTypeData.length ? (
-                        <Example caseTypes={[caseType?.CASE_TYPE_ID]} />
+                        <GraphVisuals caseTypes={[caseType?.CASE_TYPE_ID]} />
                       ) : (
                         []
                       )}
