@@ -1,4 +1,4 @@
-import { Avatar, Box, Grid, Typography } from "@material-ui/core";
+import { Box, Grid, Typography ,Link  } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
 import CommonAvatar from "../../components/common/avatar";
@@ -30,7 +30,10 @@ function PeopleBasicInfoTab(props) {
               }}
             >
               {props.peopleInfo?.Display_name ? (
-                <CommonAvatar name={props.peopleInfo?.Display_name} sizeClass={classes.avt_large} />
+                <CommonAvatar
+                  name={props.peopleInfo?.Display_name}
+                  sizeClass={classes.avt_large}
+                />
               ) : null}
             </div>
           </Grid>
@@ -85,13 +88,24 @@ function PeopleBasicInfoTab(props) {
 
                 {props.peopleInfo.MANAGER_LDAP_PATH ? (
                   <Grid item lg={8} md={8} xs={8} sm={8}>
-                    <Typography>
+                    <Link
+                      component="button"
+                      variant="body2"
+                      onClick={() => {
+                        props.getDepartmentPeopleList(
+                          0,
+                          {'employee_id': props.peopleInfo.manager_id},
+                          0
+                        );
+                      }}
+                    >
                       {
                         props.peopleInfo.MANAGER_LDAP_PATH.split("=")[1]?.split(
                           ","
                         )[0]
                       }
-                    </Typography>
+                    </Link>
+                   
                   </Grid>
                 ) : (
                   ""

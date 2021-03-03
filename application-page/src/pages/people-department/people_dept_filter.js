@@ -273,8 +273,7 @@ function PeopleDepartmentFilter(props) {
       // IF THERE'S A RUNNING TIMEOUT
       clearTimeout(timeoutRef.current); // THEN, CANCEL IT
     }
-    if (searchText != "") {
-    }
+
 
     timeoutRef.current = setTimeout(() => {
       // SET A TIMEOUT
@@ -321,7 +320,7 @@ function PeopleDepartmentFilter(props) {
                  name="searchInput"
                  value={props.searchInput.searchText}
                   onInput={(event) => searchPeople(event.target.value)}
-                  placeholder="Search…"
+                  placeholder="Search By Name.."
                 />
 
              

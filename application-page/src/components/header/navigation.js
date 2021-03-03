@@ -91,8 +91,8 @@ export default function Navigation(props) {
       {isLogin ? (
         <Login path="/login" />
       ) : (
-        <div className={classes.root}>
-          <AppBar
+        <div className={classes.root} >
+          <AppBar 
             position="fixed"
             className={clsx(classes.appBar, {
               [classes.appBarShift]: open,
@@ -100,7 +100,7 @@ export default function Navigation(props) {
           >
             <Toolbar>
               <IconButton
-                color="inherit"
+               
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
@@ -132,9 +132,9 @@ export default function Navigation(props) {
             </Toolbar>
           </AppBar>
 
-          <Drawer
+          <Drawer 
             variant="permanent"
-            className={clsx(classes.drawer, {
+            className={clsx(classes.drawer,classes.drawerColor, {
               [classes.drawerOpen]: open,
               [classes.drawerClose]: !open,
             })}
@@ -145,15 +145,7 @@ export default function Navigation(props) {
               }),
             }}
           >
-            <div className={classes.toolbar + " side-click"}>
-              {/*-------note:----code for dropdownlist(future development)
-              {/*{open ? (
-                <ListItem>
-                  <AppIcon src={app_icon} name={name}></AppIcon>
-                </ListItem>
-              ) : (
-                ""
-              )} */}
+            <div className={classes.toolbar + " side-click"} >
               <h2>Navigation</h2>
               <div></div>
               <IconButton onClick={handleDrawerClose}>

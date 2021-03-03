@@ -1,6 +1,6 @@
 
 import { createMuiTheme } from "@material-ui/core";
-
+import React, { useEffect, useState } from "react";
 const color = localStorage.getItem('themeColor');
 
 const theme =  createMuiTheme({
@@ -14,6 +14,7 @@ const theme =  createMuiTheme({
     },
   },
 });
+
 
 
 export default theme;
