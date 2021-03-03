@@ -21,8 +21,11 @@ export default function ItemOverview() {
   const reducerState = useSelector((state) => state);
   const [componentLoader, setComponentLoader] = useState(false);
   const [noDataFound, setNoDataFound] = React.useState(false);
-  const [entityCount, setEntityCount] = React.useState({});
+  const [entityCount, setEntityCount] = React.useState([]);
   const [entityTypes, setEntityTypes] = React.useState([]);
+  const [entityListId, setEntityListId] = React.useState("");
+  const [state, setState] = useState(0);
+
   React.useEffect(() => {
     async function getEntityCount() {
       setComponentLoader(true);
@@ -35,7 +38,7 @@ export default function ItemOverview() {
         .then(function (response) {
           console.log(JSON.stringify(response.data));
           setComponentLoader(false);
-          setEntityCount(response.data[0]);
+          setEntityCount(response.data);
         })
         .catch(function (error) {
           console.log(error);
@@ -47,10 +50,6 @@ export default function ItemOverview() {
   }, []);
   React.useEffect(() => {
     async function getEntityTypes(Ids) {
-      console.log(
-        "getEntityTypesgetEntityTypesgetEntityTypesgetEntityTypes-------",
-        Ids
-      );
       var data = JSON.stringify({ entityIds: Ids });
       var config = {
         method: "post",
@@ -64,11 +63,8 @@ export default function ItemOverview() {
       await axios(config)
         .then(function (response) {
           if (response.data.length) {
-            console.log(
-              "response.dataresponse.dataresponse.dataresponse.dataresponse.dataresponse.data----------",
-              response.data
-            );
             setEntityTypes(response.data);
+            getSetEntityList(response.data);
           } else {
             setNoDataFound(true);
           }
@@ -93,14 +89,37 @@ export default function ItemOverview() {
         setNoDataFound(true);
       }
     }
-  }, [reducerState.applicationData.caseTypes]);
+  }, [
+    reducerState.applicationData.caseTypes,
+    reducerState.applicationData.applicationElements,
+  ]);
 
-  const handleClickItem = (Id) => {
-    // setOpen(!open);
-    if (Id) {
-      window.open(process.env.REACT_APP_ASSOCIATED_ENTITY_TYPES + Id, "_blank");
-      return;
+  const getSetEntityList = (entityTypes) => {
+    if (entityTypes) {
+      let entityIds = entityTypes
+        .map(function (x) {
+          return x.NAME;
+        })
+        .join(",");
+      if (entityIds) {
+        setEntityListId(entityIds);
+      } else {
+        setNoDataFound(true);
+      }
     }
+  };
+  const handleClickItem = (id) => {
+    if (id > 0) {
+      setEntityListId(id);
+    } else {
+      getSetEntityList(entityTypes);
+    }
+    // setEntityListId(Id);
+    // setOpen(!open);
+    // if (Id) {
+    //   window.open(process.env.REACT_APP_ASSOCIATED_ENTITY_TYPES + Id, "_blank");
+    //   return;
+    // }
   };
 
   return (
@@ -111,9 +130,10 @@ export default function ItemOverview() {
       borderRadius={35}
     >
       <Grid item xs={12} container spacing={3}>
-        <Grid item lg={3} md={3} xs={12} sm={12}>
+        <Grid item lg={5} md={5} xs={6} sm={6}>
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel id="demo-simple-select-outlined-label">
+              {" "}
               Items
             </InputLabel>
             <Select
@@ -121,36 +141,39 @@ export default function ItemOverview() {
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
               label="Items"
+              defaultValue={0}
+              onChange={(event) => handleClickItem(event.target.value)}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               {entityTypes?.length ? (
-                entityTypes.map((entityType) => (
-                  <MenuItem
-                    value={entityType.ID}
-                    key={entityType.ENTITY_ID}
-                    onClick={() => handleClickItem(entityType.NAME)}
-                  >
+                <MenuItem
+                  value={0}
+                  key="0"
+                  onChange={() => getSetEntityList(entityTypes)}
+                >
+                  <em>All</em>
+                </MenuItem>
+              ) : (
+                []
+              )}
+
+              {entityTypes?.length ? (
+                entityTypes?.map((entityType) => (
+                  <MenuItem key={entityType.NAME} value={entityType.NAME}>
                     {entityType.ID}
                   </MenuItem>
                 ))
               ) : (
-                <MenuItem value="">
+                <MenuItem value={-1}>
                   <em>No Data Available</em>
                 </MenuItem>
               )}
-              {/* <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem> */}
             </Select>
           </FormControl>
         </Grid>
-
         <Grid
           item
-          lg={9}
-          md={9}
+          lg={7}
+          md={7}
           xs={12}
           sm={12}
           style={{ "text-align": "right" }}
@@ -166,11 +189,6 @@ export default function ItemOverview() {
           </Button>
         </Grid>
 
-        {/* <Grid item lg={12} md={12} xs={12} sm={12}>
-          <Typography variant="caption" display="block" gutterBottom>
-            COUNT OF ITEMS
-          </Typography>
-        </Grid> */}
         {componentLoader ? (
           <div className={classes.w_100}>
             <ComponentLoader type="rect" />
@@ -179,10 +197,7 @@ export default function ItemOverview() {
           <>
             {entityCount ? (
               <>
-                {/* <div className={classes.activityGraph}>
-              <ActiveEntity />
-            </div> */}
-                <Grid item lg={12} md={12} xs={12} sm={12}>
+                {/* <Grid item lg={12} md={12} xs={12} sm={12}>
                   <Typography variant="subtitle2" gutterBottom>
                     COUNT OF ITEMS
                   </Typography>
@@ -205,72 +220,78 @@ export default function ItemOverview() {
                         sm={12}
                         className={`sm-border-left ` + classes.activityGraph}
                       >
-                        <ActiveEntity />
+                        {entityListId ? (
+                          <ActiveEntity entityListId={entityListId} />
+                        ) : (
+                          <>
+                            {
+                              noDataFound && <>No Data found</>
+                              //  ? (
+                              //   <>No Data found</>
+                              // ) : (
+                              //   <div>
+                              //     <Skeleton className={classes.skeletonWidth} />
+                              //   </div>
+                              // )
+                            }
+                          </>
+                        )}
                       </Grid>
                     </Grid>
                   </Container>
-                </Grid>
+                </Grid> */}
 
-                <Grid item lg={12} md={12} xs={12} sm={12}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    COUNT OF ITEMS BY STATUS
-                  </Typography>
-                  <Container className={classes.mt_one}>
-                    <Grid container spacing={3}>
-                      <Grid item lg={3} md={3} xs={12} sm={12}>
-                        <Typography
-                          variant="h3"
-                          gutterBottom
-                          className={classes.h3_text}
+                {entityCount.map((entity, index) => (
+                  <Grid item lg={12} md={12} xs={12} sm={12}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      {entity.Title}
+                    </Typography>
+                    <Container className={classes.mt_one}>
+                      <Grid container spacing={3}>
+                        <Grid item lg={3} md={3} xs={12} sm={12}>
+                          <Typography
+                            variant="h3"
+                            gutterBottom
+                            className={classes.h3_text}
+                          >
+                            {entity.Count}
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          lg={9}
+                          md={9}
+                          xs={12}
+                          sm={12}
+                          className={`sm-border-left ` + classes.activityGraph}
                         >
-                          {entityCount.sttus_count}
-                        </Typography>
+                          {index == 0 ? (
+                            entityListId ? (
+                              <ActiveEntity entityListId={entityListId} />
+                            ) : (
+                              <>
+                                {
+                                  noDataFound && <>No Data found</>
+                                  //  ? (
+                                  //   <>No Data found</>
+                                  // ) : (
+                                  //   <div>
+                                  //     <Skeleton className={classes.skeletonWidth} />
+                                  //   </div>
+                                  // )
+                                }
+                              </>
+                            )
+                          ) : (
+                            <Typography variant="h6" gutterBottom>
+                              {entity.Title}
+                            </Typography>
+                          )}
+                        </Grid>
                       </Grid>
-                      <Grid
-                        item
-                        lg={9}
-                        md={9}
-                        xs={12}
-                        sm={12}
-                        className={`sm-border-left `}
-                      >
-                        <Typography variant="h6" gutterBottom>
-                          Status
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Container>
-                </Grid>
-                <Grid item lg={12} md={12} xs={12} sm={12}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    COUNT OF ITEMS BY CATEGORY
-                  </Typography>
-                  <Container className={classes.mt_one}>
-                    <Grid container spacing={3}>
-                      <Grid item lg={3} md={3} xs={12} sm={12}>
-                        <Typography
-                          variant="h3"
-                          gutterBottom
-                          className={classes.h3_text}
-                        >
-                          {entityCount.category_count}
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        lg={9}
-                        md={9}
-                        xs={12}
-                        sm={12}
-                        className={`sm-border-left `}
-                      >
-                        <Typography variant="h6" gutterBottom>
-                          CATEGORY
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Container>
-                </Grid>
+                    </Container>
+                  </Grid>
+                ))}
               </>
             ) : (
               <div style={{ height: "2rem" }}>No Data Found</div>

@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { DataGrid, GridOverlay } from "@material-ui/data-grid";
 import { FormControl, Grid, InputLabel, MenuItem } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
+import { makeStyles } from "@material-ui/core/styles";
+import { DataGrid, GridOverlay } from "@material-ui/data-grid";
+import React,{useEffect} from "react";
 import {
-  default as useStyles,
-  default as useStylesBase,
+  default as useStylesBase
 } from "../../assets/css/common_styles";
+
+
+
 function PeopleActivityTab(props) {
   const classesBase = useStylesBase();
-
-
+// use for provide column name display in grid 
   const useNoRowStyles = makeStyles((theme) => ({
     root: {
       flexDirection: "column",
@@ -53,6 +54,8 @@ function PeopleActivityTab(props) {
       width: 250,
     },
   ];
+
+  // use for when no data available hen display this ui 
   function CustomNoRowsOverlay() {
     const classes = useNoRowStyles();
 
@@ -104,7 +107,7 @@ function PeopleActivityTab(props) {
 
   const handleActivityFilterChange = (value) => {
     props.setActivityFilterDrpValue(value);
-    props.CaseActivityLogList(0, props.peopleInfo, false);
+    props.CaseActivityLogList(value,0, props.peopleInfo, false);
   };
 
   return (
@@ -118,9 +121,9 @@ function PeopleActivityTab(props) {
             Select
             className={classesBase.mb_one}
           >
-             <InputLabel id="demo-controlled-open-select-label">
-                 Select Case Type 
-                </InputLabel>
+            <InputLabel id="demo-controlled-open-select-label">
+              Select Type
+            </InputLabel>
             <Select
               className="input-dropdown"
               name="employeeStatus"

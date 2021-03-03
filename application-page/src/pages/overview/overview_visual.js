@@ -10,14 +10,12 @@ import {
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { navigate } from "@reach/router";
-import React, { useState } from "react";
-import Carousel from "react-material-ui-carousel";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import SwipeableViews from "react-swipeable-views";
 import GotoBackButton from "../../components/common/BackButton.js";
-import AssigendCase from "../../components/react_graph/assigend_case";
-import AssignedCaseTypeSupervisor from "../../components/react_graph/assigned_supervisor_graph";
+import ComponentLoader from "../../components/common/component-loader.js";
 import Example from "../../components/react_graph/common_graph";
-import CaseTypeStatusGraph from "../../components/react_graph/status_case_graph";
 
 const basePath = process.env.REACT_APP_BASE_PATH;
 
@@ -44,6 +42,11 @@ export default function VisualOverview(props) {
   const [value, setValue] = useState(0);
   const theme = useTheme();
   const isParent = props.location?.state?.isParent;
+  const [caseTypeData, setCaseTypeData] = useState([]);
+  const [caseTypeIds, setCaseTypeIds] = useState([]);
+  const [dataAvailableCaseTypeIds, setDataAvailableCaseTypeIds] = useState([]);
+  const reducerState = useSelector((state) => state);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -57,6 +60,19 @@ export default function VisualOverview(props) {
       state: { isParent: true, isChild: false },
     });
   };
+
+  useEffect(() => {
+    let caseTypes = reducerState.applicationData.caseTypes;
+    if (caseTypes && caseTypes.length) {
+      let ids = caseTypes
+        .map(function (x) {
+          return x.CASE_TYPE_ID;
+        })
+        .join(",");
+      setCaseTypeData(caseTypes);
+      setCaseTypeIds(ids);
+    }
+  }, [reducerState.applicationData.caseTypes]);
 
   const a11yProps = (index) => {
     return {
@@ -95,45 +111,56 @@ export default function VisualOverview(props) {
             </form>
           </Grid>
           <Grid item lg={8} md={8} xs={12} sm={8}>
-            <div>
-              <Paper elevation={3}>
-                <AppBar position="static" elevation={3}>
-                  <Tabs
-                    className="nav-tab-list"
-                    value={value}
-                    onChange={handleChange}
-                    indicatorColor="primary"
-                    textColor="secondary"
-                    variant="fullWidth"
-                    aria-label="full width tabs example"
-                  >
-                    <Tab className="nav-tab" label="All" {...a11yProps(0)} />
-                    <Tab className="nav-tab" label="Tab" {...a11yProps(1)} />
-                    <Tab className="nav-tab" label="Tab" {...a11yProps(2)} />
-                  </Tabs>
-                </AppBar>
-              </Paper>
-              <SwipeableViews
-                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                index={value}
-                onChangeIndex={handleChangeIndex}
-              >
-                <TabPanel value={value} index={0} dir={theme.direction}>
-                  <Carousel interval={125250000}>
-                    <CaseTypeStatusGraph />
-                    <Example />
-                    <AssigendCase />
-                    <AssignedCaseTypeSupervisor />
-                  </Carousel>
-                </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
-                  Tab-2
-                </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
-                  Tab-3
-                </TabPanel>
-              </SwipeableViews>
-            </div>
+            {caseTypeData.length ? (
+              <div>
+                <Paper elevation={3} style={{ width: "fit-content" }}>
+                  <AppBar position="static" elevation={3}>
+                    <Tabs
+                      className="nav-tab-list"
+                      value={value}
+                      onChange={handleChange}
+                      indicatorColor="primary"
+                      textColor="secondary"
+                      variant="fullWidth"
+                      aria-label="full width tabs example"
+                    >
+                      <Tab className="nav-tab" label="All" {...a11yProps(0)} />
+                      {caseTypeData.map((caseType) => (
+                        <Tab className="nav-tab" label={caseType?.NAME} />
+                      ))}
+                    </Tabs>
+                  </AppBar>
+                </Paper>
+                <SwipeableViews
+                  axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+                  index={value}
+                  onChangeIndex={handleChangeIndex}
+                >
+                  <TabPanel value={value} index={0} dir={theme.direction}>
+                    {caseTypeData.length ? (
+                      <Example caseTypes={[caseTypeIds]} />
+                    ) : (
+                      []
+                    )}
+                  </TabPanel>
+                  {caseTypeData.map((caseType) => (
+                    <TabPanel
+                      value={caseType?.CASE_TYPE_ID}
+                      index={caseType?.CASE_TYPE_ID}
+                      dir={theme.direction}
+                    >
+                      {caseTypeData.length ? (
+                        <Example caseTypes={[caseType?.CASE_TYPE_ID]} />
+                      ) : (
+                        []
+                      )}
+                    </TabPanel>
+                  ))}
+                </SwipeableViews>
+              </div>
+            ) : (
+              <ComponentLoader type="rect" />
+            )}
           </Grid>
         </Grid>
       </Box>

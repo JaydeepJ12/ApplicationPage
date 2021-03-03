@@ -4,7 +4,7 @@ import { fade } from "@material-ui/core/styles/colorManipulator";
 const drawerWidth = 240;
 export default makeStyles(
   (theme) => {
-    console.log("-header---theme", theme);
+
     return {
       // --------------------- common -----------------/
       grow: {

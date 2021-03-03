@@ -60,6 +60,10 @@ function PeopleMainTab(props) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  
+  useEffect(() => {
+  }, [props.peopleInfo],[props.activityFilterValue]);
+
   const handleOnTaskScroll = (
     people_info,
     caseListData,
@@ -69,7 +73,6 @@ function PeopleMainTab(props) {
     const bottom =
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight;
-
     if (bottom && props.taskLoader && recordCount >= props.maxCount) {
       props.caseList(people_info, caseListData?.length, true);
     }
@@ -111,7 +114,7 @@ function PeopleMainTab(props) {
               className="nav-tab"
               onClick={() => {
                 props.setNavTab(2)
-                props.CaseActivityLogList(0, props.peopleInfo);
+                props.CaseActivityLogList(props.activityFilterValue,0, props.peopleInfo,false);
               }}
               label="Acivity"
               {...a11yProps(2)}
@@ -156,7 +159,7 @@ function PeopleMainTab(props) {
             noDataFound={props.noDataFound}
             rows={props.rows}
             activityLogMaxCount={props.activityLogMaxCount}
-            rowCount={props.recordCount}
+            rowCount={props.rowCount}
             onPageChange={props.handlePageChange}
             loading={props.loading}
             CaseActivityLogList={props.CaseActivityLogList}

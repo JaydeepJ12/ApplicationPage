@@ -1,8 +1,8 @@
 import { Avatar, Box ,Card, CardHeader } from "@material-ui/core";
 import React from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
-import ComponentLoader from "../common/component-loader";
-function PeopleCard(props) {
+import ComponentLoader from "../../components/common/component-loader";
+function EntityCard(props) {
   var classes = useStyles();
 
   const addDefaultSrc = (event) => {
@@ -33,35 +33,33 @@ function PeopleCard(props) {
   };
 
   return (
-    <div className="page" id="people-card">
-      {props.peopleData.length ? (
+    <div className="page" id="entity-card">
+      {props.entityList.length ? (
         <>
           {(props.componentLoader
-            ? Array.from(new Array(props.peopleData.length))
-            : props.peopleData
-          ).map((people, index) => (
+            ? Array.from(new Array(props.entityList.length))
+            : props.entityList
+          ).map((entity, index) => (
             <Box key={index} width="100%">
-              {people ? (
+              {entity ? (
                 <Card
                   padding={0.5}
                   style={{ cursor: "pointer" }}
                   className={
-                    props.peopleData.length > 1
+                    props.entityList.length > 1
                       ? "card-user-case " + classes.mb_one
                       : "card-user-case"
                   }
                   
                   onClick={() => {
-                    if(people.EMPLOYEE_ID !== props.peopleInfo.EMPLOYEE_ID){
-                      props.handlePeopleInfo(people.EMPLOYEE_ID);
+                    if(entity.EMPLOYEE_ID !== props.entityInfo.EMPLOYEE_ID){
+                      props.handleEntityInfo(entity.EMPLOYEE_ID);
                     }
                    
                   }}
                 >
                   <CardHeader
-                    avatar={renderUserImage(people.FULL_NAME)}
-                    title={people.FULL_NAME}
-                    subheader={people.DEPARTMENT_NAME}
+                    subheader={entity.DEPARTMENT_NAME}
                   />
                 </Card>
               ) : (
@@ -104,4 +102,4 @@ function PeopleCard(props) {
     </div>
   );
 }
-export default PeopleCard;
+export default EntityCard;

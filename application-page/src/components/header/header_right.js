@@ -18,7 +18,7 @@ import React, { useState } from "react";
 // styles
 import useStyles from "./header_styles";
 import Settings from "./settings";
-
+import CommonAvatar from "../../components/common/avatar";
 const notifications = [
   {
     id: 0,
@@ -102,10 +102,9 @@ export default function HeaderRight() {
         className={classes.headerMenuButton}
         onClick={(e) => setProfileMenu(e.currentTarget)}
       >
-        <Avatar
-          alt="Test"
-          src="https://s3-alpha-sig.figma.com/img/67fb/f195/182fba98c8d3f90d0466b52daece2698?Expires=1610928000&Signature=WbTSsAC2RK2pr2DDwOxX44kddohUxpwnCq9Y6QFkJ73fvWpfBn1w~~Sf0GxfLpuyhu4Csza5VpKa8kFbKUA1Y5-7zAnpeqSUCspdUnnkWyyPC1mFkBdkKp~yZbsnHIENumo3wTmvz~pSDdHoyFgxOREPaCWOQukUjXQrVyem4QY~wYdbkQLOeeorCecTzOi-qcXS1PqXe~tT1qpZuytEbfpy~oo~RysXbXrfUNdpIQ4HcSKnw7I-dgJuwvx5U2mWkX8CorMgQi5dmwYd5Dwyyvd-gD7cUJUP~PFYBJ0sxIGwMb-lfz9oCe~X80q4bacvjJb9-77-HrQuQ5N3yC8Vng__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
-        />
+
+          <CommonAvatar name={'Test'} sizeClass={classes.avt_small} />
+       
       </IconButton>
       <Menu
         id="notifiation-list"

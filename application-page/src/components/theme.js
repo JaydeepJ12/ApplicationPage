@@ -1,15 +1,19 @@
+
 import { createMuiTheme } from "@material-ui/core";
 
-const theme = createMuiTheme({
+const color = localStorage.getItem('themeColor');
+
+const theme =  createMuiTheme({
   palette: {
     primary: {
-      main: "#03DAC5",
-      contrastText: "#444444",
+      main: color && color != 'undefined' ? color : "#03DAC5",
+      contrastText: "#ffffff",
     },
     secondary: {
-      main: "#444444",
+      main: "#ffffff",
     },
   },
 });
+
 
 export default theme;

@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useState } from "react";
 import useStyles from "../../assets/css/common_styles";
 import * as notification from "../../components/common/toast";
-
+import CommonAvatar from "../../components/common/avatar";
 export default function CasePreview(props) {
   const classes = useStyles();
   const [caseId, setCaseId] = useState(props.caseId);
@@ -58,22 +58,7 @@ export default function CasePreview(props) {
     }
   };
 
-  const renderUserImage = (userName) => {
-    if (userName) {
-      return (
-        <Avatar
-          className={classes.large}
-          onError={(event) => addDefaultSrc(event)}
-          src={
-            "http://services.boxerproperty.com/userphotos/DownloadPhoto.aspx?username=" +
-            userName
-          }
-        />
-      );
-    } else {
-      return <Avatar src="../assets/images/default-userimage.png" />;
-    }
-  };
+ 
 
 
   return (
@@ -103,7 +88,7 @@ export default function CasePreview(props) {
               }
             />
             <IconButton style={{ marginLeft: "1rem" }} className="st-pt-0">
-              {renderUserImage(caseData.assignedTo)}
+            <CommonAvatar name={caseData.assignedTo} sizeClass={classes.avt_small} />
             </IconButton>
           </ListItem>
         </CardActions>
