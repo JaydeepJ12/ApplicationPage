@@ -24,7 +24,7 @@ function PeopleCard(props) {
             ? Array.from(new Array(props.peopleData.length))
             : props.peopleData
           ).map((people, index) => (
-            <Box key={index} width="100%">
+            <Box key={index} width="100%" classes={classes.CommonHoverColor}>
               {people ? (
                 <Card
                   padding={0.5}

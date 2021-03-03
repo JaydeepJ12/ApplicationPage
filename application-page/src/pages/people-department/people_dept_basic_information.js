@@ -8,7 +8,6 @@ function PeopleBasicInfoTab(props) {
 
   useEffect(() => {}, [props.peopleInfo]);
 
-  console.log("---props.peopleInfo", props.peopleInfo);
   return (
     <div className="page" id="people-basic-information">
       {!props.dataInfoLoaded ? (
@@ -95,11 +94,7 @@ function PeopleBasicInfoTab(props) {
                       onClick={() => {
                         props.getDepartmentPeopleList(
                           0,
-                          {
-                            searchText: props.peopleInfo.MANAGER_LDAP_PATH.split(
-                              "="
-                            )[1]?.split(",")[0],
-                          },
+                          {'employee_id': props.peopleInfo.manager_id},
                           0
                         );
                       }}

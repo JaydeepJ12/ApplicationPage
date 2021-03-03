@@ -112,7 +112,12 @@ export default makeStyles(
         width: 200,
         height: 50,
       },
-
+      cardHover: {
+        color: theme.palette.text.hint,
+        "&:hover": {
+          color: theme.color,
+        },
+      },
       activityGraph: {
         width: "100%",
         height: 250,

@@ -96,7 +96,9 @@ export default function PeopleDepartment() {
       if (filters.searchText && filters.searchText !== undefined) {
         Object.assign(jsonData, { Display_name: filters.searchText });
       }
-
+      if (filters.employee_id && filters.employee_id !== undefined) {
+        Object.assign(jsonData, { employee_id: filters.employee_id });
+      }
       Object.assign(jsonData, {
         empStatus: filters.employeeStatus ? filters.employeeStatus : "active",
       });
