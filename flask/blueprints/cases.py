@@ -112,7 +112,6 @@ def getDepartmentPeoples():
 @bp.route('/getPeopleInfo', methods=['POST'])
 def getPeopleInfo():
     data = request.json
-    print(data)
     df = db.get_people_info(data['EMPLOYEE_ID'])
     return df.to_json(orient='records')
 
@@ -383,10 +382,4 @@ def case_activity_log_test():
         return df
 
 
-@bp.route('/department_fetch', methods=['POST'])
-def department_fetch():
-    if request.method == 'POST':
-        data = request.json
-        print(data)
-        df = db.department_fetch(data)
-        return df.to_json(orient='records')
+
