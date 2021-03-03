@@ -5,7 +5,7 @@ import json
 import time
 import numpy as np
 from handlers.cases import CaseHandler
-
+from flask_cors import CORS, cross_origin
 bpu = Blueprint('people', __name__, url_prefix='/people')
 
 db = CasesSQL()
@@ -18,6 +18,7 @@ def getPeople():
     return df.to_json(orient='records')
 
 @bpu.route('/department_fetch', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def department_fetch():
     if request.method == 'POST':
         data = request.json

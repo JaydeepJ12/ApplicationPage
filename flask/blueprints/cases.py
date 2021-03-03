@@ -110,6 +110,7 @@ def getDepartmentPeoples():
 
 
 @bp.route('/getPeopleInfo', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def getPeopleInfo():
     data = request.json
     df = db.get_people_info(data['EMPLOYEE_ID'])
