@@ -1,5 +1,4 @@
-import { Button, Typography } from "@material-ui/core";
-// import API from "../api_base/api";
+import { Typography } from "@material-ui/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
@@ -9,8 +8,9 @@ import {
   Legend,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
+
 // we get all the data for all of the graphs from teh first call
 // so we should use that every time
 const case_type_data = (ids) => {
@@ -18,8 +18,7 @@ const case_type_data = (ids) => {
 };
 
 const StatusGraph = (props) => {
-  // need to either get defind colors from db, or define them
-  //in the front end
+  // need to either get defined colors from db, or define them in the front end
   const obj = props.data;
   return (
     <BarChart width={800} height={300} data={obj}>
@@ -35,10 +34,9 @@ const StatusGraph = (props) => {
   );
 };
 
-// coulds tranform to jsx element that takes props
+// could transform to jsx element that takes props
 const StatusPriorityGraph = (props) => {
-  // need to either get defind c olors from db, or define them
-  //in the front end
+  // need to either get defined colors from db, or define them in the front end
   const obj = props?.data;
   let keys = [];
   if (obj.length) {
@@ -53,17 +51,16 @@ const StatusPriorityGraph = (props) => {
       <YAxis />
       <Tooltip />
       <Legend verticalAlign="top" align="right" />
-      <Bar dataKey="No Due Date" stackId="a" />
-      <Bar dataKey="Not Due" stackId="a" fill="#855CF8" />
-      <Bar dataKey="Past Due" stackId="a" fill="#c6b3e6" />
-      <Bar dataKey="Due" stackId="a" fill="#c6b3e6" />
+      <Bar dataKey="No Due Date" stackId="a" fill="#000000" />
+      <Bar dataKey="Not Due" stackId="a" fill="#808080" />
+      <Bar dataKey="Past Due" stackId="a" fill="#ff8c00" />
+      <Bar dataKey="Due" stackId="a" fill="#d1d1d1" />
     </BarChart>
   );
 };
 
 const AssignedToGraph = (props) => {
-  // need to either get defind c olors from db, or define them
-  //in the front end
+  // need to either get defined colors from db, or define them in the front end
   const obj = props?.data;
   let keys = [];
   if (obj.length) {
@@ -73,24 +70,19 @@ const AssignedToGraph = (props) => {
   return (
     <BarChart width={800} height={300} data={obj}>
       <CartesianGrid strokeDasharray="3 3" />
-      <XAxis
-        // angle={-90}
-        // textAnchor="end"
-        // interval={0}
-        dataKey="name"
-      />
+      <XAxis dataKey="name" />
       <YAxis />
       <Tooltip />
       <Legend verticalAlign="top" align="right" />
-      <Bar dataKey="No Due Date" stackId="r" />
-      <Bar dataKey="Not Due" stackId="r" fill="#855CF8" />
-      <Bar dataKey="Past Due" stackId="r" fill="#c6b3e6" />
-      <Bar dataKey="Due" stackId="r" fill="#c6b3e6" />
+      <Bar dataKey="No Due Date" stackId="r" fill="#000000" />
+      <Bar dataKey="Not Due" stackId="r" fill="#808080" />
+      <Bar dataKey="Past Due" stackId="r" fill="#ff8c00" />
+      <Bar dataKey="Due" stackId="r" fill="#d1d1d1" />
     </BarChart>
   );
 };
 
-export default function Example(props) {
+export default function GraphVisuals(props) {
   const [caseData, setCaseData] = useState(false);
 
   console.log(props.caseData);
@@ -106,24 +98,12 @@ export default function Example(props) {
       });
   };
 
-  const handleRefreshClick = () => {
-    getCaseTypeData();
-  };
-
   useEffect(() => {
     getCaseTypeData();
   }, []);
 
   return (
     <div className="grpah">
-      <Button
-        color="primary"
-        onClick={() => {
-          handleRefreshClick();
-        }}
-      >
-        Refresh
-      </Button>
       <Typography
         style={{ textAlign: "center" }}
         variant="h5"
