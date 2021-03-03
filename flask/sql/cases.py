@@ -463,27 +463,28 @@ class CasesSQL:
 
     def get_people_info(self, EMPLOYEE_ID):
         query = f'''
-           	SELECT 
-                c.EMPLOYEE_ID,
-				c.FULL_NAME as Display_name,
-				c.JOB_TITLE as jobTitle,
-				c.DEPARTMENT_NAME as BasicName,
-				c.PHONE_NUMBER as EmpCellPhone,
-				c.CITY,
-				c.STATE,
-				c.LAST_NAME,
-				c.STREET_ADDRESS as OFFICE_LOCATION,
-				c.MANAGER_LDAP_PATH,
-				c.BIRTH_DATE,
-				c.FIRST_NAME,
-				c.SHORT_USER_NAME,
-				c.HIRE_DATE,
-				c.GENDER,
-				c.MIDDLE_NAME,
-				c.EMAIL_ADDRESS,
-				c.ZIP_CODE,
-                et.EMPLOYEE_TYPE_NAME as empType
-                			FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID) WHERE c.EMPLOYEE_ID ={EMPLOYEE_ID}
+            
+           	# SELECT 
+            #     c.EMPLOYEE_ID,
+			# 	c.FULL_NAME as Display_name,
+			# 	c.JOB_TITLE as jobTitle,
+			# 	c.DEPARTMENT_NAME as BasicName,
+			# 	c.PHONE_NUMBER as EmpCellPhone,
+			# 	c.CITY,
+			# 	c.STATE,
+			# 	c.LAST_NAME,
+			# 	c.STREET_ADDRESS as OFFICE_LOCATION,
+			# 	c.MANAGER_LDAP_PATH,
+			# 	c.BIRTH_DATE,
+			# 	c.FIRST_NAME,
+			# 	c.SHORT_USER_NAME,
+			# 	c.HIRE_DATE,
+			# 	c.GENDER,
+			# 	c.MIDDLE_NAME,
+			# 	c.EMAIL_ADDRESS,
+			# 	c.ZIP_CODE,
+            #     et.EMPLOYEE_TYPE_NAME as empType
+            #     			FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID) WHERE c.EMPLOYEE_ID ={EMPLOYEE_ID}
         '''
         return self.db.execQuery(query)
 

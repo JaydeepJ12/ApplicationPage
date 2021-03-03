@@ -213,7 +213,6 @@ export default function PeopleDepartment() {
     if (isPrev) {
       skipCount = gridSkipCount - activityLogMaxCount * 2;
     }
-   console.log("-------CaseActivityLogList",activityFilterValue);
     setRows([]);
     var jsonData = {
       username: people.SHORT_USER_NAME ? people.SHORT_USER_NAME : "dixitms",
@@ -324,6 +323,7 @@ export default function PeopleDepartment() {
             peopleInfo={peopleInfo}
             noDataFound={noDataFound}
             dataInfoLoaded={dataInfoLoaded}
+            getDepartmentPeopleList={getDepartmentPeopleList}
           ></PeopleBasicInfo>
 
           <div className={classes.mt_one}>
