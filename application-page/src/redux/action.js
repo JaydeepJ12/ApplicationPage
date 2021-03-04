@@ -20,3 +20,10 @@ export const applicationElements = (content) => ({
     content,
   },
 });
+
+export const themeColor = (content) => ({
+  type: actions.THEME_COLOR,
+  payload: {
+    content,
+  },
+});

@@ -4,15 +4,16 @@ import {
 } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import axios from "axios";
-import React from "react";
+import React,{useContext} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import theme from "../src/components/theme";
+// import theme from "../src/components/theme";
 import ErrorPage from "./components/common/error-page/error-page";
 import PageNotFound from "./components/common/page-not-found/page-not-found";
 import ReducerData from "./components/common/reducer-data.js";
 import Navigation from "./components/header/navigation";
 import { actionData } from "./redux/action";
-
+import { createMuiTheme } from "@material-ui/core";
+import NumberContext from '../src/components/common/settings/color_picker';
 const generateClassName = createGenerateClassName({
   productionPrefix: "c",
 });
@@ -56,6 +57,23 @@ function App() {
     reducerState.applicationData.isErrorPage,
   ]);
 
+
+  // for theme 
+  var color = reducerState.applicationData.themeColor ? reducerState.applicationData.themeColor : localStorage.getItem('themeColor');
+  const theme =  createMuiTheme({
+    palette: {
+      primary: {
+        main: color && color != 'undefined' ? color : "#03DAC5",
+        contrastText: "#ffffff",
+      },
+      secondary: {
+        main: "#ffffff",
+      },
+    },
+  });
+  
+  //end for theme 
+  // const color = useContext(NumberContext);
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider generateClassName={generateClassName} injectFirst>

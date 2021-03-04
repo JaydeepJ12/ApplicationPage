@@ -111,7 +111,7 @@ export default function VisualOverview(props) {
           <Grid item lg={8} md={8} xs={12} sm={8}>
             {caseTypeData.length ? (
               <div>
-                <Paper elevation={3} style={{ width: "fit-content" }}>
+                <Paper elevation={3}>
                   <AppBar position="static" elevation={3}>
                     <Tabs
                       className="nav-tab-list"

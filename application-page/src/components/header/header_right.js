@@ -91,7 +91,7 @@ export default function HeaderRight() {
       >
         <Badge
           badgeContent={isNotificationUnread ? notifications.length : null}
-          color={"primary"}
+          color={"secondary"}
         >
           <NotificationsIcon className={classes.headerIcon} />
         </Badge>
