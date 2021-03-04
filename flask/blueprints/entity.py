@@ -57,3 +57,10 @@ def entity_list_byId():
     data = request.json
     df = db.entity_list_byId(data.get('entityTypeIds'))
     return df.to_json(orient='records')
+
+
+# @bp1.route('/entity_list', methods=['POST'])
+# def entity_list_byId():
+#     data = request.json
+#     df = db.entity_list_byId(data.get('entityTypeIds'))
+#     return df.to_json(orient='records')
