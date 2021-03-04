@@ -125,10 +125,7 @@ header .MuiIconButton-label .MuiSvgIcon-root {
   font-size: 1.8rem;
   color: rgba(0, 0, 0, 0.54);
 }
-header.MuiPaper-elevation4 {
-  box-shadow: none !important;
-  /* box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12); */
-}
+
 
 /* --------------------end -header css ----------------------------- */
 
@@ -145,7 +142,6 @@ header.MuiPaper-elevation4 {
 }
 .card-user-case {
   background: rgba(196, 196, 196, 0.25);
-  box-shadow: none !important;
 }
 .card-background-color {
   background: lightskyblue;
@@ -268,7 +264,7 @@ header.MuiPaper-elevation4 {
 }
 /* case card  */
 .card-user-case:hover {
-  background: rgb(3 218 197) !important;
+  background: rgb(199 199 199);
 }
 .top-app-drp-list img {
   object-fit: scale-down !important;
@@ -375,4 +371,7 @@ header.MuiPaper-elevation4 {
 .MuiDataGrid-footer,
 .MuiDataGrid-columnsContainer {
   background-color: #e5e5e5 !important;
+}
+.MuiDrawer-paperAnchorDockedLeft {
+  border-right: 0;
 }
