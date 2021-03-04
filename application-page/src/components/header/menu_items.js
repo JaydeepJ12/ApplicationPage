@@ -44,10 +44,10 @@ const menuItems = [
       pageTitle: "Insights",
     },
     {
-      menuName: "Case Creator",
+      menuName: "Task Creator",
       menuIcon: <Create />,
-      menuPath: "/case-select",
-      pageTitle: "Create Case",
+      menuPath: "/task-select",
+      pageTitle: "Task Creator",
     },
   ];
 
