@@ -742,67 +742,53 @@ where a.IS_ACTIVE = 'Y'
             if all_data.get('empStatus') == "both":
                 status = '0 OR ACTIVE = 1'
             if all_data.get("provisioned") == "yes":
-                min_query = f"DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID > 1"
+                min_query = f"CAST(EAM.EXTERNAL_DATASOURCE_OBJECT_ID AS int) > 1"
             if all_data.get("provisioned") == "no":
-                min_query = f"DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID = null"
+                min_query = f"CAST(EAM.EXTERNAL_DATASOURCE_OBJECT_ID AS nvarchar) = null"
             all_data.pop('empStatus', None)
             all_data.pop('provisioned', None)
+            entity_id = all_data.pop('application_id', None)
             query = f'''
                         SELECT 
-                        EMPLOYEEID AS EMPLOYEE_ID
-                        ,EmpDisplayName AS Display_name
-                        ,EMP_DEPARTMENT_TOP_LEVEL AS Top_level_name
-                        ,Emp_DEPARTMENT_TOP_LEVEL_ID
-                        ,EMP_DEPARTMENT_BASIC_NAME AS BasicName
-                        ,Emp_DEPARTMENT_BASIC_NAME_ID
-                        ,DEPARTMENT AS subDepartment
-                        ,DepartmentID AS SUB_DEPARTMENT_ID
-                        ,Emp_JOB_FUNCTION_NAME AS jobFunction
-                        ,Emp_DEPARTMENT_JOB_FUNCTION_ID
-                        ,Emp_JOB_TITLE_NAME AS jobTitle
-                        ,Emp_DEPARTMENT_JOB_TITLE_ID
-                        ,EmpState AS employeeStatus
-                        ,Company_ID
-                        ,DSJT.empFirstName as FIRST_NAME
-                        ,DSJT.empLastName as LAST_NAME
-                        ,DSJT.MANAGER_LDAP_PATH
-                        ,DSJT.EmpCity as CITY
-                        ,DSJT.OFFICE_LOCATION
-                        ,DSJT.EmpCellPhone
-                        ,DSJT.HIRE_DATE
-                        ,DSJT.ZIP_CODE
-                        ,DSJT.EmpState as STATE
-						,DSJT.COMPANY_NAME as companyName
-                        ,DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID
-                        ,EMPT.EMPLOYEE_TYPE_NAME as empType
-                        ,EMPT.EMPLOYEE_TYPE_ID
-                        ,DSEM.SHORT_USER_NAME
-                        ,EmpEmail AS EMAIL_ADDRESS
-                        ,Manager.SupervisorId as manager_id
-                        ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
-                        
-                        FROM [DEPARTMENTS].[dbo].[vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSJT
-                        INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM WITH(NOLOCK) ON 
-                        DSEM.EMPLOYEE_GUID = DSJT.EMPLOYEE_GUID 
-                        OUTER APPLY  
-                                                       (  
-                                                        SELECT TOP 1 D2.EMAIL_Address As SupervisorSId,D2.Employee_ID As SupervisorId,COALESCE(D2.DISPLAY_NAME,D2.First_Name+' '+D2.Last_Name) AS  SUPERVISORNAME   
-                                                        ,D1.Manager_LDAP_Path,d2.SHORT_USER_NAME ,D2.City AS Manager_City,D2.State as Manager_State  
-                                                        FROM [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] D1 WITH (NOLOCK)  
-                                                        INNER JOIN [Departments].[DBO].[MANAGER_CONFIG] M1 WITH (NOLOCK) ON CONVERT(nvarchar(MAX),D1.Employee_GUID)=CONVERT(nvarchar(MAX),M1.Employee_GUID)  
-                                                          AND D1.Short_User_Name=DSEM.Short_User_Name  
-                                                        INNER JOIN [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] D2 WITH (NOLOCK) ON CONVERT(nvarchar(MAX),D2.Employee_GUID)=CONVERT(nvarchar(MAX),M1.MANAGER_GUID)  
-                                                        INNER JOIN [Departments].[DBO].[USER_ACCOUNT_STATUS_REF] UASR WITH(NOLOCK) ON D1.USER_AD_STATUS =UASR.STATUS_VALUE  
-                                                        INNER JOIN [Departments].[DBO].[USER_ACCOUNT_STATUS_REF] REF WITH (NOLOCK) ON REF.STATUS_VALUE = D1.USER_AD_STATUS  
-                                                          AND REF.STATUS_DISABLED = 'N'  
-                                                           
-                                                        --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
-                                                        ORDER BY M1.IS_Primary DESC  
-                                                       )Manager
-                        INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE] DSKT WITH(NOLOCK) ON 
-                        DSKT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID = Emp_DEPARTMENT_JOB_TITLE_ID 
-                        LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON
-                        DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID WHERE (ACTIVE = {status}) and {min_query} 
+                        DSJT.EMPLOYEEID AS EMPLOYEE_ID
+                       ,DSJT.EmpDisplayName AS Display_name
+                       ,DSJT.EMP_DEPARTMENT_TOP_LEVEL AS Top_level_name
+                       ,DSJT.Emp_DEPARTMENT_TOP_LEVEL_ID
+                       ,DSJT.EMP_DEPARTMENT_BASIC_NAME AS BasicName
+                       ,DSJT.Emp_DEPARTMENT_BASIC_NAME_ID
+                       ,DSJT.DEPARTMENT AS SubDepartment
+                       ,DSJT.DepartmentID AS SUB_DEPARTMENT_ID
+                       ,DSJT.Emp_JOB_FUNCTION_NAME AS JobFunction
+                       ,DSJT.Emp_DEPARTMENT_JOB_FUNCTION_ID
+                       ,DSJT.Emp_JOB_TITLE_NAME AS JobTitle
+                       ,DSJT.Emp_DEPARTMENT_JOB_TITLE_ID
+                       ,DSJT.empFirstName AS FIRST_NAME
+                       ,DSJT.empLastName AS LAST_NAME
+                       ,DSJT.MANAGER_LDAP_PATH
+                       ,DSJT.EmpCity AS CITY
+                       ,DSJT.OFFICE_LOCATION
+                       ,DSJT.EmpCellPhone
+                       ,DSJT.HIRE_DATE
+                       ,DSJT.ZIP_CODE
+                       ,DSJT.EmpState AS STATE
+                       ,DSJT.Company_ID
+                       ,DSJT.COMPANY_NAME AS CompanyName
+                       ,CAST(EAM.EXTERNAL_DATASOURCE_OBJECT_ID AS int) AS DEPARTMENT_STRUCTURE_JOB_TITLE_ID
+                       ,EMPT.EMPLOYEE_TYPE_NAME AS empType 
+                       ,EMPT.EMPLOYEE_TYPE_ID 
+                       ,DSJT.SAM_ACCOUNT_NAME AS SHORT_USER_NAME 
+                       ,EmpEmail AS EMAIL_ADDRESS
+                       ,DSEM2.Employee_ID As Manager_Id
+                       ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
+                       FROM  [BOXER_ENTITIES].[DBO].[ENTITY] E 
+                       INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_TYPE EAT ON E.ENTITY_TYPE_ID=EAT.ENTITY_TYPE_ID AND EAT.SYSTEM_CODE='DPTJT' AND EAT.IS_ACTIVE='Y'
+                       INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_METADATA EAM ON E.ENTITY_ID=EAM.ENTITY_ID AND EAT.ENTITY_ASSOC_TYPE_ID=EAM.ENTITY_ASSOC_TYPE_ID and EAM.IS_ACTIVE='Y'
+                       INNER JOIN [DEPARTMENTS].[dbo].[vw_Table_DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSJT ON EAM.EXTERNAL_DATASOURCE_OBJECT_ID=DSJT.Emp_DEPARTMENT_JOB_TITLE_ID
+                       INNER JOIN [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM WITH(NOLOCK) ON DSJT.EMPLOYEE_GUID=DSEM.EMPLOYEE_GUID
+                       INNER JOIN [Departments].[DBO].[MANAGER_CONFIG] MG WITH (NOLOCK) ON DSEM.Employee_GUID=MG.Employee_GUID
+                       INNER JOIN [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM2 WITH (NOLOCK) ON MG.MANAGER_GUID=convert(nvarchar(200),DSEM2.Employee_GUID)
+                       LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID 
+                       WHERE  E.ENTITY_ID =   {entity_id} and (ACTIVE = {status}) AND {min_query}
                     '''
             if all_data.get("employee") == "all":
                 query = query + \
