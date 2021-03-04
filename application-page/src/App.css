@@ -372,3 +372,6 @@ header .MuiIconButton-label .MuiSvgIcon-root {
 .MuiDataGrid-columnsContainer {
   background-color: #e5e5e5 !important;
 }
+.MuiDrawer-paperAnchorDockedLeft {
+  border-right: 0;
+}

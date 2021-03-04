@@ -10,6 +10,9 @@ export default makeStyles(
       mt_one: {
         marginTop: theme.spacing(2),
       },
+      mt_two: {
+        marginTop: theme.spacing(4),
+      },
       mb_one: {
         marginBottom: theme.spacing(2),
       },
