@@ -36,18 +36,57 @@ function ActiveEntity(props) {
 
       await axios(config)
         .then(function (response) {
-          if (response.data.length) {
-            getSetGraphData(response.data);
-          } else {
+          getSetGraphData(response.data);
+          if (!response.data.length) {
             setNoDataFound(true);
           }
+          //  else {
+          //   getSetGraphData(response.data);
+          //   setNoDataFound(true);
+          // }
         })
         .catch(function (error) {
           console.log(error);
           // navigateToErrorPage(error?.message);
         });
     }
-    if (props.entityListId.trim() !== "") {
+    async function getEntitySttus(Ids, type) {
+      // alert("type---" + type);
+      setNoDataFound(false);
+      var jsonData = {
+        entityTypeIds: Ids,
+        systemCode: type,
+      };
+
+      var config = {
+        method: "post",
+        url: "/entity/entity_list_bySystemCode",
+        data: jsonData,
+      };
+
+      await axios(config)
+        .then(function (response) {
+          getSetGraphData(response.data);
+          if (!response.data.length) {
+            // getSetGraphData(response.data);
+            setNoDataFound(true);
+          }
+          // else {
+          //   getSetGraphData(response.data);
+
+          // }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    if (props.entityListId && props.type) {
+      // alert(props.entityListId);
+      // alert(props.type);
+      getEntitySttus(props.entityListId, props.type);
+    } else if (props.entityListId) {
+      // alert(props.entityListId);
       getEntitiesList(props.entityListId);
     }
   }, [props.entityListId]);
@@ -93,7 +132,7 @@ function ActiveEntity(props) {
       ) : (
         <>
           {noDataFound ? (
-            <>No Data Found</>
+            <>No Data Found {noDataFound}</>
           ) : (
             <div>
               <Skeleton className={classes.skeletonWidth} />

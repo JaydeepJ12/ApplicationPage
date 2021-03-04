@@ -713,6 +713,23 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             return str(exe)
 
+    def entity_list_bySystemCode(self, entityIds, systemCode):
+        try:
+            query = f'''
+            select eat.ENTITY_TYPE_ID as EntityType,
+                count([ENTITY_ID]) as count,
+                year(eam.CREATED_DATETIME) as CreatedDate
+                from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam
+                left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
+                where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
+                group by  year(eam.CREATED_DATETIME), eat.ENTITY_TYPE_ID
+                order by year(eam.CREATED_DATETIME)
+            '''
+            print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
     def department_fetch(self, all_data):
         try:
             status = 1
