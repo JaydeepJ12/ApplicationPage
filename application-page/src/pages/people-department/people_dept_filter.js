@@ -222,6 +222,7 @@ function PeopleDepartmentFilter(props) {
   };
   const handleFilterResetClick = () => {
     props.setNavTab(0);
+    props.setFilterData({})
     props.setSearchInput({ searchText: "" });
     props.getDepartmentPeopleList();
     handleFilterClear();
@@ -279,10 +280,10 @@ function PeopleDepartmentFilter(props) {
       // SET A TIMEOUT
       timeoutRef.current = null; // RESET REF TO NULL WHEN IT RUNS
       if (searchText) {
-      
+        props.filterValue.searchText = searchText;
         props.getDepartmentPeopleList(
           0,
-          { searchText: searchText },
+          props.filterValue,
           0
         )
       }else{
