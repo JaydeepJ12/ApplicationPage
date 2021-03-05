@@ -39,7 +39,7 @@ function PeopleCard(props) {
                   }}
                 >
                   <CardHeader
-                    avatar={  <CommonAvatar name={people.Display_name} sizeClass={classes.avt_small} />}
+                    avatar={  <CommonAvatar name={people.Display_name} sizeClass={classes.avt_small+" "+'avt-shadow'} />}
                     title={people.Display_name}
                     subheader={people.SubDepartment}
                   />

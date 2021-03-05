@@ -83,8 +83,8 @@ function PeopleMainTab(props) {
    }
   return (
     <div className="page" id="people-parent-tab">
-      <Paper>
-        <AppBar position="static" elevation={1}>
+      <Paper className="rounded">
+        <AppBar position="static" elevation={4}>
           <Tabs
             value={value}
             onChange={handleChange}
