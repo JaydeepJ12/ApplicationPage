@@ -86,3 +86,16 @@ def type_list_by_id():
         return 'No Data Available'
 
     return df.to_json(orient='records')
+
+@bp1.route('/data_by_entity_id', methods=['GET'])
+def data_by_entity_id():
+    ''' no limit and max for this, as there should never been a ton of these in the db'''
+    eid = request.args.get('id')
+    if eid == None:
+        return 'id field required'
+        
+    df = entities.entity_by_id(eid)
+    if df.empty == True: 
+        return 'No Data Available'
+
+    return df.to_json(orient='records')
