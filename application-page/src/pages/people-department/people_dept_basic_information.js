@@ -51,7 +51,7 @@ function PeopleBasicInfoTab(props) {
                   <Typography color={"primary"}>Job: </Typography>
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
-                  {props.peopleInfo?.jobTitle}
+                  {props.peopleInfo?.JobTitle}
                 </Grid>
                 <Grid item lg={4} md={4} xs={4} sm={4}>
                   <Typography color={"primary"}>Department: </Typography>
@@ -92,11 +92,7 @@ function PeopleBasicInfoTab(props) {
                       component="button"
                       variant="body2"
                       onClick={() => {
-                        props.getDepartmentPeopleList(
-                          0,
-                          {'employee_id': props.peopleInfo.manager_id},
-                          0
-                        );
+                        props.getDepartmentPeopleInfo(props.peopleInfo.Manager_Id);
                       }}
                     >
                       {

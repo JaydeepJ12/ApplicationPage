@@ -9,9 +9,9 @@ export default function ColorSetter() {
   const dispatch = useDispatch();
   const [color, setColor] = useState();
 
-  localStorage.removeItem("themeColor");
-  localStorage.setItem("themeColor", color);
-
+  if(color !== undefined){
+    localStorage.setItem("themeColor", color);
+  }
   React.useEffect(() => {
     dispatch(themeColor(color));
   }, [color]);

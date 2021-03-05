@@ -14,8 +14,6 @@ function PeopleCard(props) {
   };
 
 
-
-
   return (
     <div className="page" id="people-card">
       {props.peopleData.length ? (
@@ -43,7 +41,7 @@ function PeopleCard(props) {
                   <CardHeader
                     avatar={  <CommonAvatar name={people.Display_name} sizeClass={classes.avt_small} />}
                     title={people.Display_name}
-                    subheader={people.subDepartment}
+                    subheader={people.SubDepartment}
                   />
                 </Card>
               ) : (
