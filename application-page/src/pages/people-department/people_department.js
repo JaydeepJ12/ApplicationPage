@@ -57,8 +57,6 @@ export default function PeopleDepartment() {
 
   // Start  all API call
   const getDepartmentPeopleList = async (skipCount = 0, filters, isScroll) => {
-     console.log("-----filters",filters);
-    // console.log("-----filterValue",filterValue);
     if(filters === undefined){
       setFilterData({})
     }
@@ -117,6 +115,7 @@ export default function PeopleDepartment() {
       url: API.API_GET_PEOPLE_DEPARTMENTS,
       data: jsonData,
     };
+
     await axios(config)
       .then(function (response) {
      
@@ -307,6 +306,7 @@ export default function PeopleDepartment() {
             setSearchInput={setSearchInput}
             searchInput={searchInput}
             filterValue={filterValue}
+            appId={appId}
           ></PeopleDepartmentFilter>
           <div
             className={fixedHeightPaper}
