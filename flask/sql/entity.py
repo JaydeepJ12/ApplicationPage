@@ -31,8 +31,9 @@ class EntitySQL:
 
     def list_by_id(self, id, max_count=25, offset=0, ):
         ''' Id is an applicaiton id'''
-
-        id = self.tuplefy(id)
+        if ',' in id:
+            id = id.split(',')
+            id = self.tuplefy(id)
         query = f''' SELECT [ENTITY_ID]
       ,[ENTITY_TYPE_ID]
       ,[TITLE_METADATA_TEXT] as [Title]
