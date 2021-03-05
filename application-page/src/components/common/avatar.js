@@ -18,6 +18,7 @@ export default function CommonAvatar(props){
             boxShadow={1}
             className={props.sizeClass}
             alt={props.name}
+            
             src={process.env.REACT_APP_USER_ICON + props.name}
           />
         );

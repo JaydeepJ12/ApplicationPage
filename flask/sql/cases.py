@@ -466,7 +466,7 @@ class CasesSQL:
                 SELECT 
                 c.EMPLOYEE_ID,
                            c.FULL_NAME as Display_name,
-                           c.JOB_TITLE as jobTitle,
+                           c.JOB_TITLE as JobTitle,
                            c.DEPARTMENT_NAME as BasicName,
                            c.PHONE_NUMBER as EmpCellPhone,
                            c.CITY,
@@ -482,7 +482,7 @@ class CasesSQL:
                            c.MIDDLE_NAME,
                            c.EMAIL_ADDRESS,
                            c.ZIP_CODE,
-                         Manager.SupervisorId as manager_id
+                         Manager.SupervisorId as Manager_Id
                                        ,et.EMPLOYEE_TYPE_NAME as empType
                                   FROM [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] AS c 
                                                 LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] AS et 
@@ -734,6 +734,23 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             return str(exe)
 
+    def entity_list_bySystemCode(self, entityIds, systemCode):
+        try:
+            query = f'''
+            select eat.ENTITY_TYPE_ID as EntityType,
+            count(eam.FIELD_VALUE) as count,
+            eam.FIELD_VALUE as FieldValue
+            from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam WITH (NOLOCK)
+            left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
+            where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
+            group by  eam.FIELD_VALUE, eat.ENTITY_TYPE_ID, eam.FIELD_VALUE
+            order by eam.FIELD_VALUE
+            '''
+            print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
     def department_fetch(self, all_data):
         try:
             status = 1
@@ -779,6 +796,7 @@ where a.IS_ACTIVE = 'Y'
                        ,DSJT.SAM_ACCOUNT_NAME AS SHORT_USER_NAME 
                        ,EmpEmail AS EMAIL_ADDRESS
                        ,DSEM2.Employee_ID As Manager_Id
+                       ,DSEM2.BIRTH_DATE
                        ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
                        FROM  [BOXER_ENTITIES].[DBO].[ENTITY] E 
                        INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_TYPE EAT ON E.ENTITY_TYPE_ID=EAT.ENTITY_TYPE_ID AND EAT.SYSTEM_CODE='DPTJT' AND EAT.IS_ACTIVE='Y'

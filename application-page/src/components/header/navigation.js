@@ -134,7 +134,7 @@ export default function Navigation(props) {
 
           <Drawer 
             variant="permanent"
-            className={clsx(classes.drawer,classes.drawerColor, {
+            className={clsx(classes.drawer,classes.drawer, {
               [classes.drawerOpen]: open,
               [classes.drawerClose]: !open,
             })}
