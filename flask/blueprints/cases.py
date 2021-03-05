@@ -121,7 +121,7 @@ def getPeopleInfo():
 def getDepartmentEmpFilterValues():
     data = request.json
     print(data)
-    df = db.get_department_emp_filters(data['parentName'], data['parentID'])
+    df = db.get_department_emp_filters(data.get('parentName'), data.get('parentID'), data.get('entityId'))
     return df.to_json(orient='records')
 
 
