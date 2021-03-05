@@ -72,7 +72,6 @@ a {
   display: contents;
 }
 
-
 /* display end  */
 
 /*  start float  */
@@ -125,7 +124,6 @@ header .MuiIconButton-label .MuiSvgIcon-root {
   font-size: 1.8rem;
   color: rgba(0, 0, 0, 0.54);
 }
-
 
 /* --------------------end -header css ----------------------------- */
 
@@ -374,4 +372,7 @@ header .MuiIconButton-label .MuiSvgIcon-root {
 }
 .MuiDrawer-paperAnchorDockedLeft {
   border-right: 0;
+}
+.v-scroll {
+  overflow-x: scroll;
 }
