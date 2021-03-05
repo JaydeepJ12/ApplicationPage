@@ -738,13 +738,13 @@ where a.IS_ACTIVE = 'Y'
         try:
             query = f'''
             select eat.ENTITY_TYPE_ID as EntityType,
-                count([ENTITY_ID]) as count,
-                year(eam.CREATED_DATETIME) as CreatedDate
-                from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam
-                left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
-                where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
-                group by  year(eam.CREATED_DATETIME), eat.ENTITY_TYPE_ID
-                order by year(eam.CREATED_DATETIME)
+            count(eam.FIELD_VALUE) as count,
+            eam.FIELD_VALUE as FieldValue
+            from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam WITH (NOLOCK)
+            left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
+            where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
+            group by  eam.FIELD_VALUE, eat.ENTITY_TYPE_ID, eam.FIELD_VALUE
+            order by eam.FIELD_VALUE
             '''
             print(self.db.execQuery(query))
             return self.db.execQuery(query)

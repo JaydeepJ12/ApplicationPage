@@ -50,7 +50,7 @@ function ActiveEntity(props) {
           // navigateToErrorPage(error?.message);
         });
     }
-    async function getEntitySttus(Ids, type) {
+    async function getEntityListBySystemCode(Ids, type) {
       // alert("type---" + type);
       setNoDataFound(false);
       var jsonData = {
@@ -66,7 +66,7 @@ function ActiveEntity(props) {
 
       await axios(config)
         .then(function (response) {
-          getSetGraphData(response.data);
+          setGraphDataToSystemCode(response.data);
           if (!response.data.length) {
             // getSetGraphData(response.data);
             setNoDataFound(true);
@@ -84,7 +84,7 @@ function ActiveEntity(props) {
     if (props.entityListId && props.type) {
       // alert(props.entityListId);
       // alert(props.type);
-      getEntitySttus(props.entityListId, props.type);
+      getEntityListBySystemCode(props.entityListId, props.type);
     } else if (props.entityListId) {
       // alert(props.entityListId);
       getEntitiesList(props.entityListId);
@@ -103,6 +103,27 @@ function ActiveEntity(props) {
     let sum = 0;
     const cumulativeData = graphObject.map(function (data) {
       return { name: data.name, Count: (sum += data.Count) };
+    }, []);
+    setGraphData(cumulativeData);
+  };
+
+  const setGraphDataToSystemCode = (data) => {
+    console.log("----datadatadatadata----", data);
+    data = data.filter(function (el) {
+      return el.FieldValue !== null && el.FieldValue.trim() !== ""; // Changed this so a home would match
+    });
+    console.log("newArraynewArraynewArray--", data);
+    const graphArray = data.reduce((total, value) => {
+      total[value.FieldValue] = (total[value.FieldValue] || 0) + value.count;
+      return total;
+    }, []);
+    var graphObject = Object.keys(graphArray).map((e) => ({
+      name: e,
+      Count: graphArray[e],
+    }));
+    let sum = 0;
+    const cumulativeData = graphObject.map(function (data) {
+      return { name: data.name, Count: data.Count };
     }, []);
     setGraphData(cumulativeData);
   };

@@ -58,18 +58,15 @@ def entity_list_byId():
     df = db.entity_list_byId(data.get('entityTypeIds'))
     return df.to_json(orient='records')
 
-<<<<<<< HEAD
 @bp1.route('/entity_list_bySystemCode', methods=['POST'])
 def entity_list_bySystemCode():
     data = request.json
     print(data)
     df = db.entity_list_bySystemCode(data['entityTypeIds'], data['systemCode'])
     return df.to_json(orient='records')
-=======
 
 # @bp1.route('/entity_list', methods=['POST'])
 # def entity_list_byId():
 #     data = request.json
 #     df = db.entity_list_byId(data.get('entityTypeIds'))
 #     return df.to_json(orient='records')
->>>>>>> 69f6f72b9b0f41a691892dd1990b8e890d073cf3
