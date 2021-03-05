@@ -105,16 +105,17 @@ export default function GraphVisuals(props) {
     <div className="page" id="page-department">
       <Grid container spacing={3}>
         <Grid item lg={12} md={12} xs={12} sm={12}>
-          <div className="grpah">
-            <Typography
-              style={{ textAlign: "center" }}
-              variant="h5"
-              component="h5"
-              gutterBottom
-            >
-              Case Type Status
-            </Typography>
-            {caseData ? (
+          {caseData ? (
+            <div className="grpah">
+              <Typography
+                style={{ textAlign: "center" }}
+                variant="h5"
+                component="h5"
+                gutterBottom
+              >
+                Case Type Status
+              </Typography>
+
               <Grid container spacing={3}>
                 <Grid item lg={6} md={6} xs={12} sm={12}>
                   <StatusPriorityGraph
@@ -129,10 +130,10 @@ export default function GraphVisuals(props) {
                   <AssignedToGraph data={caseData.count_by_assigned_to} />
                 </Grid>
               </Grid>
-            ) : (
-              <ComponentLoader type="rect" />
-            )}
-          </div>
+            </div>
+          ) : (
+            <ComponentLoader type="rect" />
+          )}
         </Grid>
       </Grid>
     </div>
