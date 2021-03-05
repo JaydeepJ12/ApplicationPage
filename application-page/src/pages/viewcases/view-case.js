@@ -155,7 +155,7 @@ export default function ViewCase(props) {
   };
 
   const handleCasePreviewClick = (caseId, caseData) => {
-    alert("---call for info")
+    //alert("---call for info")
     setCaseId(caseId);
     setCaseData(caseData);
   };
