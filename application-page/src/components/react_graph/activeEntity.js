@@ -36,18 +36,57 @@ function ActiveEntity(props) {
 
       await axios(config)
         .then(function (response) {
-          if (response.data.length) {
-            getSetGraphData(response.data);
-          } else {
+          getSetGraphData(response.data);
+          if (!response.data.length) {
             setNoDataFound(true);
           }
+          //  else {
+          //   getSetGraphData(response.data);
+          //   setNoDataFound(true);
+          // }
         })
         .catch(function (error) {
           console.log(error);
           // navigateToErrorPage(error?.message);
         });
     }
-    if (props.entityListId.trim() !== "") {
+    async function getEntityListBySystemCode(Ids, type) {
+      // alert("type---" + type);
+      setNoDataFound(false);
+      var jsonData = {
+        entityTypeIds: Ids,
+        systemCode: type,
+      };
+
+      var config = {
+        method: "post",
+        url: "/entity/entity_list_bySystemCode",
+        data: jsonData,
+      };
+
+      await axios(config)
+        .then(function (response) {
+          setGraphDataToSystemCode(response.data);
+          if (!response.data.length) {
+            // getSetGraphData(response.data);
+            setNoDataFound(true);
+          }
+          // else {
+          //   getSetGraphData(response.data);
+
+          // }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    if (props.entityListId && props.type) {
+      // alert(props.entityListId);
+      // alert(props.type);
+      getEntityListBySystemCode(props.entityListId, props.type);
+    } else if (props.entityListId) {
+      // alert(props.entityListId);
       getEntitiesList(props.entityListId);
     }
   }, [props.entityListId]);
@@ -64,6 +103,24 @@ function ActiveEntity(props) {
     let sum = 0;
     const cumulativeData = graphObject.map(function (data) {
       return { name: data.name, Count: (sum += data.Count) };
+    }, []);
+    setGraphData(cumulativeData);
+  };
+
+  const setGraphDataToSystemCode = (data) => {
+    data = data.filter(function (el) {
+      return el.FieldValue !== null && el.FieldValue.trim() !== ""; // Changed this so a home would match
+    });
+    const graphArray = data.reduce((total, value) => {
+      total[value.FieldValue] = (total[value.FieldValue] || 0) + value.count;
+      return total;
+    }, []);
+    var graphObject = Object.keys(graphArray).map((e) => ({
+      name: e,
+      Count: graphArray[e],
+    }));
+    const cumulativeData = graphObject.map(function (data) {
+      return { name: data.name, Count: data.Count };
     }, []);
     setGraphData(cumulativeData);
   };
@@ -93,7 +150,7 @@ function ActiveEntity(props) {
       ) : (
         <>
           {noDataFound ? (
-            <>No Data Found</>
+            <>No Data Found {noDataFound}</>
           ) : (
             <div>
               <Skeleton className={classes.skeletonWidth} />

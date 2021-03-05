@@ -60,17 +60,20 @@ def entity_list_byId():
     df = db.entity_list_byId(data.get('entityTypeIds'))
     return df.to_json(orient='records')
 
+@bp1.route('/entity_list_bySystemCode', methods=['POST'])
+def entity_list_bySystemCode():
+    data = request.json
+    print(data)
+    df = db.entity_list_bySystemCode(data['entityTypeIds'], data['systemCode'])
+    return df.to_json(orient='records')
+
 @bp1.route('/list_by_id', methods=['GET'])
 def list_by_id():
     ''' defaults to show the first 25 if no offset and max are givin'''
     app_id = request.args.get('id')
     offset = request.args.get('offset', 0)
     max_count = request.args.get('max',25)
-
-    
-
     df = entities.list_by_id(max_count=max_count, offset=offset, id=app_id)
-
     return df.to_json(orient='records')
 
 @bp1.route('/type_list_by_id', methods=['GET'])
