@@ -108,11 +108,9 @@ function ActiveEntity(props) {
   };
 
   const setGraphDataToSystemCode = (data) => {
-    console.log("----datadatadatadata----", data);
     data = data.filter(function (el) {
       return el.FieldValue !== null && el.FieldValue.trim() !== ""; // Changed this so a home would match
     });
-    console.log("newArraynewArraynewArray--", data);
     const graphArray = data.reduce((total, value) => {
       total[value.FieldValue] = (total[value.FieldValue] || 0) + value.count;
       return total;
@@ -121,7 +119,6 @@ function ActiveEntity(props) {
       name: e,
       Count: graphArray[e],
     }));
-    let sum = 0;
     const cumulativeData = graphObject.map(function (data) {
       return { name: data.name, Count: data.Count };
     }, []);
