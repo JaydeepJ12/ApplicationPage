@@ -114,7 +114,7 @@ function PeopleActivityTab(props) {
     <div className="page" id="people-task-tab">
       <Grid container>
         <Grid item lg={10} md={10} xs={10} sm={10}></Grid>
-        <Grid item lg={2} md={2} xs={2} sm={2}>
+        <Grid item lg={2} md={2} xs={12} sm={12}>
           <FormControl
             fullWidth={true}
             variant="outlined"

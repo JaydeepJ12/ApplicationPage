@@ -57,9 +57,10 @@ function App() {
     reducerState.applicationData.isErrorPage,
   ]);
 
-
+ 
   // for theme 
   var color = reducerState.applicationData.themeColor ? reducerState.applicationData.themeColor : localStorage.getItem('themeColor');
+
   const theme =  createMuiTheme({
     palette: {
       primary: {
