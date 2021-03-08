@@ -31,6 +31,12 @@ class EntitySQL:
 
     def list_by_id(self, id, max_count=25, offset=0, ):
         ''' Id is an applicaiton id'''
+
+        if ',' in id:
+            id = ','.split(id)
+        if ',' in id:
+            id = id.split(',')
+            id = self.tuplefy(id)
         query = f''' SELECT [ENTITY_ID]
       ,[ENTITY_TYPE_ID]
       ,[TITLE_METADATA_TEXT] as [Title]
@@ -39,7 +45,7 @@ class EntitySQL:
   where ENTITY_TYPE_ID = ( SELECT  [TEXT] as ETID
     
 								  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT]
-								   where entity_id = {id}
+								   where entity_id in {id}
 								   and
 								   IS_ACTIVE = 'Y'
 								   and 
@@ -50,9 +56,48 @@ class EntitySQL:
 
 	order by entity_id desc
 	OFFSET {offset} ROWS FETCH NEXT {max_count} ROWS ONLY'''
-   
+        print(query)
         return self.db.execQuery(query )
 
     def entity_by_id(self, eid):
-        ''' id is entity is'''
-        pass
+        ''' id is entity id, will need another endpoint for relationship stuff'''
+        query = f'''
+        select assoc_type.NAME,FIELD_VALUE, fields.entity_assoc_type_id  from 
+(
+
+SELECT 
+      eam.[ENTITY_ASSOC_TYPE_ID]
+      ,[ENTITY_ID]
+      ,[FIELD_NAME]
+      ,[FIELD_VALUE]
+  
+  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam
+  
+
+  union
+
+  SELECT 
+      eam.[ENTITY_ASSOC_TYPE_ID]
+      ,[ENTITY_ID]
+	  ,null as [FIELD_NAME]
+      ,[TEXT] as [FIELD_VALUE]
+  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT] eam
+ 
+
+  ) fields
+
+
+
+  join ( SELECT ENTITY_ASSOC_TYPE_ID, NAME
+   
+  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE]
+
+  where 
+  IS_ACTIVE = 'Y'
+	
+	) assoc_type 
+		on assoc_type.[ENTITY_ASSOC_TYPE_ID] = fields.[ENTITY_ASSOC_TYPE_ID]
+
+  where entity_id = {eid}
+  order by ENTITY_ID '''
+        return self.db.execQuery(query)

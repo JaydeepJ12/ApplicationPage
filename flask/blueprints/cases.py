@@ -147,6 +147,7 @@ def create():
 @bp.route('/GetExternalDataValues', methods=['POST'])
 def external_data_values():
     data = mobile.external_data_values(request.json).json()
+    print(data)
     for x in data['responseContent']:
         x['DecodeId'] = x.pop("id")
         x["DecodeValue"] = x.pop("name")

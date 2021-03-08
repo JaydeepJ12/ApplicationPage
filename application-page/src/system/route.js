@@ -15,11 +15,11 @@ const basePath = process.env.REACT_APP_BASE_PATH;
 const rootRoute = (
   <div>
     <Router basepath={basePath}>
-      <CaseSelect path="/:app_id/case-select" />
+      <CaseSelect path="/:app_id/task-select" />
       <OverView path="/:app_id/overview" default />
       <PeopleDepartment path="/:app_id/people" />
       <ApplicationItem path="/:app_id/items" />
-      <ViewCase path="/:app_id/tasks"></ViewCase>
+      <ViewCase path="/:app_id/tasks"/>
       <Insights path='/:app_id/insights' />
       <Login path="/:app_id/login" />
       <ErrorPage path="/:app_id/error" />
