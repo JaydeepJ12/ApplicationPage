@@ -46,6 +46,9 @@ class EntitySQL:
 
     def list_by_id(self, id, max_count=25, offset=0, ):
         ''' Id is an applicaiton id'''
+
+        if ',' in id:
+            id = ','.split(id)
         if ',' in id:
             id = id.split(',')
             id = self.tuplefy(id)
@@ -68,7 +71,7 @@ class EntitySQL:
 
 	order by entity_id desc
 	OFFSET {offset} ROWS FETCH NEXT {max_count} ROWS ONLY'''
-   
+        print(query)
         return self.db.execQuery(query )
 
     def entity_by_id(self, eid):
