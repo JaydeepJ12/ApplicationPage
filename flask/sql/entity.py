@@ -48,8 +48,6 @@ class EntitySQL:
         ''' Id is an applicaiton id'''
 
         if ',' in id:
-            id = ','.split(id)
-        if ',' in id:
             id = id.split(',')
             id = self.tuplefy(id)
         query = f''' SELECT [ENTITY_ID]

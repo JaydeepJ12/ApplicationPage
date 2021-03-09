@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response
 from sql.cases import CasesSQL
 from stemmons.api import Cases
 from api.mobile import Mobile
@@ -383,3 +383,25 @@ def case_activity_log_test():
             return json.dumps({'error_status': 400, 'error': "please pass the username"})
         df = db.case_activity_log_track(data['application_type'], data['username'], data['skipCount'], data['maxCount'])
         return df
+
+
+@bp.route('/activity_logs', methods=['GET'])
+def all_activity_logs():
+    '''API Base, takes in userShortName, maxCount, skipCount.
+    
+    NOTE: in query entity side of union is corrently commetned out 03/08/2021'''
+    print(request.args)
+    user_sam = request.args.get('userShortName')
+    count = request.args.get('maxCount',50)
+    skip = request.args.get('skipCount',0)
+
+    if user_sam == None:
+        #return json.dumps({'error_status': 400, 'error': "please pass the username"})
+        return make_response('please pass the user\'s short name', 404)
+    try: 
+        df = db.activity_logs(user_sam, count, skip)
+        return df.to_json(orient='records')
+    except AttributeError:
+        return make_response('Attribute Error, query returned None.', 500)
+    except:
+        return make_response('Whoops, internal error', 500)
