@@ -32,7 +32,8 @@ function PeopleBasicInfoTab(props) {
               {props.peopleInfo?.Display_name ? (
                 <CommonAvatar
                   name={props.peopleInfo?.Display_name}
-                  sizeClass={classes.avt_large}
+                  sizeClass={classes.avt_large +' '+classes.m_auto +' '+'avt-shadow'}
+        
                 />
               ) : null}
             </div>

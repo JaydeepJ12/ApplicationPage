@@ -24,6 +24,9 @@ a {
 .rounded-pill {
   border-radius: 50rem !important;
 }
+.rounded {
+  border-radius: 6px;
+}
 /* ------------end ------common redios------------------- */
 
 /* ------------------common center------------------- */
@@ -375,4 +378,8 @@ header .MuiIconButton-label .MuiSvgIcon-root {
 }
 .MuiDrawer-paperAnchorDockedLeft {
   border-right: 0;
+}
+.avt-shadow {
+  box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
+    0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
 }

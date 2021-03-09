@@ -4,9 +4,14 @@ export default makeStyles(
   (theme) => {
     return {
       // margin class
+      m_auto: {
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      },
       m_one: {
         margin: theme.spacing(2),
       },
+      
       mt_one: {
         marginTop: theme.spacing(2),
       },

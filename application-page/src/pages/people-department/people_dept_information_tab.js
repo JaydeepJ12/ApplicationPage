@@ -73,7 +73,7 @@ function PeopleBasicInfoTab(props) {
                         disabled
                         id="outlined-disabled"
                         label="Job Title"
-                        value={props.peopleInfo.jobTitle}
+                        value={props.peopleInfo.JobTitle}
                       />
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sm={12}>

@@ -121,7 +121,7 @@ def getPeopleInfo():
 def getDepartmentEmpFilterValues():
     data = request.json
     print(data)
-    df = db.get_department_emp_filters(data['parentName'], data['parentID'])
+    df = db.get_department_emp_filters(data.get('parentName'), data.get('parentID'), data.get('entityId'))
     return df.to_json(orient='records')
 
 
@@ -147,6 +147,7 @@ def create():
 @bp.route('/GetExternalDataValues', methods=['POST'])
 def external_data_values():
     data = mobile.external_data_values(request.json).json()
+    print(data)
     for x in data['responseContent']:
         x['DecodeId'] = x.pop("id")
         x["DecodeValue"] = x.pop("name")
