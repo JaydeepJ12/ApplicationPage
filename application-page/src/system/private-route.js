@@ -3,7 +3,6 @@ import Login from "../components/Login/index";
 
 const PrivateRoute = ({ as: Component, ...props }) => {
   let token = localStorage.getItem("token");
-  console.log("login props - ", props);
   let path = props.location.pathname;
   let parts = path.split("/");
   path = parts[parts.length - 1];
