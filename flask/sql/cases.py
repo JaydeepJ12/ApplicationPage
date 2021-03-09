@@ -734,6 +734,24 @@ where a.IS_ACTIVE = 'Y'
         except Exception as exe:
             return str(exe)
 
+    def entity_count_byId(self, entityTypeIds):
+        try:
+            query = f'''
+            SELECT
+            (SELECT count(*) from [BOXER_ENTITIES].[dbo].[entity_list] 
+            where ENTITY_TYPE_ID in({entityTypeIds})) AS total_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'sttus' THEN 1 ELSE 0 END) AS sttus_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'CATEG' THEN 1 ELSE 0 END) AS category_count
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam 
+            left join  [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat
+            on eam.[ENTITY_ASSOC_TYPE_ID] = eat.[ENTITY_ASSOC_TYPE_ID]
+            where eat.ENTITY_TYPE_ID in({entityTypeIds})
+            '''
+            # print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
     def entity_list_bySystemCode(self, entityIds, systemCode):
         try:
             query = f'''

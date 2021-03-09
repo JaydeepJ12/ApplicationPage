@@ -71,8 +71,10 @@ a {
 .st-contents {
   display: contents;
 }
-
-
+.st-d-inline {
+  display: flex;
+  align-items: center !important;
+}
 /* display end  */
 
 /*  start float  */
@@ -125,7 +127,6 @@ header .MuiIconButton-label .MuiSvgIcon-root {
   font-size: 1.8rem;
   color: rgba(0, 0, 0, 0.54);
 }
-
 
 /* --------------------end -header css ----------------------------- */
 
