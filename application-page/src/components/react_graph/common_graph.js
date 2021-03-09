@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
@@ -8,8 +8,9 @@ import {
   Legend,
   Tooltip,
   XAxis,
-  YAxis,
+  YAxis
 } from "recharts";
+import ComponentLoader from "../common/component-loader";
 
 // we get all the data for all of the graphs from teh first call
 // so we should use that every time
@@ -21,7 +22,7 @@ const StatusGraph = (props) => {
   // need to either get defined colors from db, or define them in the front end
   const obj = props.data;
   return (
-    <BarChart width={800} height={300} data={obj}>
+    <BarChart width={500} height={300} data={obj}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" />
       <YAxis />
@@ -45,7 +46,7 @@ const StatusPriorityGraph = (props) => {
   }
 
   return (
-    <BarChart width={400} height={300} data={obj}>
+    <BarChart width={500} height={300} data={obj}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" />
       <YAxis />
@@ -68,7 +69,7 @@ const AssignedToGraph = (props) => {
     keys.shift();
   }
   return (
-    <BarChart width={800} height={300} data={obj}>
+    <BarChart width={1100} height={300} data={obj}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" />
       <YAxis />
@@ -84,8 +85,6 @@ const AssignedToGraph = (props) => {
 
 export default function GraphVisuals(props) {
   const [caseData, setCaseData] = useState(false);
-
-  console.log(props.caseData);
 
   const getCaseTypeData = () => {
     setCaseData(false);
@@ -103,24 +102,40 @@ export default function GraphVisuals(props) {
   }, []);
 
   return (
-    <div className="grpah">
-      <Typography
-        style={{ textAlign: "center" }}
-        variant="h5"
-        component="h5"
-        gutterBottom
-      >
-        Case Type Status
-      </Typography>
-      {caseData ? (
-        <div>
-          <StatusPriorityGraph data={caseData.count_by_status_priority} />
-          <StatusGraph data={caseData.count_by_status} />
-          <AssignedToGraph data={caseData.count_by_assigned_to} />
-        </div>
-      ) : (
-        <div></div>
-      )}
+    <div className="page" id="page-department">
+      <Grid container spacing={3}>
+        <Grid item lg={12} md={12} xs={12} sm={12}>
+          {caseData ? (
+            <div className="grpah">
+              <Typography
+                style={{ textAlign: "center" }}
+                variant="h5"
+                component="h5"
+                gutterBottom
+              >
+                Case Type Status
+              </Typography>
+
+              <Grid container spacing={3}>
+                <Grid item lg={6} md={6} xs={12} sm={12}>
+                  <StatusPriorityGraph
+                    data={caseData.count_by_status_priority}
+                  />
+                </Grid>
+                <Grid item lg={6} md={6} xs={12} sm={12} className="v-scroll">
+                  <StatusGraph data={caseData.count_by_status} />
+                </Grid>
+
+                <Grid item lg={12} md={12} xs={12} sm={12}>
+                  <AssignedToGraph data={caseData.count_by_assigned_to} />
+                </Grid>
+              </Grid>
+            </div>
+          ) : (
+            <ComponentLoader type="rect" />
+          )}
+        </Grid>
+      </Grid>
     </div>
   );
 }

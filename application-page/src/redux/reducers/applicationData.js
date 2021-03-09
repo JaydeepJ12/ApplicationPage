@@ -10,6 +10,7 @@ const initialSate = {
   applicationElements: [],
   isErrorPage: false,
   errorPageMessage: "",
+  isLoginPage: false
 };
 export default function (state = initialSate, action) {
   switch (action.type) {
@@ -67,6 +68,13 @@ export default function (state = initialSate, action) {
       return {
         ...state,
         applicationElements: content,
+      };
+    }
+    case actions.IS_LOGIN_PAGE: {
+      const { content } = action.payload;
+      return {
+        ...state,
+        isLoginPage: content,
       };
     }
     default:

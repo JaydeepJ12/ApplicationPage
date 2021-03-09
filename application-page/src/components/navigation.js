@@ -149,7 +149,7 @@ export default function Navigation(props) {
     {
       menuName: "CaseCreator",
       menuIcon: <Create />,
-      menuPath: "case-select",
+      menuPath: "task-select",
       pageTitle: "Create Case",
     },
     {
@@ -281,7 +281,7 @@ export default function Navigation(props) {
           </Drawer>
           <main className={classes.content}>
             <Router basepath="/react">
-              <CaseSelect path="/case-select" />
+              <CaseSelect path="/task-select" />
               <OverView path="/overview" />
               <Test path="/test"></Test>
               <Insights path='/insights'/>

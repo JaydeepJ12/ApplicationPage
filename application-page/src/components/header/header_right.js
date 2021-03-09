@@ -1,24 +1,28 @@
 import {
-  Avatar,
   Badge,
+  Button,
   IconButton,
   InputBase,
   Menu,
   MenuItem,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import {
   NotificationsNone as NotificationsIcon,
   Person as AccountIcon,
-  Search as SearchIcon,
+  Search as SearchIcon
 } from "@material-ui/icons";
-import { Link } from "@reach/router";
+import { navigate } from "@reach/router";
 import classNames from "classnames";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import SecureLS from "secure-ls";
+import CommonAvatar from "../../components/common/avatar";
+import { isLoginPage } from "../../redux/action";
 // styles
 import useStyles from "./header_styles";
 import Settings from "./settings";
-import CommonAvatar from "../../components/common/avatar";
+
 const notifications = [
   {
     id: 0,
@@ -52,10 +56,44 @@ const notifications = [
 
 export default function HeaderRight() {
   var classes = useStyles();
+  const dispatch = useDispatch();
+
   var [isNotification, setNotificationMenu] = useState(null);
   var [isNotificationUnread, setNotificationUnread] = useState(true);
   var [profileMenu, setProfileMenu] = useState(null);
   var [isSearchOpen, setSearchOpen] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+
+  React.useEffect(() => {
+    
+    var ls = new SecureLS({
+      encodingType: "des",
+      isCompression: false,
+      encryptionSecret: process.env.REACT_APP_ENCRYPTION_SECRET,
+    });
+
+    let displayName = localStorage.getItem("displayName");
+    let userName = ls.get("userName");
+    let email = localStorage.getItem("email");
+
+    if (displayName) {
+      setDisplayName(displayName);
+    }
+    if (userName) {
+      setUserName(userName);
+    }
+    if (email) {
+      setEmail(email);
+    }
+  }, []);
+
+  const signOut = () => {
+    localStorage.removeItem("token");
+    dispatch(isLoginPage(false));
+    navigate("login");
+  };
   return (
     <>
       <div className={classes.grow} />
@@ -102,9 +140,7 @@ export default function HeaderRight() {
         className={classes.headerMenuButton}
         onClick={(e) => setProfileMenu(e.currentTarget)}
       >
-
-          <CommonAvatar name={'Test'} sizeClass={classes.avt_small} />
-       
+        <CommonAvatar name={userName} sizeClass={classes.avt_small} />
       </IconButton>
       <Menu
         id="notifiation-list"
@@ -149,7 +185,7 @@ export default function HeaderRight() {
       >
         <div className={classes.profileMenuUser}>
           <Typography variant="h6" weight="medium">
-            Dixit Solanki
+            {displayName ? displayName : "Stemmons User"}
           </Typography>
         </div>
         <MenuItem
@@ -185,7 +221,7 @@ export default function HeaderRight() {
 
         <div className={classes.profileMenuUser}>
           <Typography className={classes.profileMenuLink} color="primary">
-            <Link to={"/login"}>Sign Out</Link>
+            <Button onClick={signOut}>Sign Out</Button>
           </Typography>
         </div>
       </Menu>

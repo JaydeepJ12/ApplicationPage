@@ -1,14 +1,17 @@
 from flask import Blueprint, request
 from sql.cases import CasesSQL
+from api.mobile import Mobile
 import pandas as pd
 import json 
 import time
 import numpy as np
 from handlers.cases import CaseHandler
 from flask_cors import CORS, cross_origin
+
 bpu = Blueprint('people', __name__, url_prefix='/people')
 
 db = CasesSQL()
+mobile = Mobile('http://home.boxerproperty.com/MobileAPI', 'michaelaf', 'Boxer@@2021')
 
 @bpu.route('/find', methods=['POST'])
 def getPeople():
@@ -25,3 +28,7 @@ def department_fetch():
         df = db.department_fetch(data)
         return df.to_json(orient='records')
 
+@bpu.route('/authenticate', methods=['POST'])
+def authenticate():
+    data = mobile.authenticate(request.json).json()
+    return data
