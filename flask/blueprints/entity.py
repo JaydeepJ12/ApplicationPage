@@ -63,6 +63,16 @@ def entity_list_byId():
     df = db.entity_list_byId(data.get('entityTypeIds'))
     return df.to_json(orient='records')
 
+@bp1.route('/entity_count_byId', methods=['POST'])
+def entity_count_byId():
+    data = request.json
+    print(data)
+    df = db.entity_count_byId(data['entityTypeIds'])
+    return json.dumps([{"Title":"COUNT OF ITEMS", "Count": df.to_dict(orient='records')[0]['total_count']},
+                      {"Title": "COUNT OF ITEMS BY STATUS", "Count": df.to_dict(orient='records')[0]['sttus_count']},
+                      {"Title":"COUNT OF ITEMS BY CATEGORY", "Count":df.to_dict(orient='records')[0]['category_count']}]
+                       )
+
 @bp1.route('/entity_list_bySystemCode', methods=['POST'])
 def entity_list_bySystemCode():
     data = request.json
