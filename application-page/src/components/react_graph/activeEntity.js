@@ -16,8 +16,10 @@ import {
 import Skeleton from "@material-ui/lab/Skeleton";
 import useStyles from "../../assets/css/common_styles";
 import { navigate } from "@reach/router";
+import { useTheme } from "@material-ui/core/styles";
 
 function ActiveEntity(props) {
+  const theme = useTheme();
   const classes = useStyles();
   const [noDataFound, setNoDataFound] = React.useState(false);
   const [graphData, setGraphData] = useState([]);
@@ -82,11 +84,8 @@ function ActiveEntity(props) {
     }
 
     if (props.entityListId && props.type) {
-      // alert(props.entityListId);
-      // alert(props.type);
       getEntityListBySystemCode(props.entityListId, props.type);
     } else if (props.entityListId) {
-      // alert(props.entityListId);
       getEntitiesList(props.entityListId);
     }
   }, [props.entityListId]);
@@ -139,12 +138,22 @@ function ActiveEntity(props) {
             }}
           >
             {/* <CartesianGrid strokeDasharray="3 3" /> */}
-            <XAxis dataKey="name" />
+            <XAxis
+              dataKey="name"
+              // textAnchor="end"
+              // height={100}
+              // interval={0}
+              // angle={-90}
+            />
             <YAxis />
             <Tooltip />
             {/* <Legend /> */}
             <Bar dataKey="pv" stackId="a" fill="#8884d8" />
-            <Bar dataKey="Count" stackId="a" fill="#82ca9d" />
+            <Bar
+              dataKey="Count"
+              stackId="a"
+              fill={theme.palette.primary.main}
+            />
           </BarChart>
         </ResponsiveContainer>
       ) : (
