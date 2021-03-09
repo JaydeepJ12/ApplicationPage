@@ -57,7 +57,7 @@ export default function VisualOverview(props) {
   };
 
   const handleClick = (props) => {
-    navigate(basePath + "/case-select", {
+    navigate(basePath + "/task-select", {
       state: { isParent: true, isChild: false },
     });
   };
