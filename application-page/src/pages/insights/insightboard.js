@@ -5,7 +5,11 @@ import {
   InputLabel,
   makeStyles,
   MenuItem,
-  Select
+  Select,
+  Tabs,
+  Tab,
+  Box,
+  Typography
 } from "@material-ui/core";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { navigate } from "@reach/router";
@@ -15,6 +19,23 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useStylesBase from "../../assets/css/common_styles";
 import * as notification from "../../components/common/toast";
+
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      aria-labelledby={`scrollable-force-tab-${index}`}
+      {...other}
+    >
+      {children}
+      
+    </div>
+  );
+}
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -28,6 +49,11 @@ const useStyles = makeStyles(
       height: "80vh",
       overflow: "auto",
     },
+    iframe:{
+        height:'80vh',
+        width:'65vw',
+        border:'1'
+    }
   }),
   { index: 1 }
 );
@@ -36,6 +62,7 @@ const useStyles = makeStyles(
 //cors policy will be an issue in development
 //https://home.boxerproperty.com/Visualize/3d_scatter
 export default function Insights() {
+
   const classes = useStyles();
   const classesBase = useStylesBase();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -48,6 +75,11 @@ export default function Insights() {
   const [noDataFound, setNoDataFound] = useState(false);
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
+
+  const [value,setValue] = useState(0)
+  const [created, setCreated] = useState(false)
+  const [tabContent, setTabContent] = useState([]);
+  const [tabData, setTabData] = useState([]);
 
   const getAssociatedReports = async (entityIds) => {
     var jsonData = JSON.stringify({ entityIds: entityIds });
@@ -102,23 +134,34 @@ export default function Insights() {
     } else if (isFiltered) {
       setNoDataFound(true);
     }
+
     setLabelWidth(inputLabel.current.offsetWidth);
   }, [reducerState.applicationData.applicationElements]);
 
-  const handleRedirect = (url) => {
-    if (url) {
-      window.open(
-        url,
-        "_blank",
-        "location=yes,height=700,width=700,scrollbars=yes,status=yes"
-      );
-    } else {
-      notification.toast.warning("No url available...!!");
-      return false;
-    }
-  };
+  const addTab = (option) =>{
+    console.log(option)
+    addLabelTab(option.ID, option.NAME)
+    addContentTab(option.NAME)
+  }
+
+  //need to add table, and be able to embed a report in each tab
+  const addLabelTab = (title,id) =>{
+    const data = {value:id ,label: title }
+    tabData.push(data)
+    setTabData(tabData)
+    setCreated(true)
+
+  }
+  const addContentTab = (url) =>{
+    console.log('content url: ',url)
+    tabContent.push({url:url})
+    setTabContent(tabContent)
+    
+  }
+
 
   const handleAssociatedReportChange = (name) => {
+
     setSelectedAssociatedReportName(name);
   };
 
@@ -160,7 +203,7 @@ export default function Insights() {
                         <MenuItem
                           key={option.ENTITY_ID}
                           value={option.ID}
-                          onClick={() => handleRedirect(option.NAME)}
+                          onClick={() => addTab(option)}
                         >
                           {option.ID}
                         </MenuItem>
@@ -176,8 +219,40 @@ export default function Insights() {
                     )}
                   </Select>
                 </FormControl>
+                <Tabs value={value} onChange={(e, newValue)=>{setValue(newValue)}} orientation='vertical' >
+                   {
+                   //tabs
+                   }
+                   {created ? 
+                   tabData.map((data,idx)=>{
+                        return <Tab value={idx} label={data.label + ' - ' + idx} ></Tab>
+                        })
+                        :
+                        <div></div>}
+               </Tabs>
               </div>
+              
             </Grid>
+            <Grid>
+              
+            </Grid>
+            
+            { created ? tabContent.map((data,idx)=>{
+                     console.log(data,idx, classes.iframe.width)
+                        return  (
+                        <TabPanel value={value} index={idx}>
+                            {<iframe src={data.url}
+                                className={classes.iframe}>
+                            </iframe>}
+                        </TabPanel>)
+                        })
+                        :
+                        <div></div>}
+            
+            
+            { 
+            
+            }
           </Grid>
         </Card>
       </div>

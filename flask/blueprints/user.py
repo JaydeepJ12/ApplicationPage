@@ -13,6 +13,12 @@ bpu = Blueprint('people', __name__, url_prefix='/people')
 db = CasesSQL()
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI', 'michaelaf', 'Boxer@@2021')
 
+@bpu.after_request
+def after_request(r):
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    r.headers['Access-Control-Allow-Headers'] = '*'
+    return r
+
 @bpu.route('/find', methods=['POST'])
 def getPeople():
     #needs to take in an app-id
