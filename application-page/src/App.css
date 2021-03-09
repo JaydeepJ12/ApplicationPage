@@ -74,7 +74,10 @@ a {
 .st-contents {
   display: contents;
 }
-
+.st-d-inline {
+  display: flex;
+  align-items: center !important;
+}
 /* display end  */
 
 /*  start float  */
