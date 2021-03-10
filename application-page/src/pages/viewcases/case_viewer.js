@@ -839,7 +839,7 @@ export default function CaseViewer(props) {
 
   return (
     <>
-      <Grid item lg={6} md={6} xs={12} sm={12} className="panel-center">
+      <Grid item lg={6} md={6} xs={12} sm={12} className="panel-center comment-panel">
         <div>
           
           <Typography color="textSecondary" gutterBottom>

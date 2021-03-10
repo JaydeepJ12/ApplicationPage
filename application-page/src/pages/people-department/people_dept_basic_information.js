@@ -99,7 +99,7 @@ function PeopleBasicInfoTab(props) {
                       variant="body2"
                       onClick={() => {
                         props.getDepartmentPeopleInfo(
-                          props.peopleInfo.Manager_Id
+                          props.peopleInfo.Manager_Id,null
                         );
                       }}
                     >

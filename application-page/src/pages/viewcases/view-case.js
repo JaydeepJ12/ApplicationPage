@@ -282,6 +282,7 @@ export default function ViewCase(props) {
       Filters: null,
       TypeIdsForGrouping: null,
     };
+    
     axios
       .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {

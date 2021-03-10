@@ -386,6 +386,10 @@ header .MuiIconButton-label .MuiSvgIcon-root {
 .v-scroll {
   overflow-x: scroll;
 }
+.comment-panel {
+  height: 48rem;
+  overflow: auto;
+}
 
 /* entity item page */
 .card-filter {

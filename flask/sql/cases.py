@@ -475,7 +475,7 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
-    def get_people_info(self, EMPLOYEE_ID):
+    def get_people_info(self, EMPLOYEE_ID, EMPLOYEE_SHORT_NAME):
         query = f'''
                 SELECT 
                 c.EMPLOYEE_ID,
@@ -517,7 +517,8 @@ class CasesSQL:
                                                         --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
                                                         ORDER BY M1.IS_Primary DESC  
                                                        )Manager  
-                                                       WHERE c.EMPLOYEE_ID={EMPLOYEE_ID}
+                                                       WHERE (c.EMPLOYEE_ID={EMPLOYEE_ID}  or
+													    c.SHORT_USER_NAME Like '%{EMPLOYEE_SHORT_NAME}%')
         '''
         print(query)
         return self.db.execQuery(query)
