@@ -128,10 +128,6 @@ def getPeopleInfo():
 @bp.route('/getDepartmentEmpFilterValues', methods=['POST'])
 def getDepartmentEmpFilterValues():
     data = request.json
-    if not data['parentName']:
-        return make_response("Please pass parent name", 400)
-    if not data['parentID']:
-        return make_response("Please pass parent ID", 400)
     df = db.get_department_emp_filters(data.get('parentName'), data.get('parentID'), data.get('entityId'))
     return df.to_json(orient='records')
 
@@ -139,7 +135,6 @@ def getDepartmentEmpFilterValues():
 @bp.route('/getCompanyData', methods=['POST'])
 def getCompanyData():
     df = db.get_department_company_list()
-    print("---df", df);
     return df.to_json(orient='records')
 
 
