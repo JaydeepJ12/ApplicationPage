@@ -28,8 +28,7 @@ class EntitySQL:
    WHERE  E.ENTITY_ID =   {id} '''
         return self.db.execQuery(query) 
 
-    def list_by_id(self, id, max_count=25, offset=0 ):
-        ''' Id is an applicaiton id'''
+
     def system_code_count(self):
         try:
             query = '''
@@ -45,12 +44,7 @@ class EntitySQL:
         except Exception as exe:
             return str(exe)
 
-    def list_by_id(self, id, max_count=25, offset=0, ):
-        ''' Id is an applicaiton id'''
-
-        if ',' in id:
-            id = id.split(',')
-            id = self.tuplefy(id)
+    def list_by_id(self, id, max_count=25, offset=0 ):
         query = f''' SELECT [ENTITY_ID]
       ,[ENTITY_TYPE_ID]
       ,[TITLE_METADATA_TEXT] as [Title]
