@@ -60,9 +60,8 @@ function PeopleMainTab(props) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  
-  useEffect(() => {
-  }, [props.peopleInfo],[props.activityFilterValue]);
+
+  useEffect(() => {}, [props.peopleInfo], [props.activityFilterValue]);
 
   const handleOnTaskScroll = (
     people_info,
@@ -78,9 +77,9 @@ function PeopleMainTab(props) {
     }
   };
 
-   if(props && props.navTab  === 0){
+  if (props && props.navTab === 0) {
     value = 0;
-   }
+  }
   return (
     <div className="page" id="people-parent-tab">
       <Paper className="rounded">
@@ -99,7 +98,7 @@ function PeopleMainTab(props) {
             props.peopleInfo !== "" ? (
               <Tab
                 onClick={() => {
-                  props.setNavTab(1)
+                  props.setNavTab(1);
                   props.caseList(props.peopleInfo, 0, false);
                 }}
                 className="nav-tab"
@@ -113,8 +112,13 @@ function PeopleMainTab(props) {
             <Tab
               className="nav-tab"
               onClick={() => {
-                props.setNavTab(2)
-                props.CaseActivityLogList(props.activityFilterValue,0, props.peopleInfo,false);
+                props.setNavTab(2);
+                props.CaseActivityLogList(
+                  props.activityFilterValue,
+                  0,
+                  props.peopleInfo,
+                  false
+                );
               }}
               label="Acivity"
               {...a11yProps(2)}

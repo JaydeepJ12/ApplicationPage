@@ -386,3 +386,11 @@ header .MuiIconButton-label .MuiSvgIcon-root {
 .v-scroll {
   overflow-x: scroll;
 }
+
+/* entity item page */
+.card-filter {
+  margin-left: 6rem;
+}
+.card-filter .filter-form {
+  width: 23.5rem !important;
+}
