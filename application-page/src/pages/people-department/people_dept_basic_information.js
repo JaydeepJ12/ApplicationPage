@@ -1,4 +1,4 @@
-import { Avatar, Box, Grid, Typography } from "@material-ui/core";
+import { Box, Grid, Typography ,Link  } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
 import CommonAvatar from "../../components/common/avatar";
@@ -30,7 +30,11 @@ function PeopleBasicInfoTab(props) {
               }}
             >
               {props.peopleInfo?.Display_name ? (
-                <CommonAvatar name={props.peopleInfo?.Display_name} sizeClass={classes.avt_large} />
+                <CommonAvatar
+                  name={props.peopleInfo?.Display_name}
+                  sizeClass={classes.avt_large +' '+classes.m_auto +' '+'avt-shadow'}
+        
+                />
               ) : null}
             </div>
           </Grid>
@@ -48,7 +52,7 @@ function PeopleBasicInfoTab(props) {
                   <Typography color={"primary"}>Job: </Typography>
                 </Grid>
                 <Grid item lg={8} md={8} xs={8} sm={8}>
-                  {props.peopleInfo?.jobTitle}
+                  {props.peopleInfo?.JobTitle}
                 </Grid>
                 <Grid item lg={4} md={4} xs={4} sm={4}>
                   <Typography color={"primary"}>Department: </Typography>
@@ -85,13 +89,20 @@ function PeopleBasicInfoTab(props) {
 
                 {props.peopleInfo.MANAGER_LDAP_PATH ? (
                   <Grid item lg={8} md={8} xs={8} sm={8}>
-                    <Typography>
+                    <Link
+                      component="button"
+                      variant="body2"
+                      onClick={() => {
+                        props.getDepartmentPeopleInfo(props.peopleInfo.Manager_Id);
+                      }}
+                    >
                       {
                         props.peopleInfo.MANAGER_LDAP_PATH.split("=")[1]?.split(
                           ","
                         )[0]
                       }
-                    </Typography>
+                    </Link>
+                   
                   </Grid>
                 ) : (
                   ""

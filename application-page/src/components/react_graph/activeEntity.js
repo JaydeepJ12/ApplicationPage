@@ -16,8 +16,10 @@ import {
 import Skeleton from "@material-ui/lab/Skeleton";
 import useStyles from "../../assets/css/common_styles";
 import { navigate } from "@reach/router";
+import { useTheme } from "@material-ui/core/styles";
 
 function ActiveEntity(props) {
+  const theme = useTheme();
   const classes = useStyles();
   const [noDataFound, setNoDataFound] = React.useState(false);
   const [graphData, setGraphData] = useState([]);
@@ -36,18 +38,54 @@ function ActiveEntity(props) {
 
       await axios(config)
         .then(function (response) {
-          if (response.data.length) {
-            getSetGraphData(response.data);
-          } else {
+          getSetGraphData(response.data);
+          if (!response.data.length) {
             setNoDataFound(true);
           }
+          //  else {
+          //   getSetGraphData(response.data);
+          //   setNoDataFound(true);
+          // }
         })
         .catch(function (error) {
           console.log(error);
           // navigateToErrorPage(error?.message);
         });
     }
-    if (props.entityListId.trim() !== "") {
+    async function getEntityListBySystemCode(Ids, type) {
+      // alert("type---" + type);
+      setNoDataFound(false);
+      var jsonData = {
+        entityTypeIds: Ids,
+        systemCode: type,
+      };
+
+      var config = {
+        method: "post",
+        url: "/entity/entity_list_bySystemCode",
+        data: jsonData,
+      };
+
+      await axios(config)
+        .then(function (response) {
+          setGraphDataToSystemCode(response.data);
+          if (!response.data.length) {
+            // getSetGraphData(response.data);
+            setNoDataFound(true);
+          }
+          // else {
+          //   getSetGraphData(response.data);
+
+          // }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    if (props.entityListId && props.type) {
+      getEntityListBySystemCode(props.entityListId, props.type);
+    } else if (props.entityListId) {
       getEntitiesList(props.entityListId);
     }
   }, [props.entityListId]);
@@ -68,6 +106,24 @@ function ActiveEntity(props) {
     setGraphData(cumulativeData);
   };
 
+  const setGraphDataToSystemCode = (data) => {
+    data = data.filter(function (el) {
+      return el.FieldValue !== null && el.FieldValue.trim() !== ""; // Changed this so a home would match
+    });
+    const graphArray = data.reduce((total, value) => {
+      total[value.FieldValue] = (total[value.FieldValue] || 0) + value.count;
+      return total;
+    }, []);
+    var graphObject = Object.keys(graphArray).map((e) => ({
+      name: e,
+      Count: graphArray[e],
+    }));
+    const cumulativeData = graphObject.map(function (data) {
+      return { name: data.name, Count: data.Count };
+    }, []);
+    setGraphData(cumulativeData);
+  };
+
   return (
     <>
       {graphData?.length ? (
@@ -82,18 +138,28 @@ function ActiveEntity(props) {
             }}
           >
             {/* <CartesianGrid strokeDasharray="3 3" /> */}
-            <XAxis dataKey="name" />
+            <XAxis
+              dataKey="name"
+              // textAnchor="end"
+              // height={100}
+              // interval={0}
+              // angle={-90}
+            />
             <YAxis />
             <Tooltip />
             {/* <Legend /> */}
             <Bar dataKey="pv" stackId="a" fill="#8884d8" />
-            <Bar dataKey="Count" stackId="a" fill="#82ca9d" />
+            <Bar
+              dataKey="Count"
+              stackId="a"
+              fill={theme.palette.primary.main}
+            />
           </BarChart>
         </ResponsiveContainer>
       ) : (
         <>
           {noDataFound ? (
-            <>No Data Found</>
+            <>No Data Found {noDataFound}</>
           ) : (
             <div>
               <Skeleton className={classes.skeletonWidth} />

@@ -4,7 +4,7 @@ import { fade } from "@material-ui/core/styles/colorManipulator";
 const drawerWidth = 240;
 export default makeStyles(
   (theme) => {
-
+ 
     return {
       // --------------------- common -----------------/
       grow: {
@@ -64,10 +64,10 @@ export default makeStyles(
       root: {
         display: "flex",
         maxWidth: "100vw",
-        overflowX: "hidden",
+        drawerX: "hidden",
       },
       appBar: {
-        background: "white",
+        backgroundColor: theme.palette.primary.main,
         color: "black",
         zIndex: theme.zIndex.drawer + 1,
         transition: theme.transitions.create(["width", "margin"], {
@@ -76,6 +76,7 @@ export default makeStyles(
         }),
       },
       appBarShift: {
+        backgroundColor: theme.palette.primary.main,
         marginLeft: drawerWidth,
         width: `calc(100% - ${drawerWidth}px)`,
         transition: theme.transitions.create(["width", "margin"], {
@@ -93,15 +94,23 @@ export default makeStyles(
         width: drawerWidth,
         flexShrink: 0,
         whiteSpace: "nowrap",
+        color: theme.color,
+      },
+      CommonHoverColor: {
+        "&:hover, &:focus": {
+          backgroundColor: theme.palette.background.light,
+        },
       },
       drawerOpen: {
         width: drawerWidth,
+        backgroundColor: theme.palette.primary.main,
         transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.enteringScreen,
         }),
       },
       drawerClose: {
+        backgroundColor: theme.palette.primary.main,
         transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.leavingScreen,
@@ -162,7 +171,7 @@ export default makeStyles(
         backgroundColor: fade(theme.palette.common.black, 0.08),
         width: "100%",
         [theme.breakpoints.up("md")]: {
-          width: 280,
+          width: 260,
         },
       },
       searchIcon: {

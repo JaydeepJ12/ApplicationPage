@@ -13,9 +13,9 @@ import { navigate } from "@reach/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SwipeableViews from "react-swipeable-views";
-import GotoBackButton from "../../components/common/BackButton.js";
+import { default as useStyles } from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader.js";
-import Example from "../../components/react_graph/common_graph";
+import GraphVisuals from "../../components/react_graph/common_graph";
 
 const basePath = process.env.REACT_APP_BASE_PATH;
 
@@ -39,12 +39,13 @@ const TabPanel = (props) => {
 };
 
 export default function VisualOverview(props) {
-  const [value, setValue] = useState(0);
+  var classes = useStyles();
   const theme = useTheme();
+  const [value, setValue] = useState(0);
+
   const isParent = props.location?.state?.isParent;
   const [caseTypeData, setCaseTypeData] = useState([]);
   const [caseTypeIds, setCaseTypeIds] = useState([]);
-  const [dataAvailableCaseTypeIds, setDataAvailableCaseTypeIds] = useState([]);
   const reducerState = useSelector((state) => state);
 
   const handleChange = (event, newValue) => {
@@ -56,7 +57,7 @@ export default function VisualOverview(props) {
   };
 
   const handleClick = (props) => {
-    navigate(basePath + "/case-select", {
+    navigate(basePath + "/task-select", {
       state: { isParent: true, isChild: false },
     });
   };
@@ -83,37 +84,29 @@ export default function VisualOverview(props) {
 
   return (
     <div id="page-overview" className="page">
-      <GotoBackButton />
       <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
         <Grid container>
-          <Grid
-            item
-            lg={2}
-            md={2}
-            xs={12}
-            sm={2}
-            justify="center"
-            className="vertical-center"
-          >
-            <form>
-              <Button
-                onClick={() => {
-                  handleClick();
-                }}
-                variant="contained"
-                size="large"
-                className="btn btn-create-button btn-primary rounded-pill"
-                variant="contained"
-                color="primary"
-              >
-                + Create
-              </Button>
-            </form>
-          </Grid>
-          <Grid item lg={8} md={8} xs={12} sm={8}>
+          <Grid item lg={12} md={12} xs={12} sm={12}>
             {caseTypeData.length ? (
               <div>
-                <Paper elevation={3} style={{ width: "fit-content" }}>
+                <form>
+                  <Button
+                    onClick={() => {
+                      handleClick();
+                    }}
+                    variant="contained"
+                    size="large"
+                    className={
+                      classes.mb_one +
+                      " btn btn-create-button btn-primary rounded-pill"
+                    }
+                    variant="contained"
+                    color="primary"
+                  >
+                    + Create
+                  </Button>
+                </form>
+                <Paper elevation={3}>
                   <AppBar position="static" elevation={3}>
                     <Tabs
                       className="nav-tab-list"
@@ -138,7 +131,7 @@ export default function VisualOverview(props) {
                 >
                   <TabPanel value={value} index={0} dir={theme.direction}>
                     {caseTypeData.length ? (
-                      <Example caseTypes={[caseTypeIds]} />
+                      <GraphVisuals caseTypes={[caseTypeIds]} />
                     ) : (
                       []
                     )}
@@ -150,7 +143,7 @@ export default function VisualOverview(props) {
                       dir={theme.direction}
                     >
                       {caseTypeData.length ? (
-                        <Example caseTypes={[caseType?.CASE_TYPE_ID]} />
+                        <GraphVisuals caseTypes={[caseType?.CASE_TYPE_ID]} />
                       ) : (
                         []
                       )}

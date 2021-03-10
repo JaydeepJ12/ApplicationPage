@@ -2,6 +2,8 @@ import { Box, Grid } from "@material-ui/core";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
+
+import { useDispatch, useSelector } from "react-redux";
 import { default as useStyles } from "../../assets/css/common_styles";
 import * as API from "../../components/api_base/path-config";
 import * as notification from "../../components/common/toast";
@@ -14,6 +16,9 @@ import PeopleMainTab from "./people_dept_main_tab";
 var dateFormat = require("dateformat");
 
 export default function PeopleDepartment() {
+
+  const reducerState = useSelector((state) => state);
+  const appId = reducerState.applicationData.appId;
   var classes = useStyles();
   var [value, setValue] = React.useState(0);
   const [page, setPage] = React.useState(0);
@@ -22,7 +27,7 @@ export default function PeopleDepartment() {
   const [componentLoader, setComponentLoader] = useState(false);
   const [taskLoader, setTaskLoader] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [filterValue, setFilterData] = useState("");
+  const [filterValue, setFilterData] = useState({});
   const [dataInfoLoaded, setInfoDataLoaded] = useState(false);
   const [noDataFound, setNoDataFound] = useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -52,6 +57,9 @@ export default function PeopleDepartment() {
 
   // Start  all API call
   const getDepartmentPeopleList = async (skipCount = 0, filters, isScroll) => {
+    if(filters === undefined){
+      setFilterData({})
+    }
     if (!isScroll) {
       setInfoDataLoaded(false);
     }
@@ -62,57 +70,52 @@ export default function PeopleDepartment() {
     setNoDataFound(false);
     var jsonData = {
       maxCount: maxCount + skipCount,
+      application_id: appId,
     };
     // this condition to base on api to pass only those filter which will select so it can handle by object merge
 
     setMaxCount(jsonData.maxCount);
+
     if (filters !== undefined && filters !== "") {
       if (filters.topLevel !== "" && filters.topLevel !== undefined) {
-        Object.assign(jsonData, { EMP_DEPARTMENT_TOP_LEVEL: filters.topLevel });
+        Object.assign(jsonData, { 'DSJT.EMP_DEPARTMENT_TOP_LEVEL': filters.topLevel });
       }
       if (filters.basicName !== "" && filters.basicName !== undefined) {
-        Object.assign(jsonData, {
-          EMP_DEPARTMENT_BASIC_NAME: filters.basicName,
-        });
+        Object.assign(jsonData, { 'DSJT.EMP_DEPARTMENT_BASIC_NAME': filters.basicName});
       }
       if (filters.subDepartment !== "" && filters.subDepartment !== undefined) {
-        Object.assign(jsonData, { DEPARTMENT: filters.subDepartment });
+        Object.assign(jsonData, { 'DSJT.DEPARTMENT': filters.subDepartment });
       }
       if (filters.jobFunction !== "" && filters.jobFunction !== undefined) {
-        Object.assign(jsonData, { Emp_JOB_FUNCTION_NAME: filters.jobFunction });
+        Object.assign(jsonData, { 'DSJT.Emp_JOB_FUNCTION_NAME': filters.jobFunction });
       }
       if (filters.jobTitle !== "" && filters.jobTitle !== undefined) {
-        Object.assign(jsonData, { Emp_JOB_TITLE_NAME: filters.jobTitle });
+        Object.assign(jsonData, { 'DSJT.Emp_JOB_TITLE_NAME': filters.jobTitle });
       }
       if (filters.company !== "" && filters.company !== undefined) {
         Object.assign(jsonData, { "DSJT.COMPANY_NAME": filters.company });
       }
       if (filters.employeeType !== "" && filters.employeeType !== undefined) {
-        Object.assign(jsonData, {
-          "EMPT.EMPLOYEE_TYPE_NAME": filters.employeeType,
-        });
+        Object.assign(jsonData, {"EMPT.EMPLOYEE_TYPE_NAME": filters.employeeType,});
       }
-
       if (filters.searchText && filters.searchText !== undefined) {
-        Object.assign(jsonData, { Display_name: filters.searchText });
+        Object.assign(jsonData, { 'DSJT.EmpDisplayName': filters.searchText });
       }
-
-      Object.assign(jsonData, {
-        empStatus: filters.employeeStatus ? filters.employeeStatus : "active",
-      });
-      Object.assign(jsonData, {
-        provisioned: filters.provisioned ? filters.provisioned : "yes",
-      });
+      if (filters.employee_id && filters.employee_id !== undefined) {
+        Object.assign(jsonData, { 'DSJT.EMPLOYEEID': filters.employee_id });
+      }
+      Object.assign(jsonData, {'empStatus': filters.employeeStatus ? filters.employeeStatus : "active"});
+      Object.assign(jsonData, {'provisioned': filters.provisioned ? filters.provisioned : "yes",});
     } else {
-      Object.assign(jsonData, { employee: "all" });
-      Object.assign(jsonData, { provisioned: "yes" });
+      Object.assign(jsonData, { 'employee': "all" });
+      Object.assign(jsonData, { 'provisioned': "yes" });
     }
-
     var config = {
       method: "post",
       url: API.API_GET_PEOPLE_DEPARTMENTS,
       data: jsonData,
     };
+
     await axios(config)
       .then(function (response) {
      
@@ -213,7 +216,6 @@ export default function PeopleDepartment() {
     if (isPrev) {
       skipCount = gridSkipCount - activityLogMaxCount * 2;
     }
-   console.log("-------CaseActivityLogList",activityFilterValue);
     setRows([]);
     var jsonData = {
       username: people.SHORT_USER_NAME ? people.SHORT_USER_NAME : "dixitms",
@@ -283,13 +285,13 @@ export default function PeopleDepartment() {
       return false;
     }
     if (bottom && dataLoaded) {
-      getDepartmentPeopleList(peopleData?.length, searchInput, true);
+      getDepartmentPeopleList(peopleData?.length, filterValue, true);
     }
   };
 
   useEffect(() => {
     getDepartmentPeopleList();
-  }, []);
+  }, [reducerState.applicationData.appId]);
  
   return (
     <div className="page" id="page-department">
@@ -303,6 +305,8 @@ export default function PeopleDepartment() {
             setFilterData={setFilterData}
             setSearchInput={setSearchInput}
             searchInput={searchInput}
+            filterValue={filterValue}
+            appId={appId}
           ></PeopleDepartmentFilter>
           <div
             className={fixedHeightPaper}
@@ -324,6 +328,9 @@ export default function PeopleDepartment() {
             peopleInfo={peopleInfo}
             noDataFound={noDataFound}
             dataInfoLoaded={dataInfoLoaded}
+            getDepartmentPeopleList={getDepartmentPeopleList}
+            getDepartmentPeopleInfo={getDepartmentPeopleInfo}
+          
           ></PeopleBasicInfo>
 
           <div className={classes.mt_one}>

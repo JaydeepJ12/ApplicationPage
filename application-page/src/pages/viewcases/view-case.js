@@ -8,6 +8,7 @@ import {
   MenuItem,
   Select,
   withStyles,
+  Box,
 } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
@@ -23,7 +24,7 @@ import * as notification from "../../components/common/toast";
 import Loading from "../../components/Loader";
 import CaseList from "./case-list";
 import CaseViewer from "./case_viewer";
-
+import ComponentLoader from "../../components/common/component-loader";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -95,6 +96,7 @@ const StyledMenuItem = withStyles((theme) => ({
 export default function ViewCase(props) {
   const [caseId, setCaseId] = useState(0);
   const [caseData, setCaseData] = useState([]);
+
   const [caseListData, setCaseListData] = useState([]);
   const [filteredCaseListData, setFilteredCaseListData] = useState([]);
   const [loaded, setLoaded] = useState(true);
@@ -153,6 +155,7 @@ export default function ViewCase(props) {
   };
 
   const handleCasePreviewClick = (caseId, caseData) => {
+    //alert("---call for info")
     setCaseId(caseId);
     setCaseData(caseData);
   };
@@ -192,7 +195,7 @@ export default function ViewCase(props) {
       })
       .catch(function (error) {
         console.log(error);
-        navigateToErrorPage(error?.message)
+        navigateToErrorPage(error?.message);
       });
   };
 
@@ -230,6 +233,7 @@ export default function ViewCase(props) {
     isFilterByCaseType = false,
     caseTypeId = 0
   ) => {
+    setCaseLoaded(false);
     let userName = userNameValue;
     let caseListFilter = filterValue;
 
@@ -309,6 +313,7 @@ export default function ViewCase(props) {
               ? selectedCaseHeadersData[0]
               : caseHeadersData[0]
           );
+          setCaseLoaded(true);
           setCaseId(
             caseId > 0
               ? caseId
@@ -333,7 +338,7 @@ export default function ViewCase(props) {
           setUserNameValue("");
           setFilterValue(-1);
         }
-        
+
         if (props.location?.state?.filter > 0) {
           navigate("tasks", {
             state: {
@@ -349,7 +354,7 @@ export default function ViewCase(props) {
       })
       .catch(function (error) {
         console.log(error);
-        navigateToErrorPage(error?.message)
+        navigateToErrorPage(error?.message);
       });
   };
 
@@ -640,18 +645,41 @@ export default function ViewCase(props) {
 
               {caseId > 0 ? (
                 <CaseViewer
+                 loaded={loaded}
                   caseId={caseId}
                   caseData={caseData}
+                  caseLoaded={caseLoaded}
                   handleCaseLoaded={handleCaseLoaded}
                   handleDocumentList={handleDocumentList}
                   navigateToErrorPage={navigateToErrorPage}
                 ></CaseViewer>
               ) : (
-                ""
+                <Grid
+                  item
+                  lg={6}
+                  md={6}
+                  xs={12}
+                  sm={12}
+                  className="panel-center"
+                >
+                  <Box
+                    boxShadow={0}
+                    className={classes.mt_two + " card bg-secondary"}
+                    borderRadius={5}
+                  >
+                    <ComponentLoader type="rect" />
+                  </Box>
+                </Grid>
               )}
             </>
           ) : (
-            ""
+            <Box
+            boxShadow={0}
+            className={classes.mt_two + " card bg-secondary"}
+            borderRadius={5}
+          >
+            <ComponentLoader type="rect" />
+          </Box>
           )}
           {!loaded ? createLoader() : []}
         </Grid>

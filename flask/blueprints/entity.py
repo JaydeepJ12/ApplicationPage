@@ -1,5 +1,6 @@
 from flask import Blueprint, request, make_response
 from sql.cases import CasesSQL
+from sql.entity import EntitySQL
 from stemmons.api import Cases
 from api.mobile import Mobile
 from operator import itemgetter
@@ -10,6 +11,7 @@ from flask_cors import CORS, cross_origin
 
 bp1 = Blueprint('entity', __name__, url_prefix='/entity')
 db = CasesSQL()
+entities = EntitySQL()
 
 mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf','Boxer@@2021')
 
@@ -47,10 +49,13 @@ def entity_link():
 
 @bp1.route('/entity_systemcode_count', methods=['GET'])
 def entity_systemcode_count():
-    df = db.system_code_count()
-    return json.dumps([{"Title":"COUNT OF ITEMS", "Count": df.to_dict(orient='records')[0]['total_count']},
-                      {"Title": "COUNT OF ITEMS BY STATUS", "Count": df.to_dict(orient='records')[0]['sttus_count']},
-                      {"Title":"COUNT OF ITEMS BY CATEGORY", "Count":df.to_dict(orient='records')[0]['category_count']}]
+    df = entities.system_code_count()
+    item_count =  df['total_count'].values[0]
+    status_count = df['sttus_count'].values[0]
+    category_count = df['category_count'].values[0]
+    return json.dumps([{"Title":"COUNT OF ITEMS", "Count":int(item_count)},
+                      {"Title": "COUNT OF ITEMS BY STATUS", "Count":int(status_count)},
+                      {"Title":"COUNT OF ITEMS BY CATEGORY", "Count":int(category_count)}]
                        )
 
 
@@ -71,4 +76,54 @@ def entity_list():
     df = db.entity_list_byId(data.get('entityTypeIds'))
     return df.to_json(orient='records')
 
+@bp1.route('/entity_count_byId', methods=['POST'])
+def entity_count_byId():
+    data = request.json
+    print(data)
+    df = db.entity_count_byId(data['entityTypeIds'])
+    return json.dumps([{"Title":"COUNT OF ITEMS", "Count": df.to_dict(orient='records')[0]['total_count']},
+                      {"Title": "COUNT OF ITEMS BY STATUS", "Count": df.to_dict(orient='records')[0]['sttus_count']},
+                      {"Title":"COUNT OF ITEMS BY CATEGORY", "Count":df.to_dict(orient='records')[0]['category_count']}]
+                       )
 
+@bp1.route('/entity_list_bySystemCode', methods=['POST'])
+def entity_list_bySystemCode():
+    data = request.json
+    print(data)
+    df = db.entity_list_bySystemCode(data['entityTypeIds'], data['systemCode'])
+    return df.to_json(orient='records')
+
+@bp1.route('/list_by_id', methods=['GET'])
+def list_by_id():
+    ''' defaults to show the first 25 if no offset and max are givin'''
+    app_id = request.args.get('id')
+    offset = request.args.get('offset', 0)
+    max_count = request.args.get('max',25)
+    df = entities.list_by_id(max_count=max_count, offset=offset, id=app_id)
+    return df.to_json(orient='records')
+
+@bp1.route('/type_list_by_id', methods=['GET'])
+def type_list_by_id():
+    ''' no limit and max for this, as there should never been a ton of these in the db'''
+    app_id = request.args.get('id')
+    print(request.args)
+    if app_id == None:
+        return 'id field required'
+        
+    df = entities.type_list_by_id(app_id)
+    if df.empty == True: 
+        return 'No Data Available'
+
+    return df.to_json(orient='records')
+
+@bp1.route('/data_by_entity_id', methods=['GET'])
+def data_by_entity_id():
+    ''' no limit and max for this, as there should never been a ton of these in the db'''
+    eid = request.args.get('id')
+    if eid == None:
+        return 'id field required'
+        
+    df = entities.entity_by_id(eid)
+    if df.empty == True: 
+        return 'No Data Available'
+    return df.to_json(orient='records')

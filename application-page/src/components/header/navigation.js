@@ -13,18 +13,19 @@ import {
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
 import { ChevronLeft, ChevronRight, Menu } from "@material-ui/icons";
-import { Link } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 import classnames from "classnames";
 import clsx from "clsx";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actionData } from "../../redux/action";
+import SecureLS from "secure-ls";
+import { actionData, isLoginPage } from "../../redux/action";
 import rootRoute from "../../system/route";
 import HeaderRight from "../header/header_right";
 import menuItems from "../header/menu_items";
 import Login from "../Login/index.js";
-import ApplicationPageDropDown from "./applicationList";
 import ApplicationLinks from "./applicationLinks";
+import ApplicationPageDropDown from "./applicationList";
 import useStyles from "./header_styles";
 
 export default function Navigation(props) {
@@ -40,35 +41,55 @@ export default function Navigation(props) {
   const [appId, setAppId] = React.useState(0);
 
   React.useEffect(() => {
+    if (!isLoggedIn()) {
+      dispatch(isLoginPage(true));
+      setIsLogin(true);
+      navigate(process.env.REACT_APP_LOGIN_PAGE, {});
+    }
+
     let appId = reducerState.applicationData.appId;
-    if (appId) {
-      setCurrentPageValue(appId);
+    let isLogin = reducerState.applicationData.isLoginPage;
+
+    if (isLogin) {
+      setIsLogin(true);
+      setBasePath(process.env.REACT_APP_BASE_PATH);
+    }
+
+    if (appId && !isLogin) {
+      setCurrentPageValue(appId, isLogin);
       setBasePath(basePath + appId);
       setAppId(appId);
     }
-  }, [reducerState.applicationData.appId, props.appId]);
+  }, [
+    reducerState.applicationData.appId,
+    props.appId,
+    reducerState.applicationData.isLoginPage,
+  ]);
 
-  const setCurrentPageValue = (appId) => {
+  const isLoggedIn = () => {
+    let token = localStorage.getItem("token");
+    if (token) {
+      return true;
+    }
+    return false;
+  };
+
+  const setCurrentPageValue = (appId, isLoginPage = false) => {
     let path = window.location.pathname;
 
     if (path) {
       var parts = path.split(appId);
       path = parts[parts.length - 1];
 
-      let isLogin = path === "/login";
       let isError = path === "/error";
 
       let page = menuItems.find((x) => x.menuPath === path);
       if (page) {
         dispatch(actionData(false, "PAGE_NOT_FOUND"));
         setCurrentPage(page.pageTitle);
-      } else if (!isLogin && !isError) {
+      } else if (!isLoginPage && !isError) {
         dispatch(actionData(true, "PAGE_NOT_FOUND"));
         setCurrentPage("");
-      }
-
-      if (isLogin) {
-        setIsLogin(true);
       }
 
       if (isError) {
@@ -86,10 +107,26 @@ export default function Navigation(props) {
     setOpen(false);
   };
 
+  const onLogin = (token, userName = "", displayName = "", email = "") => {
+    var ls = new SecureLS({
+      encodingType: "des",
+      isCompression: false,
+      encryptionSecret: process.env.REACT_APP_ENCRYPTION_SECRET,
+    });
+
+    dispatch(isLoginPage(false));
+    localStorage.setItem("token", token);
+    ls.set("userName", userName);
+    localStorage.setItem("displayName", displayName);
+    localStorage.setItem("email", email);
+    navigate(process.env.REACT_APP_HOME_PAGE, {});
+    setIsLogin(false);
+  };
+
   return (
     <>
       {isLogin ? (
-        <Login path="/login" />
+        <Login path="/login" onLogin={onLogin} />
       ) : (
         <div className={classes.root}>
           <AppBar
@@ -100,7 +137,6 @@ export default function Navigation(props) {
           >
             <Toolbar>
               <IconButton
-                color="inherit"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
@@ -134,7 +170,7 @@ export default function Navigation(props) {
 
           <Drawer
             variant="permanent"
-            className={clsx(classes.drawer, {
+            className={clsx(classes.drawer, classes.drawerColor, {
               [classes.drawerOpen]: open,
               [classes.drawerClose]: !open,
             })}
@@ -146,14 +182,6 @@ export default function Navigation(props) {
             }}
           >
             <div className={classes.toolbar + " side-click"}>
-              {/*-------note:----code for dropdownlist(future development)
-              {/*{open ? (
-                <ListItem>
-                  <AppIcon src={app_icon} name={name}></AppIcon>
-                </ListItem>
-              ) : (
-                ""
-              )} */}
               <h2>Navigation</h2>
               <div></div>
               <IconButton onClick={handleDrawerClose}>

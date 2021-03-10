@@ -7,7 +7,8 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Typography
+  Typography,
+  Box
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import useStyles from "../../assets/css/common_styles";
@@ -62,10 +63,13 @@ export default function CasePreview(props) {
 
 
   return (
+    <Box  width="100%" classes={classes.CommonHoverColor}>
     <Card
       padding={0.5}
       style={{ cursor: "pointer" }}
-      className={"card-user-case"}
+      className={
+           "card-user-case " + classes.mb_one
+      }
       key={caseData.caseID}
       id={"card-" + caseId}
       onClick={(event) => {
@@ -94,5 +98,6 @@ export default function CasePreview(props) {
         </CardActions>
       </CardContent>
     </Card>
+    </Box>
   );
 }

@@ -20,3 +20,17 @@ export const applicationElements = (content) => ({
     content,
   },
 });
+
+export const themeColor = (content) => ({
+  type: actions.THEME_COLOR,
+  payload: {
+    content,
+  },
+});
+
+export const isLoginPage = (content) => ({
+  type: actions.IS_LOGIN_PAGE,
+  payload: {
+    content,
+  },
+});

@@ -4,11 +4,19 @@ export default makeStyles(
   (theme) => {
     return {
       // margin class
+      m_auto: {
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      },
       m_one: {
         margin: theme.spacing(2),
       },
+      
       mt_one: {
         marginTop: theme.spacing(2),
+      },
+      mt_two: {
+        marginTop: theme.spacing(4),
       },
       mb_one: {
         marginBottom: theme.spacing(2),
@@ -112,7 +120,12 @@ export default makeStyles(
         width: 200,
         height: 50,
       },
-
+      cardHover: {
+        color: theme.palette.text.hint,
+        "&:hover": {
+          color: theme.color,
+        },
+      },
       activityGraph: {
         width: "100%",
         height: 250,
@@ -122,7 +135,7 @@ export default makeStyles(
         margin: theme.spacing(2),
       },
       h3_text: {
-        fontSize: "2.8vw",
+        fontSize: "2.2vw",
       },
     };
   },

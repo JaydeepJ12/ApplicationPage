@@ -9,16 +9,16 @@ import {
   MenuItem,
   Popover,
   TextField,
-  Toolbar,
+  Toolbar
 } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import { FilterList, RotateLeft } from "@material-ui/icons";
 import SearchIcon from "@material-ui/icons/Search";
 import axios from "axios";
-import React, { useEffect,useRef,useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   default as useStyles,
-  default as useStylesBase,
+  default as useStylesBase
 } from "../../assets/css/common_styles";
 import * as API from "../../components/api_base/path-config";
 import * as notification from "../../components/common/toast";
@@ -68,6 +68,7 @@ function PeopleDepartmentFilter(props) {
     var jsonData = {
       parentName: parentName ? parentName : "",
       parentID: parentID ? parentID : 0,
+      entityId: props.appId,
     };
     var config = {
       method: "post",
@@ -76,9 +77,10 @@ function PeopleDepartmentFilter(props) {
     };
     await axios(config)
       .then(function (response) {
+
         // for top level dropdown
         let drpTopLevelData = response.data.filter(
-          (x) => x.Level === "TOP LEVEL"
+          (x) => x.Level === "TOP LEVEL"
         );
         if (drpTopLevelData.length) {
           setTopLevelDrpData(drpTopLevelData);
@@ -222,6 +224,7 @@ function PeopleDepartmentFilter(props) {
   };
   const handleFilterResetClick = () => {
     props.setNavTab(0);
+    props.setFilterData({});
     props.setSearchInput({ searchText: "" });
     props.getDepartmentPeopleList();
     handleFilterClear();
@@ -237,6 +240,7 @@ function PeopleDepartmentFilter(props) {
     setEmployeeTypeDrpValue([]);
     setEmployeeStatusDrpValue("active");
     setProvisionedDrpValue("yes");
+    props.getDepartmentPeopleList();
   };
 
   const handleFilterSubmit = (event) => {
@@ -273,20 +277,14 @@ function PeopleDepartmentFilter(props) {
       // IF THERE'S A RUNNING TIMEOUT
       clearTimeout(timeoutRef.current); // THEN, CANCEL IT
     }
-    if (searchText != "") {
-    }
 
     timeoutRef.current = setTimeout(() => {
       // SET A TIMEOUT
       timeoutRef.current = null; // RESET REF TO NULL WHEN IT RUNS
       if (searchText) {
-      
-        props.getDepartmentPeopleList(
-          0,
-          { searchText: searchText },
-          0
-        )
-      }else{
+        props.filterValue.searchText = searchText;
+        props.getDepartmentPeopleList(0, props.filterValue, 0);
+      } else {
         props.getDepartmentPeopleList();
       }
     }, timeoutVal);
@@ -318,13 +316,11 @@ function PeopleDepartmentFilter(props) {
                   </IconButton>
                 </div>
                 <InputBase
-                 name="searchInput"
-                 value={props.searchInput.searchText}
+                  name="searchInput"
+                  value={props.searchInput.searchText}
                   onInput={(event) => searchPeople(event.target.value)}
-                  placeholder="Search…"
+                  placeholder="Search By Name.."
                 />
-
-             
               </div>
             </FormControl>
             <div className="st-float-end">

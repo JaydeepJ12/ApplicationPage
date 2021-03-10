@@ -14,8 +14,6 @@ function PeopleCard(props) {
   };
 
 
-
-
   return (
     <div className="page" id="people-card">
       {props.peopleData.length ? (
@@ -24,7 +22,7 @@ function PeopleCard(props) {
             ? Array.from(new Array(props.peopleData.length))
             : props.peopleData
           ).map((people, index) => (
-            <Box key={index} width="100%">
+            <Box key={index} width="100%" classes={classes.CommonHoverColor}>
               {people ? (
                 <Card
                   padding={0.5}
@@ -41,9 +39,9 @@ function PeopleCard(props) {
                   }}
                 >
                   <CardHeader
-                    avatar={  <CommonAvatar name={people.Display_name} sizeClass={classes.avt_small} />}
+                    avatar={  <CommonAvatar name={people.Display_name} sizeClass={classes.avt_small+" "+'avt-shadow'} />}
                     title={people.Display_name}
-                    subheader={people.subDepartment}
+                    subheader={people.SubDepartment}
                   />
                 </Card>
               ) : (

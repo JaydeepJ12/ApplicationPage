@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.21.1",
     "dateformat": "^4.3.1",
+    "jwt-decode": "^3.1.2",
     "plotly.js": "^1.58.4",
     "react": "^16.13.1",
     "react-colorful": "^4.4.4",

@@ -9,7 +9,7 @@ import {
   Grid,
   MenuItem,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import axios from "axios";
@@ -22,7 +22,7 @@ import * as notification from "../../components/common/toast";
 import FileUpload from "../../components/file-upload.js";
 import Loading from "../../components/Loader.js";
 import CaseBasicInformation from "./case-basic-information.js";
-
+import ComponentLoader from "../../components/common/component-loader";
 const casesBaseURL = process.env.REACT_APP_BASE_CASES_URL;
 
 export default function CaseViewer(props) {
@@ -836,27 +836,37 @@ export default function CaseViewer(props) {
     );
   };
 
+
   return (
     <>
       <Grid item lg={6} md={6} xs={12} sm={12} className="panel-center">
-        <Typography color="textSecondary" gutterBottom>
-          {caseData.typeName}
-        </Typography>
-        <Typography variant="h4" component="h3">
-          {caseData.title}
-        </Typography>
-
-        <Box>{createFileField()}</Box>
-        <span>Description</span>
-        {createFroalaField()}
         <div>
+          
+          <Typography color="textSecondary" gutterBottom>
+            {caseData.typeName}
+          </Typography>
+          <Typography variant="h4" component="h3">
+            {caseData.title}
+          </Typography>
+
+          <Box>{createFileField()}</Box>
+          <span>Description</span>
+          {createFroalaField()}
+          <div></div>
           {notesLoaded ? (
             <div className="comment-list">{loadNotes()}</div>
           ) : (
-            <p>Please wait...!! Comments Loading</p>
+            <Box
+              boxShadow={0}
+              className={classes.mt_one + " card bg-secondary"}
+              borderRadius={5}
+            >
+              <ComponentLoader type="rect" />
+            </Box>
           )}
         </div>
       </Grid>
+
       <Grid
         item
         xs={12}
@@ -867,11 +877,24 @@ export default function CaseViewer(props) {
       >
         {/* <CaseDetailBasicInfo /> */}
         <Box>
-          <div data-test-id="">
+          {
+            props.caseId > 0
+            ?
             <CaseBasicInformation
-              caseData={caseData}
-              handleAutocompleteChange={handleAutocompleteChange}
-            ></CaseBasicInformation>
+            caseData={caseData}
+            handleAutocompleteChange={handleAutocompleteChange}
+          ></CaseBasicInformation>
+            :
+            <Box
+            boxShadow={0}
+            className={classes.mt_two + " card bg-secondary"}
+            borderRadius={5}
+          >
+            <ComponentLoader type="rect" />
+          </Box>
+          }
+          <div data-test-id="">
+    
 
             {caseFields ? (
               <Accordion
@@ -914,7 +937,13 @@ export default function CaseViewer(props) {
                 )}
               </Accordion>
             ) : (
-              ""
+              <Box
+              boxShadow={0}
+              className={classes.mt_two + " card bg-secondary"}
+              borderRadius={5}
+            >
+              <ComponentLoader type="rect" />
+            </Box>
             )}
           </div>
         </Box>

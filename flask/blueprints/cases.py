@@ -116,6 +116,7 @@ def getDepartmentPeoples():
 
 
 @bp.route('/getPeopleInfo', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def getPeopleInfo():
     data = request.json
     if not data['EMPLOYEE_ID']:
@@ -131,7 +132,7 @@ def getDepartmentEmpFilterValues():
         return make_response("Please pass parent name", 400)
     if not data['parentID']:
         return make_response("Please pass parent ID", 400)
-    df = db.get_department_emp_filters(data['parentName'], data['parentID'])
+    df = db.get_department_emp_filters(data.get('parentName'), data.get('parentID'), data.get('entityId'))
     return df.to_json(orient='records')
 
 
@@ -157,6 +158,7 @@ def create():
 @bp.route('/GetExternalDataValues', methods=['POST'])
 def external_data_values():
     data = mobile.external_data_values(request.json).json()
+    print(data)
     for x in data['responseContent']:
         x['DecodeId'] = x.pop("id")
         x["DecodeValue"] = x.pop("name")
@@ -396,3 +398,25 @@ def case_activity_log_test():
             return make_response("please pass the username", 400)
         df = db.case_activity_log_track(data['application_type'], data['username'], data['skipCount'], data['maxCount'])
         return df
+
+
+@bp.route('/activity_logs', methods=['GET'])
+def all_activity_logs():
+    '''API Base, takes in userShortName, maxCount, skipCount.
+    
+    NOTE: in query entity side of union is corrently commetned out 03/08/2021'''
+    print(request.args)
+    user_sam = request.args.get('userShortName')
+    count = request.args.get('maxCount',50)
+    skip = request.args.get('skipCount',0)
+
+    if user_sam == None:
+        #return json.dumps({'error_status': 400, 'error': "please pass the username"})
+        return make_response('please pass the user\'s short name', 404)
+    try: 
+        df = db.activity_logs(user_sam, count, skip)
+        return df.to_json(orient='records')
+    except AttributeError:
+        return make_response('Attribute Error, query returned None.', 500)
+    except:
+        return make_response('Whoops, internal error', 500)

@@ -1,22 +1,24 @@
-import { createMuiTheme } from '@material-ui/core';
-import React,{useState} from 'react'
+import React, { useState } from "react";
 import { HexColorPicker } from "react-colorful";
+import { useDispatch } from "react-redux";
 import "react-colorful/dist/index.css";
-import theme from '../../../components/theme';
+import { themeColor } from "../../../redux/action";
+const NumberContext = React.createContext();
 
-export default function ColorSetter(){
+export default function ColorSetter() {
+  const dispatch = useDispatch();
+  const [color, setColor] = useState();
 
-    const [color, setColor] = useState();
-    
-    localStorage.removeItem('themeColor');
-    localStorage.setItem('themeColor', color);
-    return(
-        <div>
-          <theme color={color}/>
+  if(color !== undefined){
+    localStorage.setItem("themeColor", color);
+  }
+  React.useEffect(() => {
+    dispatch(themeColor(color));
+  }, [color]);
 
-      
-            <HexColorPicker color={color} onChange={setColor} />
-        </div>
-        
-    )
+  return (
+    <NumberContext.Provider color={color}>
+      <HexColorPicker color={color} onChange={setColor} />
+    </NumberContext.Provider>
+  );
 }

@@ -6,10 +6,11 @@ const initialSate = {
   appId: 0,
   isPageNotFound: false,
   applicationList: [],
-  applicationName: "",
+  themeColor: "",
   applicationElements: [],
   isErrorPage: false,
   errorPageMessage: "",
+  isLoginPage: false
 };
 export default function (state = initialSate, action) {
   switch (action.type) {
@@ -55,11 +56,11 @@ export default function (state = initialSate, action) {
         applicationList: content,
       };
     }
-    case actions.APPLICATION_NAME: {
+    case actions.THEME_COLOR: {
       const { content } = action.payload;
       return {
         ...state,
-        applicationName: content,
+        themeColor: content,
       };
     }
     case actions.APPLICATION_ELEMENTS: {
@@ -67,6 +68,13 @@ export default function (state = initialSate, action) {
       return {
         ...state,
         applicationElements: content,
+      };
+    }
+    case actions.IS_LOGIN_PAGE: {
+      const { content } = action.payload;
+      return {
+        ...state,
+        isLoginPage: content,
       };
     }
     default:

@@ -20,7 +20,8 @@ class CasesSQL:
         return id
 
     def cases_type_form(self, id):
-        query = f'''
+        
+        query = '''
         SELECT [ASSOC_TYPE_ID] as AssocTypeId
                 ,[ASSOC_FIELD_TYPE] as AssocFieldType
                 ,[CASE_TYPE_ID] as CaseTypeId
@@ -36,10 +37,10 @@ class CasesSQL:
   
             FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
             where is_active = 'Y'
-            and CASE_TYPE_ID = {id}
+            and CASE_TYPE_ID = ?
             order by SYSTEM_PRIORITY asc
         '''
-        return self.db.execQuery(query)
+        return self.db.execQuery(query, params = (id,))
 
     def cases_types(self):
         query = f'''
@@ -376,7 +377,7 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
-    def get_department_emp_filters(self, parentName, parentID):
+    def get_department_emp_filters(self, parentName, parentID, entityId):
 
         if parentName == 'topLevel':
             query = f'''
@@ -396,7 +397,20 @@ class CasesSQL:
                 '''
         else:
             query = f'''
-                    Select DEPARTMENT_STRUCTURE_TOP_LEVEL_ID as ID ,NAME , 'TOP LEVEL' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_TOP_LEVEL]  WITH(NOLOCK)  WHERE COMMON_DISPLAY ='Y'
+                    SELECT 
+                    DSTL.DEPARTMENT_STRUCTURE_TOP_LEVEL_ID AS ID
+                    ,DSTL.[NAME] 
+                    ,'TOP LEVEL' as [Level]
+                    FROM  [BOXER_ENTITIES].[DBO].[ENTITY] E WITH(NOLOCK) 
+                    INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_TYPE EAT WITH(NOLOCK) ON E.ENTITY_TYPE_ID = EAT.ENTITY_TYPE_ID AND EAT.SYSTEM_CODE = 'DPTJT' AND EAT.IS_ACTIVE = 'Y'
+                    INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_METADATA EAM WITH(NOLOCK) ON E.ENTITY_ID = EAM.ENTITY_ID AND EAT.ENTITY_ASSOC_TYPE_ID = EAM.ENTITY_ASSOC_TYPE_ID and EAM.IS_ACTIVE = 'Y'
+                    INNER JOIN [DEPARTMENTS].dbo.DEPARTMENT_STRUCTURE_JOB_TITLE  DSJT  WITH (NOLOCK) ON EAM.EXTERNAL_DATASOURCE_OBJECT_ID = DSJT.DEPARTMENT_STRUCTURE_JOB_TITLE_ID 
+                    INNER JOIN [DEPARTMENTS].dbo.DEPARTMENT_STRUCTURE_JOB_FUNCTION DSJF  WITH (NOLOCK) ON DSJT.DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID = DSJF.DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID 
+                    INNER JOIN [DEPARTMENTS].dbo.DEPARTMENT_STRUCTURE_SUB_DEPARTMENT DSSD  WITH (NOLOCK) ON DSJF.DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID = DSSD.DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID  
+                    INNER JOIN [DEPARTMENTS].dbo.DEPARTMENT_STRUCTURE_BASIC_NAME DSBN  WITH (NOLOCK) ON DSSD.DEPARTMENT_STRUCTURE_BASIC_NAME_ID = DSBN.DEPARTMENT_STRUCTURE_BASIC_NAME_ID  
+                    INNER JOIN [DEPARTMENTS].dbo.DEPARTMENT_STRUCTURE_TOP_LEVEL DSTL  WITH (NOLOCK) ON DSBN.DEPARTMENT_STRUCTURE_TOP_LEVEL_ID = DSTL.DEPARTMENT_STRUCTURE_TOP_LEVEL_ID  
+                    WHERE  E.ENTITY_ID = {entityId}       ----**** Pass ApplicationID or EntityID here to filter out the data.
+                    GROUP BY DSTL.DEPARTMENT_STRUCTURE_TOP_LEVEL_ID,DSTL.[NAME]
                 '''
         return self.db.execQuery(query)
 
@@ -466,7 +480,7 @@ class CasesSQL:
                 SELECT 
                 c.EMPLOYEE_ID,
                            c.FULL_NAME as Display_name,
-                           c.JOB_TITLE as jobTitle,
+                           c.JOB_TITLE as JobTitle,
                            c.DEPARTMENT_NAME as BasicName,
                            c.PHONE_NUMBER as EmpCellPhone,
                            c.CITY,
@@ -482,7 +496,7 @@ class CasesSQL:
                            c.MIDDLE_NAME,
                            c.EMAIL_ADDRESS,
                            c.ZIP_CODE,
-                         Manager.SupervisorId as manager_id
+                         Manager.SupervisorId as Manager_Id
                                        ,et.EMPLOYEE_TYPE_NAME as empType
                                   FROM [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] AS c 
                                                 LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] AS et 
@@ -703,21 +717,6 @@ where a.IS_ACTIVE = 'Y'
                     '''
         return self.db.execQuery(query)
 
-    def system_code_count(self):
-        try:
-            query = '''
-            SELECT
-            count(eat.[SYSTEM_CODE]) AS total_count,
-            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'sttus' THEN 1 ELSE 0 END) AS sttus_count,
-            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'CATEG' THEN 1 ELSE 0 END) AS category_count
-            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat 
-            left join  [BOXER_ENTITIES].[dbo].[ENTITY_TYPE] et
-            on eat.ENTITY_TYPE_ID = et.ENTITY_TYPE_ID
-            '''
-            return self.db.execQuery(query)
-        except Exception as exe:
-            return str(exe)
-
     def entity_list_byId(self, entityIds):
         try:
             query = f'''
@@ -733,6 +732,85 @@ where a.IS_ACTIVE = 'Y'
             return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
+
+    def entity_count_byId(self, entityTypeIds):
+        try:
+            query = f'''
+            SELECT
+            (SELECT count(*) from [BOXER_ENTITIES].[dbo].[entity_list] 
+            where ENTITY_TYPE_ID in({entityTypeIds})) AS total_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'sttus' THEN 1 ELSE 0 END) AS sttus_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'CATEG' THEN 1 ELSE 0 END) AS category_count
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam 
+            left join  [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat
+            on eam.[ENTITY_ASSOC_TYPE_ID] = eat.[ENTITY_ASSOC_TYPE_ID]
+            where eat.ENTITY_TYPE_ID in({entityTypeIds})
+            '''
+            # print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
+    def entity_list_bySystemCode(self, entityIds, systemCode):
+        try:
+            query = f'''
+            select eat.ENTITY_TYPE_ID as EntityType,
+            count(eam.FIELD_VALUE) as count,
+            eam.FIELD_VALUE as FieldValue
+            from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam WITH (NOLOCK)
+            left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
+            where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
+            group by  eam.FIELD_VALUE, eat.ENTITY_TYPE_ID, eam.FIELD_VALUE
+            order by eam.FIELD_VALUE
+            '''
+            print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
+    def activity_logs(self, user_sam, count=50, skip=0):
+        ''' should be the endpoing for looping up ativity for a user
+        
+        NOTE: Entities is commented out while we wait for an index on that table'''
+
+        query = f''' 
+                select 
+                    [Application]
+                    ,[Activity Type]
+                    ,Note
+                    ,[Date]
+                from (
+                select 
+                    'Cases' as [Application]
+                    ,eat.NAME as [Activity Type]
+                    ,[NOTE] as [Note]
+                    ,ea.[CREATED_DATETIME] as [Date]
+                from boxer_cme.dbo.CASE_ACTIVITY ea with(nolock)
+                inner join BOXER_CME.dbo.Case_activity_type eat with(nolock)
+                on ea.ACTIVITY_TYPE_ID = eat.CASE_ACTIVITY_TYPE_ID
+                and ea.created_by = '{user_sam}'
+                /*
+                union all
+
+                select 
+                    'Entities' as [Application]
+                    ,eat.NAME as [Activity_Type]
+                    ,[NOTE] 
+                    ,ea.CREATED_DATETIME as [Date]
+                from BOXER_ENTITIES.dbo.Entity_ACTIVITY ea with(nolock)
+                inner join BOXER_ENTITIES.dbo   .Entity_activity_type eat with(nolock)
+                on ea.ENTITY_ACTIVITY_TYPE_ID = eat.ENTITY_ACTIVITY_TYPE_ID
+                and ea.created_by = '{user_sam}'
+                */
+                ) dat
+
+            order by [Date] desc
+
+            offset {skip} rows fetch next {count} rows only
+        '''
+        
+        
+        return self.db.execQuery(query)
 
     def department_fetch(self, all_data):
         try:
@@ -779,6 +857,7 @@ where a.IS_ACTIVE = 'Y'
                        ,DSJT.SAM_ACCOUNT_NAME AS SHORT_USER_NAME 
                        ,EmpEmail AS EMAIL_ADDRESS
                        ,DSEM2.Employee_ID As Manager_Id
+                       ,DSEM2.BIRTH_DATE
                        ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
                        FROM  [BOXER_ENTITIES].[DBO].[ENTITY] E 
                        INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_TYPE EAT ON E.ENTITY_TYPE_ID=EAT.ENTITY_TYPE_ID AND EAT.SYSTEM_CODE='DPTJT' AND EAT.IS_ACTIVE='Y'
@@ -844,10 +923,6 @@ class AppSql:
         return self.db.execQuery(query)
 
 
-class FieldHandler:
-    pass
-
-
 class AppHandler(AppSql):
     '''transforms sql calls into json for the react from end'''
 
@@ -873,6 +948,7 @@ class AppHandler(AppSql):
                 'url': f"http://entities.boxerproperty.com/Download.aspx?FileID={id}"
             })
         return resp
+
 
 
 class CaseHandler(CasesSQL):

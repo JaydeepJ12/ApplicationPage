@@ -25,29 +25,18 @@ const menuItems = [
       pageTitle: "Tasks",
     },
     {
-      menuName: "People",
-      menuIcon: <People />,
-      menuPath: "/people",
-      pageTitle: "People",
-    },
-    {
-      menuName: "People Department",
-      menuIcon: <Dvr />,
-      menuPath: "/people_dept",
-      pageTitle: "People Department",
-    },
-    {
-      menuName: "Application Item",
-      menuIcon: <DataUsage />,
-      menuPath: "/application_item",
-      pageTitle: "Application Item",
-    },
-    {
       menuName: "Items",
       menuIcon: <ViewList />,
       menuPath: "/items",
       pageTitle: "Items",
     },
+    {
+      menuName: "People",
+      menuIcon: <People />,
+      menuPath: "/people",
+      pageTitle: "People",
+    },
+    
     {
       menuName: "Insights",
       menuIcon: <Timeline />,
@@ -55,22 +44,10 @@ const menuItems = [
       pageTitle: "Insights",
     },
     {
-      menuName: "CaseCreator",
+      menuName: "Task Creator",
       menuIcon: <Create />,
-      menuPath: "/case-select",
-      pageTitle: "Create Case",
-    },
-    {
-      menuName: "View Cases",
-      menuIcon: <ViewList />,
-      menuPath: "/viewcase",
-      pageTitle: "View Cases",
-    },
-    {
-      menuName: "Case Type Form",
-      menuIcon: <Dvr />,
-      menuPath: "/case-type-form",
-      pageTitle: "Case Type",
+      menuPath: "/task-select",
+      pageTitle: "Task Creator",
     },
   ];
 

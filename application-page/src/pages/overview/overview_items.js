@@ -2,10 +2,12 @@ import {
   Box,
   Button,
   Container,
+  createMuiTheme,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
+  responsiveFontSizes,
   Select,
   Typography,
 } from "@material-ui/core";
@@ -16,39 +18,60 @@ import useStyles from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader";
 import ActiveEntity from "../../components/react_graph/activeEntity";
 
+let theme = createMuiTheme();
+theme = responsiveFontSizes(theme);
+
 export default function ItemOverview() {
   var classes = useStyles();
   const reducerState = useSelector((state) => state);
   const [componentLoader, setComponentLoader] = useState(false);
   const [noDataFound, setNoDataFound] = React.useState(false);
   const [entityCount, setEntityCount] = React.useState([]);
+  const [statusCount, setStatusCount] = React.useState([]);
+  const [categoryCount, setCategoryCount] = React.useState([]);
   const [entityTypes, setEntityTypes] = React.useState([]);
   const [entityListId, setEntityListId] = React.useState("");
   const [state, setState] = useState(0);
 
   React.useEffect(() => {
-    async function getEntityCount() {
-      setComponentLoader(true);
+    setComponentLoader(true);
+    async function getEntityCount(Ids) {
+      var data = JSON.stringify({ entityTypeIds: Ids });
       var config = {
-        method: "get",
-        url: "/entity/entity_systemcode_count",
+        method: "post",
+        url: "/entity/entity_count_byId",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: data,
       };
 
       await axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
           setComponentLoader(false);
-          setEntityCount(response.data);
+          if (response.data.length) {
+            setEntityCount(response.data[0]);
+            setStatusCount(response.data[1]);
+            setCategoryCount(response.data[2]);
+          }
         })
         .catch(function (error) {
           console.log(error);
         });
     }
 
-    getEntityCount();
+    if (entityListId) {
+      getEntityCount(entityListId);
+    }
+
+    // if (entityListId) {
+    // getEntityCount("1215,1452,1454,1460,1462,1461,1463");
+    // }
+
     return () => {};
-  }, []);
+  }, [entityListId]);
   React.useEffect(() => {
+    setComponentLoader(true);
     async function getEntityTypes(Ids) {
       var data = JSON.stringify({ entityIds: Ids });
       var config = {
@@ -62,6 +85,7 @@ export default function ItemOverview() {
 
       await axios(config)
         .then(function (response) {
+          // setComponentLoader(false);
           if (response.data.length) {
             setEntityTypes(response.data);
             getSetEntityList(response.data);
@@ -195,103 +219,135 @@ export default function ItemOverview() {
           </div>
         ) : (
           <>
-            {entityCount ? (
+            {entityCount && statusCount && categoryCount ? (
               <>
-                {/* <Grid item lg={12} md={12} xs={12} sm={12}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    COUNT OF ITEMS
-                  </Typography>
-                  <Container className={classes.mt_one}>
-                    <Grid container spacing={3}>
-                      <Grid item lg={3} md={3} xs={12} sm={12}>
+                {entityCount.Count > 0 ? (
+                  <Grid item lg={12} md={12} xs={12} sm={12}>
+                    <div className="st-d-inline">
+                      <Typography variant="subtitle2" gutterBottom>
+                        {entityCount.Title}
+                      </Typography>
+                      <Typography
+                        variant="h3"
+                        gutterBottom
+                        // className={classes.h3_text}
+                      >
+                        {entityCount.Count}
+                      </Typography>
+                    </div>
+
+                    <Container className={classes.mt_one}>
+                      <Grid container spacing={3}>
+                        <Grid
+                          item
+                          lg={12}
+                          md={12}
+                          xs={12}
+                          sm={12}
+                          className={classes.activityGraph}
+                        >
+                          <ActiveEntity entityListId={entityListId} type="" />
+                        </Grid>
+                      </Grid>
+                    </Container>
+                  </Grid>
+                ) : (
+                  <></>
+                )}
+                {statusCount.Count > 0 ? (
+                  <Grid item lg={12} md={12} xs={12} sm={12}>
+                    <div className="st-d-inline">
+                      <Typography variant="subtitle2" gutterBottom>
+                        {statusCount.Title}
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        gutterBottom
+                        className={classes.h3_text}
+                      >
+                        {statusCount.Count}
+                      </Typography>
+                    </div>
+
+                    <Container className={classes.mt_one}>
+                      <Grid container spacing={3}>
+                        <Grid
+                          item
+                          lg={12}
+                          md={12}
+                          xs={12}
+                          sm={12}
+                          className={classes.activityGraph}
+                        >
+                          <ActiveEntity
+                            entityListId={entityListId}
+                            type="STTUS"
+                          />
+                        </Grid>
+                      </Grid>
+                    </Container>
+                  </Grid>
+                ) : (
+                  <></>
+                )}
+
+                {categoryCount.Count > 0 ? (
+                  <Grid item lg={12} md={12} xs={12} sm={12}>
+                    <div className="st-d-inline">
+                      <Typography variant="subtitle2" gutterBottom>
+                        {categoryCount.Title}
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        gutterBottom
+                        className={classes.h3_text}
+                      >
+                        {categoryCount.Count}
+                      </Typography>
+                    </div>
+
+                    <Container className={classes.mt_one}>
+                      <Grid container spacing={3}>
+                        {/* <Grid item lg={3} md={3} xs={12} sm={12}>
                         <Typography
                           variant="h3"
                           gutterBottom
                           className={classes.h3_text}
                         >
-                          {entityCount.total_count}
+                          {categoryCount.Count}
                         </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        lg={9}
-                        md={9}
-                        xs={12}
-                        sm={12}
-                        className={`sm-border-left ` + classes.activityGraph}
-                      >
-                        {entityListId ? (
-                          <ActiveEntity entityListId={entityListId} />
-                        ) : (
-                          <>
-                            {
-                              noDataFound && <>No Data found</>
-                              //  ? (
-                              //   <>No Data found</>
-                              // ) : (
-                              //   <div>
-                              //     <Skeleton className={classes.skeletonWidth} />
-                              //   </div>
-                              // )
-                            }
-                          </>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </Container>
-                </Grid> */}
+                      </Grid> */}
 
-                {entityCount.map((entity, index) => (
-                  <Grid item lg={12} md={12} xs={12} sm={12}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      {entity.Title}
-                    </Typography>
-                    <Container className={classes.mt_one}>
-                      <Grid container spacing={3}>
-                        <Grid item lg={3} md={3} xs={12} sm={12}>
-                          <Typography
-                            variant="h3"
-                            gutterBottom
-                            className={classes.h3_text}
-                          >
-                            {entity.Count}
-                          </Typography>
-                        </Grid>
                         <Grid
                           item
-                          lg={9}
-                          md={9}
+                          lg={12}
+                          md={12}
                           xs={12}
                           sm={12}
-                          className={`sm-border-left ` + classes.activityGraph}
+                          className={classes.activityGraph}
                         >
-                          {index == 0 ? (
-                            entityListId ? (
-                              <ActiveEntity entityListId={entityListId} />
-                            ) : (
-                              <>
-                                {
-                                  noDataFound && <>No Data found</>
-                                  //  ? (
-                                  //   <>No Data found</>
-                                  // ) : (
-                                  //   <div>
-                                  //     <Skeleton className={classes.skeletonWidth} />
-                                  //   </div>
-                                  // )
-                                }
-                              </>
-                            )
-                          ) : (
-                            <Typography variant="h6" gutterBottom>
-                              {entity.Title}
-                            </Typography>
-                          )}
+                          <ActiveEntity
+                            entityListId={entityListId}
+                            type="CATEG"
+                          />
                         </Grid>
                       </Grid>
                     </Container>
                   </Grid>
-                ))}
+                ) : (
+                  <>
+                    {/* {
+                            noDataFound && <>No Data found</>
+                            //  ? (
+                            //   <>No Data found</>
+                            // ) : (
+                            //   <div>
+                            //     <Skeleton className={classes.skeletonWidth} />
+                            //   </div>
+                            // )
+                          } */}
+                  </>
+                )}
               </>
             ) : (
               <div style={{ height: "2rem" }}>No Data Found</div>
