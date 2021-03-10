@@ -5,13 +5,13 @@ export default makeStyles(
     return {
       // margin class
       m_auto: {
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        marginLeft: "auto",
+        marginRight: "auto",
       },
       m_one: {
         margin: theme.spacing(2),
       },
-      
+
       mt_one: {
         marginTop: theme.spacing(2),
       },
@@ -136,6 +136,14 @@ export default makeStyles(
       },
       h3_text: {
         fontSize: "2.2vw",
+      },
+      cs_icon: {
+        margin: theme.spacing(1),
+        width: 59,
+        textAlign: "center",
+      },
+      icon_mx_width: {
+        width: "max-content",
       },
     };
   },
