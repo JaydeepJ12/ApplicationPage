@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response
 from sql.cases import CasesSQL
 from api.mobile import Mobile
 import pandas as pd
@@ -23,6 +23,8 @@ def after_request(r):
 def getPeople():
     #needs to take in an app-id
     data = request.json
+    if not data['searchText']:
+        return make_response("please pass search text", 400)
     df = db.get_people(data['skipCount'], data['maxCount'], data['searchText'])
     return df.to_json(orient='records')
 
