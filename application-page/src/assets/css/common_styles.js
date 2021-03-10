@@ -135,7 +135,7 @@ export default makeStyles(
         margin: theme.spacing(2),
       },
       h3_text: {
-        fontSize: "2.8vw",
+        fontSize: "2.2vw",
       },
     };
   },

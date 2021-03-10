@@ -98,7 +98,7 @@ export default function OverView(props) {
   };
 
   const handleClick = (props) => {
-    props.navigate("/case-select");
+    props.navigate("/task-select");
   };
   var SilderSetting = {
     dots: false,

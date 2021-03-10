@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response
 from sql.cases import CasesSQL
 from stemmons.api import Cases
 from api.mobile import Mobile
@@ -69,6 +69,8 @@ def caseTypes():
 @bp.route('/getEntitiesByEntityId', methods=['POST'])
 def getEntitiesByEntityId():
     data = request.json
+    if not data['entityId']:
+        return make_response("please pass entity Id", 400)
     df = db.get_entities_by_entity_id(data['entityId'])
     df = df.sort_values(by='NAME')
     return df.to_json(orient='records')
@@ -77,6 +79,8 @@ def getEntitiesByEntityId():
 @bp.route('/caseTypesByEntityId', methods=['POST'])
 def caseTypesByEntityId():
     data = request.json
+    if not data['entityIds']:
+        return make_response("please pass entity Ids", 400)
     df = db.case_types_by_entity_id(data['entityIds'])
     df = df.sort_values(by='NAME')
     return df.to_json(orient='records')
@@ -85,6 +89,8 @@ def caseTypesByEntityId():
 @bp.route('/caseassoctypecascade')
 def caseassoctypecascade():
     caseTypeId = request.args.get('CaseTypeID')
+    if not caseTypeId:
+        return make_response("please pass case type Id")
     df = db.caseassoctypecascade(int(caseTypeId))
     return df.to_json(orient='records')  #
 
@@ -113,6 +119,8 @@ def getDepartmentPeoples():
 @cross_origin(supports_credentials=True)
 def getPeopleInfo():
     data = request.json
+    if not data['EMPLOYEE_ID']:
+        return make_response("Please pass employee Id", 400)
     df = db.get_people_info(data['EMPLOYEE_ID'])
     return df.to_json(orient='records')
 
@@ -120,7 +128,10 @@ def getPeopleInfo():
 @bp.route('/getDepartmentEmpFilterValues', methods=['POST'])
 def getDepartmentEmpFilterValues():
     data = request.json
-    print(data)
+    if not data['parentName']:
+        return make_response("Please pass parent name", 400)
+    if not data['parentID']:
+        return make_response("Please pass parent ID", 400)
     df = db.get_department_emp_filters(data.get('parentName'), data.get('parentID'), data.get('entityId'))
     return df.to_json(orient='records')
 
@@ -304,7 +315,7 @@ def case_activity_log():
     if request.method == 'GET':
         caseIds = request.args.get('caseIds')
         if not caseIds:
-            return json.dumps({'error_status': 400, 'error': "please pass the case id"})
+            return make_response("please pass the case id", 400)
         return CaseHandler().case_activity_log(caseIds)
 
 
@@ -362,6 +373,8 @@ def get_related_cases_count_data():
 @bp.route('/getUserInfo', methods=['POST'])
 def get_user_info():
     data = request.json
+    if not data['userShortName']:
+        return make_response("please pass user short name", 400)
     df = db.get_user_info(data['userShortName'])
     return df.to_json(orient='records')
 
@@ -369,6 +382,8 @@ def get_user_info():
 @bp.route('/getFilterValuesByCaseTypeIds', methods=['POST'])
 def getFilterValuesByCaseTypeIds():
     data = request.json
+    if not data['caseTypeIds']:
+        return make_response("please pass case type Ids", 400)
     df = db.get_filter_values_by_caseTypeIds(data['caseTypeIds'])
     return df.to_json(orient='records')
 
@@ -380,6 +395,28 @@ def case_activity_log_test():
         data = request.json
         print(data)
         if not data['username']:
-            return json.dumps({'error_status': 400, 'error': "please pass the username"})
+            return make_response("please pass the username", 400)
         df = db.case_activity_log_track(data['application_type'], data['username'], data['skipCount'], data['maxCount'])
         return df
+
+
+@bp.route('/activity_logs', methods=['GET'])
+def all_activity_logs():
+    '''API Base, takes in userShortName, maxCount, skipCount.
+    
+    NOTE: in query entity side of union is corrently commetned out 03/08/2021'''
+    print(request.args)
+    user_sam = request.args.get('userShortName')
+    count = request.args.get('maxCount',50)
+    skip = request.args.get('skipCount',0)
+
+    if user_sam == None:
+        #return json.dumps({'error_status': 400, 'error': "please pass the username"})
+        return make_response('please pass the user\'s short name', 404)
+    try: 
+        df = db.activity_logs(user_sam, count, skip)
+        return df.to_json(orient='records')
+    except AttributeError:
+        return make_response('Attribute Error, query returned None.', 500)
+    except:
+        return make_response('Whoops, internal error', 500)

@@ -27,3 +27,10 @@ export const themeColor = (content) => ({
     content,
   },
 });
+
+export const isLoginPage = (content) => ({
+  type: actions.IS_LOGIN_PAGE,
+  payload: {
+    content,
+  },
+});

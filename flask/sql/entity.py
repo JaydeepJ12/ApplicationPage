@@ -30,6 +30,27 @@ class EntitySQL:
 
     def list_by_id(self, id, max_count=25, offset=0 ):
         ''' Id is an applicaiton id'''
+    def system_code_count(self):
+        try:
+            query = '''
+            SELECT
+            count(eat.[SYSTEM_CODE]) AS total_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'sttus' THEN 1 ELSE 0 END) AS sttus_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'CATEG' THEN 1 ELSE 0 END) AS category_count
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat 
+            left join  [BOXER_ENTITIES].[dbo].[ENTITY_TYPE] et
+            on eat.ENTITY_TYPE_ID = et.ENTITY_TYPE_ID
+            '''
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
+    def list_by_id(self, id, max_count=25, offset=0, ):
+        ''' Id is an applicaiton id'''
+
+        if ',' in id:
+            id = id.split(',')
+            id = self.tuplefy(id)
         query = f''' SELECT [ENTITY_ID]
       ,[ENTITY_TYPE_ID]
       ,[TITLE_METADATA_TEXT] as [Title]
