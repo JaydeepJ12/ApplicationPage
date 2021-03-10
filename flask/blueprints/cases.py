@@ -119,9 +119,7 @@ def getDepartmentPeoples():
 @cross_origin(supports_credentials=True)
 def getPeopleInfo():
     data = request.json
-    if not data['EMPLOYEE_ID']:
-        return make_response("Please pass employee Id", 400)
-    df = db.get_people_info(data['EMPLOYEE_ID'])
+    df = db.get_people_info(data['EMPLOYEE_ID'], data['EMPLOYEE_SHORT_NAME'])
     return df.to_json(orient='records')
 
 

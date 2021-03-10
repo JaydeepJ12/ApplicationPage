@@ -1,7 +1,7 @@
-import { Box } from "@material-ui/core";
+import { Box,Link } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import UserAutocomplete from "../../components/autocomplete.js";
-
+import { navigate } from '@reach/router';
 export default function CaseBasicInformation(props) {
   const [caseData, setCaseData] = useState(props.caseData);
 
@@ -50,13 +50,33 @@ export default function CaseBasicInformation(props) {
     );
   };
 
+  const handlePeopleDepartment = (userName) => {
+  
+    navigate("people", {
+      state: {
+        userName: userName,
+        IsTaskClick : true
+      },
+    });
+  };
+
   return (
     <>
       <div className="text-left" style={{ marginBottom: "1rem" }}>
         <span style={{ fontWeight: "bold" }}>Assignee : </span>
-        {caseData?.assignedToFullName
+     
+
+        <Link
+          component="button"
+          variant="body2"
+          onClick={() => {
+            handlePeopleDepartment(caseData?.assignedTo);
+          }}
+        >
+       {caseData?.assignedToFullName
           ? caseData?.assignedToFullName
           : caseData?.assignedTo}
+        </Link>
       </div>
       <Box className="input-box">{createAssignTo()}</Box>
       <br />

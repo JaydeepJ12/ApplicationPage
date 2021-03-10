@@ -1,4 +1,6 @@
 import { Box, Grid } from "@material-ui/core";
+import { SignalCellularNull } from "@material-ui/icons";
+import { Alert } from "@material-ui/lab";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -14,7 +16,7 @@ import PeopleMainTab from "./people_dept_main_tab";
 
 var dateFormat = require("dateformat");
 
-export default function PeopleDepartment() {
+export default function PeopleDepartment(props) {
   const reducerState = useSelector((state) => state);
   const appId = reducerState.applicationData.appId;
   var classes = useStyles();
@@ -51,6 +53,12 @@ export default function PeopleDepartment() {
   const [pageSize, setPageSize] = useState(10);
   const [gridSkipCount, setGridSkipCount] = useState(0);
 
+  const [userNameValue, setUserNameValue] = useState(
+    props.location?.state?.userName ? props.location?.state?.userName : ""
+  );
+  const [IsTaskClick, setIsTaskClick] = useState(
+    props.location?.state?.IsTaskClick ? props.location?.state?.IsTaskClick : ""
+  );
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
 
   // Start  all API call
@@ -150,11 +158,12 @@ export default function PeopleDepartment() {
       });
   };
   // this action use for get department info when card is particular card is click
-  const getDepartmentPeopleInfo = async (employee_id) => {
+  const getDepartmentPeopleInfo = async (employee_id,emp_user_name) => {
     setInfoDataLoaded(false);
     setNoDataFound(false);
     var jsonData = {
       EMPLOYEE_ID: employee_id,
+      EMPLOYEE_SHORT_NAME: emp_user_name,
     };
 
     var config = {
@@ -291,7 +300,7 @@ export default function PeopleDepartment() {
       notification.toast.warning("Please wait. Your Data is loading...!!");
       return false;
     }
-    getDepartmentPeopleInfo(employee_id);
+    getDepartmentPeopleInfo(employee_id,'null');
   };
   // this scroll action use for scroll a left bar of people to get more data
   const handleOnScroll = (peopleData, event) => {
@@ -305,10 +314,14 @@ export default function PeopleDepartment() {
       getDepartmentPeopleList(peopleData?.length, filterValue, true);
     }
   };
-
   useEffect(() => {
     getDepartmentPeopleList();
-  }, [reducerState.applicationData.appId]);
+    setIsTaskClick(false);
+    setUserNameValue(" ");
+    if (IsTaskClick && userNameValue) {
+      getDepartmentPeopleInfo('null', userNameValue);
+    }
+  }, [reducerState.applicationData.appId,userNameValue]);
 
   return (
     <div className="page" id="page-department">
