@@ -1,4 +1,4 @@
-import { Box, Grid, Typography ,Link  } from "@material-ui/core";
+import { Box, Grid, Typography, Link } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
 import CommonAvatar from "../../components/common/avatar";
@@ -32,8 +32,13 @@ function PeopleBasicInfoTab(props) {
               {props.peopleInfo?.Display_name ? (
                 <CommonAvatar
                   name={props.peopleInfo?.Display_name}
-                  sizeClass={classes.avt_large +' '+classes.m_auto +' '+'avt-shadow'}
-        
+                  sizeClass={
+                    classes.avt_large +
+                    " " +
+                    classes.m_auto +
+                    " " +
+                    "avt-shadow"
+                  }
                 />
               ) : null}
             </div>
@@ -93,7 +98,9 @@ function PeopleBasicInfoTab(props) {
                       component="button"
                       variant="body2"
                       onClick={() => {
-                        props.getDepartmentPeopleInfo(props.peopleInfo.Manager_Id);
+                        props.getDepartmentPeopleInfo(
+                          props.peopleInfo.Manager_Id
+                        );
                       }}
                     >
                       {
@@ -102,7 +109,6 @@ function PeopleBasicInfoTab(props) {
                         )[0]
                       }
                     </Link>
-                   
                   </Grid>
                 ) : (
                   ""

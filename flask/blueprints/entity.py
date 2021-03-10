@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response
 from sql.cases import CasesSQL
 from sql.entity import EntitySQL
 from stemmons.api import Cases
@@ -34,6 +34,8 @@ def after_request(r):
 @cross_origin(supports_credentials=True)
 def entity_link():
     data = request.json
+    if not data['entityIds']:
+        return make_response("please pass entity ids", 400)
     df = db.entity_data(data['entityIds'])
     ENTITY_ID=df['ENTITY_ID'].to_list()
     ENTITY_ID=list(set(ENTITY_ID))
@@ -47,16 +49,30 @@ def entity_link():
 
 @bp1.route('/entity_systemcode_count', methods=['GET'])
 def entity_systemcode_count():
-    df = db.system_code_count()
-    return json.dumps([{"Title":"COUNT OF ITEMS", "Count": df.to_dict(orient='records')[0]['total_count']},
-                      {"Title": "COUNT OF ITEMS BY STATUS", "Count": df.to_dict(orient='records')[0]['sttus_count']},
-                      {"Title":"COUNT OF ITEMS BY CATEGORY", "Count":df.to_dict(orient='records')[0]['category_count']}]
+    df = entities.system_code_count()
+    item_count =  df['total_count'].values[0]
+    status_count = df['sttus_count'].values[0]
+    category_count = df['category_count'].values[0]
+    return json.dumps([{"Title":"COUNT OF ITEMS", "Count":int(item_count)},
+                      {"Title": "COUNT OF ITEMS BY STATUS", "Count":int(status_count)},
+                      {"Title":"COUNT OF ITEMS BY CATEGORY", "Count":int(category_count)}]
                        )
 
 
 @bp1.route('/entity_list_byId', methods=['POST'])
 def entity_list_byId():
     data = request.json
+    if not data['entityTypeIds']:
+        return make_response("please pass entity type Ids", 400)
+    df = db.entity_list_byId(data.get('entityTypeIds'))
+    return df.to_json(orient='records')
+
+
+@bp1.route('/entity_list', methods=['POST'])
+def entity_list():
+    data = request.json
+    if not data['entityTypeIds']:
+        return make_response("please pass entity type Ids", 400)
     df = db.entity_list_byId(data.get('entityTypeIds'))
     return df.to_json(orient='records')
 
@@ -110,5 +126,4 @@ def data_by_entity_id():
     df = entities.entity_by_id(eid)
     if df.empty == True: 
         return 'No Data Available'
-
     return df.to_json(orient='records')

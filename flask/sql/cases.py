@@ -20,7 +20,8 @@ class CasesSQL:
         return id
 
     def cases_type_form(self, id):
-        query = f'''
+        
+        query = '''
         SELECT [ASSOC_TYPE_ID] as AssocTypeId
                 ,[ASSOC_FIELD_TYPE] as AssocFieldType
                 ,[CASE_TYPE_ID] as CaseTypeId
@@ -36,10 +37,10 @@ class CasesSQL:
   
             FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
             where is_active = 'Y'
-            and CASE_TYPE_ID = {id}
+            and CASE_TYPE_ID = ?
             order by SYSTEM_PRIORITY asc
         '''
-        return self.db.execQuery(query)
+        return self.db.execQuery(query, params = (id,))
 
     def cases_types(self):
         query = f'''
@@ -716,21 +717,6 @@ where a.IS_ACTIVE = 'Y'
                     '''
         return self.db.execQuery(query)
 
-    def system_code_count(self):
-        try:
-            query = '''
-            SELECT
-            count(eat.[SYSTEM_CODE]) AS total_count,
-            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'sttus' THEN 1 ELSE 0 END) AS sttus_count,
-            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'CATEG' THEN 1 ELSE 0 END) AS category_count
-            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat 
-            left join  [BOXER_ENTITIES].[dbo].[ENTITY_TYPE] et
-            on eat.ENTITY_TYPE_ID = et.ENTITY_TYPE_ID
-            '''
-            return self.db.execQuery(query)
-        except Exception as exe:
-            return str(exe)
-
     def entity_list_byId(self, entityIds):
         try:
             query = f'''
@@ -781,6 +767,50 @@ where a.IS_ACTIVE = 'Y'
             return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
+
+    def activity_logs(self, user_sam, count=50, skip=0):
+        ''' should be the endpoing for looping up ativity for a user
+        
+        NOTE: Entities is commented out while we wait for an index on that table'''
+
+        query = f''' 
+                select 
+                    [Application]
+                    ,[Activity Type]
+                    ,Note
+                    ,[Date]
+                from (
+                select 
+                    'Cases' as [Application]
+                    ,eat.NAME as [Activity Type]
+                    ,[NOTE] as [Note]
+                    ,ea.[CREATED_DATETIME] as [Date]
+                from boxer_cme.dbo.CASE_ACTIVITY ea with(nolock)
+                inner join BOXER_CME.dbo.Case_activity_type eat with(nolock)
+                on ea.ACTIVITY_TYPE_ID = eat.CASE_ACTIVITY_TYPE_ID
+                and ea.created_by = '{user_sam}'
+                /*
+                union all
+
+                select 
+                    'Entities' as [Application]
+                    ,eat.NAME as [Activity_Type]
+                    ,[NOTE] 
+                    ,ea.CREATED_DATETIME as [Date]
+                from BOXER_ENTITIES.dbo.Entity_ACTIVITY ea with(nolock)
+                inner join BOXER_ENTITIES.dbo   .Entity_activity_type eat with(nolock)
+                on ea.ENTITY_ACTIVITY_TYPE_ID = eat.ENTITY_ACTIVITY_TYPE_ID
+                and ea.created_by = '{user_sam}'
+                */
+                ) dat
+
+            order by [Date] desc
+
+            offset {skip} rows fetch next {count} rows only
+        '''
+        
+        
+        return self.db.execQuery(query)
 
     def department_fetch(self, all_data):
         try:
@@ -893,10 +923,6 @@ class AppSql:
         return self.db.execQuery(query)
 
 
-class FieldHandler:
-    pass
-
-
 class AppHandler(AppSql):
     '''transforms sql calls into json for the react from end'''
 
@@ -922,6 +948,7 @@ class AppHandler(AppSql):
                 'url': f"http://entities.boxerproperty.com/Download.aspx?FileID={id}"
             })
         return resp
+
 
 
 class CaseHandler(CasesSQL):

@@ -20,32 +20,40 @@ class EntitySQL:
 
     def type_list_by_id(self, id):
         ''' Id is an applicaiton id'''
-        query = f''' SELECT E.ENTITY_ID as [ID],FIELD_VALUE as [Entity Types], EXTERNAL_DATASOURCE_OBJECT_ID as [EID]--, etid.TEXT as [ETID]
+        query = f''' SELECT E.ENTITY_ID as [ID],FIELD_VALUE as Entity_Types, EXTERNAL_DATASOURCE_OBJECT_ID as [EID]--, etid.TEXT as [ETID]
    FROM  [BOXER_ENTITIES].[DBO].[ENTITY] E 
    INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_TYPE EAT ON E.ENTITY_TYPE_ID=EAT.ENTITY_TYPE_ID AND EAT.IS_ACTIVE='Y' and EAT.SYSTEM_CODE= 'ASSET'
    INNER JOIN [BOXER_ENTITIES].[DBO].ENTITY_ASSOC_METADATA EAM ON E.ENTITY_ID=EAM.ENTITY_ID AND EAT.ENTITY_ASSOC_TYPE_ID=EAM.ENTITY_ASSOC_TYPE_ID and EAM.IS_ACTIVE='Y' 
    
    WHERE  E.ENTITY_ID =   {id} '''
-
         return self.db.execQuery(query) 
 
-    def list_by_id(self, id, max_count=25, offset=0, ):
-        ''' Id is an applicaiton id'''
 
-        if ',' in id:
-            id = ','.split(id)
-        if ',' in id:
-            id = id.split(',')
-            id = self.tuplefy(id)
+    def system_code_count(self):
+        try:
+            query = '''
+            SELECT
+            count(eat.[SYSTEM_CODE]) AS total_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'sttus' THEN 1 ELSE 0 END) AS sttus_count,
+            SUM(CASE WHEN eat.[SYSTEM_CODE] = 'CATEG' THEN 1 ELSE 0 END) AS category_count
+            FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat 
+            left join  [BOXER_ENTITIES].[dbo].[ENTITY_TYPE] et
+            on eat.ENTITY_TYPE_ID = et.ENTITY_TYPE_ID
+            '''
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
+    def list_by_id(self, id, max_count=25, offset=0 ):
         query = f''' SELECT [ENTITY_ID]
       ,[ENTITY_TYPE_ID]
       ,[TITLE_METADATA_TEXT] as [Title]
   FROM [BOXER_ENTITIES].[dbo].[ENTITY_LIST]
 
-  where ENTITY_TYPE_ID = ( SELECT  [TEXT] as ETID
+  where ENTITY_TYPE_ID in ( SELECT  [TEXT] as ETID
     
 								  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT]
-								   where entity_id in {id}
+								   where entity_id in ({id})
 								   and
 								   IS_ACTIVE = 'Y'
 								   and 
@@ -55,8 +63,7 @@ class EntitySQL:
 													where system_code = 'EXTPK'))
 
 	order by entity_id desc
-	OFFSET {offset} ROWS FETCH NEXT {max_count} ROWS ONLY'''
-        print(query)
+	OFFSET 0 ROWS FETCH NEXT {max_count} ROWS ONLY'''
         return self.db.execQuery(query )
 
     def entity_by_id(self, eid):

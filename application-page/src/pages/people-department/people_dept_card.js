@@ -1,5 +1,5 @@
 import { Avatar, Box, Card, CardHeader } from "@material-ui/core";
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
 import ComponentLoader from "../../components/common/component-loader";
 import CommonAvatar from "../../components/common/avatar";
@@ -12,7 +12,6 @@ function PeopleCard(props) {
       event.target.src = userDefaultImage;
     }
   };
-
 
   return (
     <div className="page" id="people-card">
@@ -39,7 +38,12 @@ function PeopleCard(props) {
                   }}
                 >
                   <CardHeader
-                    avatar={  <CommonAvatar name={people.Display_name} sizeClass={classes.avt_small+" "+'avt-shadow'} />}
+                    avatar={
+                      <CommonAvatar
+                        name={people.Display_name}
+                        sizeClass={classes.avt_small + " " + "avt-shadow"}
+                      />
+                    }
                     title={people.Display_name}
                     subheader={people.SubDepartment}
                   />

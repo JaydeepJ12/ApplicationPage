@@ -11,6 +11,7 @@ isInline = True
 from sqlalchemy import insert
 import base64
 import datetime
+import json
 
 # Everythings i could need to know about case types should be found here
 
@@ -56,7 +57,7 @@ class CaseHandler(Response):
             "values": values})
 
     def case_type_data(self):
-        import json
+        
         values = [{
             "label": "Case Type List",
             "id": instance.CASE_TYPE_ID,
