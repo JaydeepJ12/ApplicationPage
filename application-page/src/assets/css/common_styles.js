@@ -117,7 +117,7 @@ export default makeStyles(
         textAlign: "right",
       },
       skeletonWidthEntity: {
-        width: 159,
+        width: 300,
         height: 50,
       },
       skeletonWidth: {
