@@ -13,6 +13,7 @@ import PeopleBasicInfo from "./people_dept_basic_information";
 import PeopleCard from "./people_dept_card";
 import PeopleDepartmentFilter from "./people_dept_filter";
 import PeopleMainTab from "./people_dept_main_tab";
+import { navigate } from '@reach/router';
 
 var dateFormat = require("dateformat");
 
@@ -57,7 +58,7 @@ export default function PeopleDepartment(props) {
     props.location?.state?.userName ? props.location?.state?.userName : ""
   );
   const [IsTaskClick, setIsTaskClick] = useState(
-    props.location?.state?.IsTaskClick ? props.location?.state?.IsTaskClick : ""
+    props.location?.state?.IsTaskClick ? props.location?.state?.IsTaskClick : false
   );
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
 
@@ -69,6 +70,8 @@ export default function PeopleDepartment(props) {
     if (!isScroll) {
       setInfoDataLoaded(false);
     }
+    // setIsTaskClick(false)
+    // setUserNameValue("");
     setNavTab(0);
     setDataLoaded(false);
     setComponentLoader(true);
@@ -142,8 +145,10 @@ export default function PeopleDepartment(props) {
         setDataLoaded(true);
         setComponentLoader(false);
         if (response.data.length) {
-          if (!isScroll) {
+          if (!isScroll && !IsTaskClick) {
+            
             setPeopleInfoData(response.data[0]);
+
             setInfoDataLoaded(true);
           }
           setPeopleCount(response.data.length);
@@ -161,6 +166,7 @@ export default function PeopleDepartment(props) {
   const getDepartmentPeopleInfo = async (employee_id,emp_user_name) => {
     setInfoDataLoaded(false);
     setNoDataFound(false);
+
     var jsonData = {
       EMPLOYEE_ID: employee_id,
       EMPLOYEE_SHORT_NAME: emp_user_name,
@@ -179,6 +185,14 @@ export default function PeopleDepartment(props) {
           setPeopleInfoData(peopleInfoData);
           setInfoDataLoaded(true);
           setNoDataFound(true);
+          if (props.location?.state?.userName) {
+            navigate("people", {
+              state: {
+                userName: "",
+                IsTaskClick : false
+              },
+            });
+          }
         }
       })
       .catch(function (error) {
@@ -295,6 +309,7 @@ export default function PeopleDepartment(props) {
   const handlePeopleInfo = (employee_id) => {
     setNavTab(0);
     setValue(0);
+    setPeopleInfoData("");
     setInfoDataLoaded(false);
     if (!dataInfoLoaded) {
       notification.toast.warning("Please wait. Your Data is loading...!!");
@@ -316,11 +331,10 @@ export default function PeopleDepartment(props) {
   };
   useEffect(() => {
     getDepartmentPeopleList();
-    setIsTaskClick(false);
-    setUserNameValue(" ");
     if (IsTaskClick && userNameValue) {
       getDepartmentPeopleInfo('null', userNameValue);
     }
+    
   }, [reducerState.applicationData.appId,userNameValue]);
 
   return (

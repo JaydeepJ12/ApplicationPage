@@ -6,13 +6,6 @@ import CommonAvatar from "../../components/common/avatar";
 function PeopleCard(props) {
   var classes = useStyles();
 
-  const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../../assets/images/default-userimage.png");
-    if (userDefaultImage) {
-      event.target.src = userDefaultImage;
-    }
-  };
-
   return (
     <div className="page" id="people-card">
       {props.peopleData.length ? (
@@ -33,7 +26,7 @@ function PeopleCard(props) {
                   }
                   onClick={() => {
                     if (people.EMPLOYEE_ID !== props.peopleInfo.EMPLOYEE_ID) {
-                      props.handlePeopleInfo(people.EMPLOYEE_ID);
+                      props.handlePeopleInfo(people.EMPLOYEE_ID,'null');
                     }
                   }}
                 >

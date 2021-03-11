@@ -55,7 +55,7 @@ export default function CaseBasicInformation(props) {
     navigate("people", {
       state: {
         userName: userName,
-        IsTaskClick : true
+        IsTaskClick : true,
       },
     });
   };
