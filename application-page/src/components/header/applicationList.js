@@ -16,7 +16,7 @@ import axios from "axios";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useStyles from "../../assets/css/common_styles";
-import { applicationList } from "../../redux/action";
+import { actionData, applicationList } from "../../redux/action";
 
 const StyledMenu = withStyles({
   paper: {
@@ -83,7 +83,8 @@ function ApplicationListDropdown(props) {
   }, []);
 
   React.useEffect(() => {
-    setAppId(reducerState.applicationData.appId);
+    let appId = reducerState.applicationData.appId;
+    setAppId(appId);
     if (appId && appId > 0) {
       let applicationList = [...reducerState.applicationData.applicationList];
       if (applicationList?.length) {
@@ -112,7 +113,8 @@ function ApplicationListDropdown(props) {
       var parts = path.split("/");
       path = parts[parts.length - 1];
       const basePath = process.env.REACT_APP_BASE_PATH;
-      window.location.href = basePath + `${appId}/${path}`;
+      window.history.pushState("/", "", basePath + `${appId}/${path}`);
+      dispatch(actionData(appId, "APP_ID"));
       setAppName(appName);
     }
   };

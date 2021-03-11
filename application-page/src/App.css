@@ -398,3 +398,23 @@ header .MuiIconButton-label .MuiSvgIcon-root {
 .card-filter .filter-form {
   width: 23.5rem !important;
 }
+
+/*  Tab scroll-bar style */
+
+.MuiTabs-scroller.MuiTabs-fixed {
+  overflow: auto !important;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar {
+  height: 10px;
+  background-color: white;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar-button {
+  display: none;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 3px;
+}
