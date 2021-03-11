@@ -5,32 +5,6 @@ import ComponentLoader from "../../components/common/component-loader";
 function EntityCard(props) {
   var classes = useStyles();
 
-  const addDefaultSrc = (event) => {
-    let userDefaultImage = require("../../assets/images/default-userimage.png");
-    if (userDefaultImage) {
-      event.target.src = userDefaultImage;
-    }
-  };
-
-  const renderUserImage = (fullName) => {
-    if (fullName) {
-      return (
-        <Avatar
-          className={classes.large}
-          onError={(event) => addDefaultSrc(event)}
-          src={process.env.REACT_APP_USER_ICON.concat(fullName)}
-          className={classes.avt_large}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          src="../../assets/images/default-userimage.png"
-          className={classes.avt_large}
-        />
-      );
-    }
-  };
 
   return (
     <div className="page" id="entity-card">

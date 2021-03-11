@@ -116,6 +116,10 @@ export default makeStyles(
       listHeaderItem: {
         textAlign: "right",
       },
+      skeletonWidthEntity: {
+        width: 159,
+        height: 50,
+      },
       skeletonWidth: {
         width: 200,
         height: 50,

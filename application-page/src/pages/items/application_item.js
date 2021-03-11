@@ -5,13 +5,12 @@ import React, { useEffect, useState } from "react";
 import { default as useStyles } from "../../assets/css/common_styles";
 import { useTheme } from "@material-ui/core/styles";
 import * as notification from "../../components/common/toast";
-
+import Skeleton from "@material-ui/lab/Skeleton";
 import * as API from "../../components/api_base/path-config";
 import { useSelector } from "react-redux";
 import EntityInfoSection from "./entity_info_section";
 import ApplicationItemFilter from "./application_item_filter";
 import EntityCard from "./entity_card";
-import ComponentLoader from "../../components/common/component-loader";
 var dateFormat = require("dateformat");
 
 export default function PeopleDepartment() {
@@ -75,19 +74,16 @@ export default function PeopleDepartment() {
   };
 
   const getEntityInfo = async (entity_id) => {
-    setInfoDataLoaded(false);
     setNoDataFound(false);
-
     var config = {
       method: "get",
       url: API.API_GET_ENTITY_INFO_BY_ENTITY_ID + "?id=" + entity_id,
     };
-
     await axios(config)
       .then(function (response) {
         if (response.data.length) {
           setEntityInfo(response.data);
-
+          
           setInfoDataLoaded(true);
           setNoDataFound(true);
         }
@@ -158,32 +154,33 @@ export default function PeopleDepartment() {
         <Grid item lg={9} md={8} xs={12} sm={12}>
           <Grid container>
             <Grid item xs={12}>
-              {!dataInfoLoaded || entityInfo.length <= 0 ? (
-                <Box
-                  boxShadow={0}
-                  className="card bg-secondary"
-                  borderRadius={5}
-                >
-                  <ComponentLoader type="rect" />
-                  <ComponentLoader type="rect" />
-                </Box>
-              ) : (
-                <Card className={classes.root} className=" bg-secondary">
+              <Card className={classes.root} className=" bg-secondary">
+                {dataInfoLoaded ? (
                   <CardHeader
                     style={{
                       backgroundColor: theme.palette.primary.main,
                       fontSize: ".9rem",
                     }}
-                    title={InfoCardHeaderText ? InfoCardHeaderText : ""}
+                    title={InfoCardHeaderText}
                   />
-                  <CardContent>
-                    <EntityInfoSection
-                      entityInfoData={entityInfo}
-                      noDataFound={noDataFound}
-                    ></EntityInfoSection>
-                  </CardContent>
-                </Card>
-              )}
+                ) : (
+                  <CardHeader
+                    style={{
+                      backgroundColor: theme.palette.primary.main,
+                      fontSize: ".9rem",
+                    }}
+                    title={<Skeleton className={classes.skeletonWidthEntity} />}
+                  />
+
+                )}
+
+                <CardContent>
+                  <EntityInfoSection
+                    entityInfoData={entityInfo}
+                    dataInfoLoaded={dataInfoLoaded}
+                  ></EntityInfoSection>
+                </CardContent>
+              </Card>
             </Grid>
           </Grid>
         </Grid>
