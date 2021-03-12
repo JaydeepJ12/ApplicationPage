@@ -2,9 +2,10 @@ import {
   Badge,
   Button,
   IconButton,
-  InputBase,
+  Link,
   Menu,
   MenuItem,
+  TextField,
   Typography
 } from "@material-ui/core";
 import {
@@ -12,13 +13,15 @@ import {
   Person as AccountIcon,
   Search as SearchIcon
 } from "@material-ui/icons";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { navigate } from "@reach/router";
+import axios from "axios";
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import SecureLS from "secure-ls";
 import CommonAvatar from "../../components/common/avatar";
-import { isLoginPage } from "../../redux/action";
+import { isLoginPage, isUserNameSet } from "../../redux/action";
 // styles
 import useStyles from "./header_styles";
 import Settings from "./settings";
@@ -66,8 +69,13 @@ export default function HeaderRight() {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
 
+  const [peopleData, setPeopleData] = useState([]);
+  const [searchTextValue, setSearchTextValue] = useState("");
+
+  const timeoutRef = useRef(null);
+  let timeoutVal = 1000; // time it takes to wait for user to stop typing in ms
+
   React.useEffect(() => {
-    
     var ls = new SecureLS({
       encodingType: "des",
       isCompression: false,
@@ -75,6 +83,7 @@ export default function HeaderRight() {
     });
 
     let displayName = localStorage.getItem("displayName");
+
     let userName = ls.get("userName");
     let email = localStorage.getItem("email");
 
@@ -94,6 +103,81 @@ export default function HeaderRight() {
     dispatch(isLoginPage(false));
     navigate("login");
   };
+
+  const handleNavigationClick = (username) => {
+    dispatch(isUserNameSet(username));
+    navigate("people", {
+      state: {
+        userName: userName,
+        IsTaskClick: true,
+      },
+    });
+  };
+
+  // this code use for navigate to other page with dat
+  const handleTaskClick = () => {
+    navigate("tasks", {
+      state: {
+        userName: userName,
+        filter: 1,
+        taskCount: 2,
+        replace: true,
+        isParent: true,
+        caseTypeId: 147,
+      },
+    });
+  };
+
+  const searchPeople = (searchText) => {
+    if (timeoutRef.current !== null) {
+      // IF THERE'S A RUNNING TIMEOUT
+      clearTimeout(timeoutRef.current); // THEN, CANCEL IT
+    }
+    if (searchText != "") {
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      // SET A TIMEOUT
+      timeoutRef.current = null; // RESET REF TO NULL WHEN IT RUNS
+      if (searchText) {
+        setPeopleData([]);
+        setSearchTextValue(searchText);
+        getPeople(0, false, searchText, false, true);
+      } else {
+        setSearchTextValue("");
+        setPeopleData([]);
+        getPeople(0, false, "", true);
+      }
+    }, timeoutVal);
+  };
+
+  const getPeople = async (
+    skipCount = 0,
+    isPrev = false,
+    searchText = "",
+    isReset = false,
+    isSearch = false
+  ) => {
+    var jsonData = {
+      maxCount: 10,
+      skipCount: skipCount,
+      searchText: searchText,
+    };
+    var config = {
+      method: "post",
+      url: "/cases/getPeople",
+      data: jsonData,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        setPeopleData(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+  // end
   return (
     <>
       <div className={classes.grow} />
@@ -116,7 +200,49 @@ export default function HeaderRight() {
             <SearchIcon className={classes.headerIcon} />
           </IconButton>
         </div>
-        <InputBase placeholder="Search…" />
+        {/* <InputBase
+          onInput={(event) => searchPeople(event.target.value)}
+          placeholder="Search…"
+        /> */}
+
+        <div style={{ width: 300 }}>
+          <Autocomplete
+            freeSolo
+            id="free-solo-2-demo"
+            disableClearable
+            options={peopleData}
+            getOptionLabel={(option) => option.FullName}
+            renderOption={(option) => {
+              return (
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => {
+                    handleNavigationClick(option.ShortUserName);
+                  }}
+                >
+                  {option.FullName}
+                </Link>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                style={{ marginTop: "6px" }}
+                {...params}
+                fullWidth={true}
+                loading={"true"}
+                loadingText={"Loading"}
+                blurOnSelect={true}
+                onInput={(event) => searchPeople(event.target.value)}
+                InputProps={{
+                  ...params.InputProps,
+                  type: "search",
+                  disableUnderline: true,
+                }}
+              />
+            )}
+          />
+        </div>
       </div>
       <Settings className={classes.headerIcon} />
 
@@ -189,6 +315,9 @@ export default function HeaderRight() {
           </Typography>
         </div>
         <MenuItem
+          onClick={() => {
+            handleNavigationClick(userName);
+          }}
           className={classNames(
             classes.profileMenuItem,
             classes.headerMenuItem
@@ -197,20 +326,13 @@ export default function HeaderRight() {
           <AccountIcon className={classes.profileMenuIcon} /> Profile
         </MenuItem>
         <MenuItem
+          onClick={handleTaskClick}
           className={classNames(
             classes.profileMenuItem,
             classes.headerMenuItem
           )}
         >
           <AccountIcon className={classes.profileMenuIcon} /> Tasks
-        </MenuItem>
-        <MenuItem
-          className={classNames(
-            classes.profileMenuItem,
-            classes.headerMenuItem
-          )}
-        >
-          <AccountIcon className={classes.profileMenuIcon} /> Cases
         </MenuItem>
         <MenuItem
           className={classNames(

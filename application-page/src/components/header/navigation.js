@@ -50,14 +50,8 @@ export default function Navigation(props) {
     let appId = reducerState.applicationData.appId;
     let isLogin = reducerState.applicationData.isLoginPage;
 
-    if (isLogin) {
-      setIsLogin(true);
-      setBasePath(process.env.REACT_APP_BASE_PATH);
-    }
-
     if (appId && !isLogin) {
       setCurrentPageValue(appId, isLogin);
-      setBasePath(basePath + appId);
       setAppId(appId);
     }
   }, [
@@ -190,7 +184,10 @@ export default function Navigation(props) {
             </div>
             <List className="sidebar-navigation-block">
               {menuItems.map((item, index) => (
-                <Link to={basePath + item.menuPath} style={{ color: "black" }}>
+                <Link
+                  to={basePath + appId + item.menuPath}
+                  style={{ color: "black" }}
+                >
                   <ListItem
                     onClick={() => {
                       setCurrentPage(item.pageTitle);

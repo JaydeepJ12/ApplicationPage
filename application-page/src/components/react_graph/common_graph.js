@@ -99,7 +99,7 @@ export default function GraphVisuals(props) {
 
   useEffect(() => {
     getCaseTypeData();
-  }, []);
+  }, [JSON.stringify(props.caseTypes)]);
 
   return (
     <div className="page" id="page-department">

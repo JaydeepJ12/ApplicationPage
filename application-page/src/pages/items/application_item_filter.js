@@ -6,7 +6,7 @@ import {
   InputLabel,
   MenuItem,
   Popover,
-  Toolbar,
+  Toolbar
 } from "@material-ui/core";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -30,13 +30,10 @@ function ApplicationItemFilter(props) {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-
+  var appId = reducerState.applicationData.appId;
   const handleFilterClick = (event) => {
     setAnchorEl(event.currentTarget);
-    var appId = reducerState.applicationData.appId;
-    if (appId) {
-      getEntityTypeList(appId);
-    }
+
   };
   const handleClose = () => {
     setAnchorEl(null);
@@ -82,20 +79,66 @@ function ApplicationItemFilter(props) {
       }
     }
   };
-  useEffect(() => {}, [props.entityData]);
+  
+  useEffect(() => {
+    if (appId) {
+      getEntityTypeList(appId);
+    }
+    
+  }, [props.entityData]);
   return (
     <div className="page" id="entity-filter">
       <AppBar position="position" className={classes.appBar}>
-        <Toolbar className="st-inline">
-          <div>
+        <Toolbar>
+        <Grid container spacing={1}>
+        <Grid item lg={8} md={8} xs={12} sm={8} container>
+          <form className="filter-form st-float-start">
+          
+          <FormControl
+            fullWidth={true}
+            variant="outlined"
+            className={classes.formControl}
+          >
+            <InputLabel id="demo-simple-select-outlined-label">
+              Entity Types
+            </InputLabel>
+            <Select
+              className="input-dropdown"
+              name="entityType"
+              label="entityType"
+              value={entityDrpValue}
+              onChange={(e) => handleFilterChange(e.target.value)}
+            >
+              <MenuItem value={0} key={0}>
+                All
+              </MenuItem>
+
+              {entityTypes?.length ? (
+                entityTypes.map((entityType) => (
+                  <MenuItem value={entityType.EID} key={entityType.EID}>
+                    {entityType.Entity_Types}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem value="">
+                  <em>No Data Available</em>
+                </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+     
+    
+      </form>
+      </Grid>
+      <Grid item lg={4} md={4} xs={12} sm={4} container>
+            <div className="st-float-end">
             <IconButton
               className={classes.button}
               aria-label="filter"
-              onClick={handleFilterClick}
+              // onClick={handleFilterClick}
             >
               <FilterList style={{ cursor: "pointer" }} />
             </IconButton>
-            <div className="st-float-end">
               <IconButton
                 className={classes.button}
                 aria-label="reset"
@@ -104,7 +147,8 @@ function ApplicationItemFilter(props) {
                 <RotateLeft style={{ cursor: "pointer" }} />
               </IconButton>
             </div>
-          </div>
+            </Grid>
+          </Grid>
         </Toolbar>
       </AppBar>
 
@@ -132,43 +176,7 @@ function ApplicationItemFilter(props) {
         }}
       >
         <Grid className={classesBase.m_one}>
-          <form className="filter-form">
-            <Grid item lg={12} md={12} xs={12} sm={12}>
-              <FormControl
-                fullWidth={true}
-                variant="outlined"
-                className={classes.formControl}
-              >
-                <InputLabel id="demo-controlled-open-select-label">
-                  Entity Types
-                </InputLabel>
-                <Select
-                  className="input-dropdown"
-                  name="entityType"
-                  label="entityType"
-                  value={entityDrpValue}
-                  onChange={(e) => handleFilterChange(e.target.value)}
-                >
-                  <MenuItem value={0} key={0}>
-                    All
-                  </MenuItem>
-
-                  {entityTypes?.length ? (
-                    entityTypes.map((entityType) => (
-                      <MenuItem value={entityType.EID} key={entityType.EID}>
-                        {entityType.Entity_Types}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem value="">
-                      <em>No Data Available</em>
-                    </MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item lg={12} md={12} xs={12} sm={12}></Grid>
-          </form>
+         
         </Grid>
       </Popover>
     </div>

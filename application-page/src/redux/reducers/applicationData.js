@@ -10,7 +10,8 @@ const initialSate = {
   applicationElements: [],
   isErrorPage: false,
   errorPageMessage: "",
-  isLoginPage: false
+  isLoginPage: false,
+  isNavigatePage: ""
 };
 export default function (state = initialSate, action) {
   switch (action.type) {
@@ -77,6 +78,14 @@ export default function (state = initialSate, action) {
         isLoginPage: content,
       };
     }
+    case actions.IS_NAVIGATE_USERNAME: {
+      const { content } = action.payload;
+      return {
+        ...state,
+        isNavigateUerName: content,
+      };
+    }
+    
     default:
       return state;
   }
