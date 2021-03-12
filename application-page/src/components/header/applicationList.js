@@ -5,7 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
-  MenuItem,
+  MenuItem
 } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import { withStyles } from "@material-ui/core/styles";
@@ -136,6 +136,8 @@ function ApplicationListDropdown(props) {
             aria-labelledby="nested-list-subheader"
             subheader={
               <ListSubheader
+                style={{ cursor: "pointer" }}
+                onClick={handleClickAnchor}
                 component="div"
                 id="nested-list-subheader"
                 className={classes.listSubHeader}

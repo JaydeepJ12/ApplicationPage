@@ -59,7 +59,6 @@ export default function CaseBasicInformation(props) {
       },
     });
   };
-
   return (
     <>
       <div className="text-left" style={{ marginBottom: "1rem" }}>
@@ -73,9 +72,12 @@ export default function CaseBasicInformation(props) {
             handlePeopleDepartment(caseData?.assignedTo);
           }}
         >
+          
        {caseData?.assignedToFullName
-          ? caseData?.assignedToFullName
-          : caseData?.assignedTo}
+          ? 
+             caseData?.assignedToFullName
+          :
+           caseData?.assignedTo}
         </Link>
       </div>
       <Box className="input-box">{createAssignTo()}</Box>

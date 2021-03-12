@@ -34,3 +34,10 @@ export const isLoginPage = (content) => ({
     content,
   },
 });
+
+export const isUserNameSet = (content) => ({
+  type: actions.IS_NAVIGATE_USERNAME,
+  payload: {
+    content,
+  },
+});

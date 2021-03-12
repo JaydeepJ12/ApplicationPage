@@ -426,7 +426,7 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
-    def get_department_people(self, maxCount, searchText=''):
+    def get_department_people(self,searchText=''):
         query = f'''
           SELECT
                  c.EMPLOYEE_ID,
@@ -454,9 +454,8 @@ class CasesSQL:
                  WHERE c.IS_ACTIVE = 'Y'
                 AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
                 ORDER BY 1 ASC
-                offset 0 rows
-                FETCH NEXT {maxCount} rows only
         '''
+        print("---------",query)
         return self.db.execQuery(query)
 
     def get_past_due_count(self, userShortName):
