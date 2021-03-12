@@ -29,7 +29,9 @@ export default makeStyles(
       },
       // padding class
       pt_zero: {
-        paddingTop: theme.spacing(0),
+        padding: theme.spacing(0),
+        paddingBottom: theme.spacing(1),
+        paddingTop: theme.spacing(1),
       },
       pb_zero: {
         paddingBottom: theme.spacing(0),
@@ -144,6 +146,10 @@ export default makeStyles(
       },
       icon_mx_width: {
         width: "max-content",
+      },
+      cs_icon_group: {
+        margin: theme.spacing(1),
+        textAlign: "center",
       },
     };
   },

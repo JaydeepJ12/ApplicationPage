@@ -78,6 +78,11 @@ a {
   display: flex;
   align-items: center !important;
 }
+.d-grid {
+  display: grid;
+  align-items: center !important;
+  padding: 5px;
+}
 /* display end  */
 
 /*  start float  */

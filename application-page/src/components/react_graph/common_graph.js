@@ -8,7 +8,7 @@ import {
   Legend,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 import ComponentLoader from "../common/component-loader";
 
@@ -122,7 +122,7 @@ export default function GraphVisuals(props) {
                     data={caseData.count_by_status_priority}
                   />
                 </Grid>
-                <Grid item lg={6} md={6} xs={12} sm={12} className="v-scroll">
+                <Grid item lg={6} md={6} xs={12} sm={12}>
                   <StatusGraph data={caseData.count_by_status} />
                 </Grid>
 
