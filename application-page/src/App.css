@@ -421,3 +421,23 @@ form.filter-form .MuiOutlinedInput-input {
   padding-left: 14px  !important;
   border-right: 1px solid #dddbdb  !important;
 }
+
+/*  Tab scroll-bar style */
+
+.MuiTabs-scroller.MuiTabs-fixed {
+  overflow: auto !important;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar {
+  height: 10px;
+  background-color: white;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar-button {
+  display: none;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 3px;
+}
