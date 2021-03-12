@@ -72,6 +72,7 @@ export default function VisualOverview(props) {
         .join(",");
       setCaseTypeData(caseTypes);
       setCaseTypeIds(ids);
+      setValue(0);
     }
   }, [reducerState.applicationData.caseTypes]);
 
