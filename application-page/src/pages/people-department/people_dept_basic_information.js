@@ -8,6 +8,7 @@ function PeopleBasicInfoTab(props) {
 
   useEffect(() => {}, [props.peopleInfo]);
 
+
   return (
     <div className="page" id="people-basic-information">
       {!props.dataInfoLoaded ? (

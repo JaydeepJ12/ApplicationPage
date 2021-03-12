@@ -20,6 +20,7 @@ var dateFormat = require("dateformat");
 export default function PeopleDepartment(props) {
   const reducerState = useSelector((state) => state);
   const appId = reducerState.applicationData.appId;
+  const isNavigateUerName = reducerState.applicationData.isNavigateUerName;
   var classes = useStyles();
   var [value, setValue] = React.useState(0);
   const [page, setPage] = React.useState(0);
@@ -330,12 +331,13 @@ export default function PeopleDepartment(props) {
     }
   };
   useEffect(() => {
+    console.log(reducerState.applicationData.isNavigateUerName)
     getDepartmentPeopleList();
-    if (IsTaskClick && userNameValue) {
-      getDepartmentPeopleInfo('null', userNameValue);
+    if (IsTaskClick && isNavigateUerName || isNavigateUerName) {
+      getDepartmentPeopleInfo('null', isNavigateUerName);
     }
     
-  }, [reducerState.applicationData.appId,userNameValue]);
+  }, [reducerState.applicationData.appId,userNameValue, isNavigateUerName]);
 
   return (
     <div className="page" id="page-department">

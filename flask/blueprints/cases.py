@@ -107,11 +107,11 @@ def getPeople():
     return df.to_json(orient='records')  #
 
 
-@bp.route('/getDepartmentPeoples', methods=['POST'])
+@bp.route('/geSearchPeoples', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def getDepartmentPeoples():
     data = request.json
-    df = db.get_department_people(data['maxCount'], data['searchText'])
+    df = db.get_department_people(data['searchText'])
     return df.to_json(orient='records')  #
 
 
