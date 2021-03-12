@@ -5,14 +5,16 @@ import React, { Fragment, useRef, useState } from "react";
 
 export default function ExternalLookup(props) {
   const [data, setData] = useState([]);
+  const [applicationId, setApplicationId] = useState(props.applicationId);
   const [typeId, setTypeId] = useState(props.typeId);
   const [fieldName, setFieldName] = useState(props.fieldName);
   const [fieldId, setFieldId] = useState(props.fieldId);
   const [selectedDataValue, setSelectedDataValue] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef(null);
+  const timeoutRef = useRef(null);props
   const [selectedData, setSelectedData] = useState("");
+
   let timeoutVal = 1000;
   const handleExternalLookupKeyUp = (searchText) => {
     if (searchText == "") {
@@ -60,11 +62,13 @@ export default function ExternalLookup(props) {
   };
 
   const getData = async (searchText) => {
+
+    
     var jsonData = {
       searchText: searchText,
       maxCount: 0,
       skipCount: 0,
-      application: 1,
+      application: applicationId,
       typeID: typeId,
       fieldID: fieldId,
       parentValues: {
@@ -74,7 +78,7 @@ export default function ExternalLookup(props) {
     };
     var config = {
       method: "post",
-      url: "http://localhost:5000/cases/GetEntityExternalDataValues",
+      url: "/cases/GetEntityExternalDataValues",
       data: jsonData,
     };
     await axios(config)

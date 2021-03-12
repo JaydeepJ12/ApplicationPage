@@ -1,237 +1,443 @@
-body {background-color: #fff !important;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  }
-  a {
-    text-decoration: none !important;
-  }
-  /* use for common page on deshboard */
-  main {
-    padding-left: 3.3rem;
-    margin-top: 5rem;
-    padding-right: 1rem;
-    margin-bottom: 0.5rem;
-  }
-  .ul li:hover {
-    color: #444 !important;
-    background-color: #e0f3ff !important;
-  }
-  .MuiDivider-root {
-    background-color: transparent  !important;
-  }
-  .MuiListItem-root {
-    padding-left: 23px !important;
-  }
-  .side-click {
-    max-height: 2rem;
-  }
-  /* ------------------common redios------------------- */
-  .rounded-pill {
-    border-radius: 50rem!important;
-  }
-  /* ------------end ------common redios------------------- */
-  
-  /* ------------------common center------------------- */
-  .text-center{
-    text-align: center;
-  }
-  .text-right {
-    text-align: right;
-  }
-  .vertical-center {
-    min-height: 100%;
-    display: flex;
-  }
-  .justify-content-between {
-    justify-content: space-between!important;
-  }
-  /* -------------end-----common center------------------- */
-  /* common color */
-  .bg-primary {
-    background-color:orange ! important;
-    color: #fff ! important;
-  }
-  .btn-primary {
-    background-color:#03DAC5 ! important;
-    color: #444 ! important;
-  }
-  /* -------------start commonn padding------------------- */
-  .st-p-1{
-    padding: 1rem!important;
-  }
-  .st-pt-0{
-    padding: 0!important;
-  }
-  .st-p-2{
-    padding: 1.5rem!important;
-  }
-  .st-m-2{
-    margin: .5rem!important;
-  }
-  /* -------------end commonn padding------------------- */
-  
-  /* input form  */
-  .MuiInput-underline:before {
-    border-bottom: 1px solid #CCCCCC !important;
-  }
-  .MuiFormControl-fullWidth {
-    width: 94%  !important;
-  }
-  .MuiInput-underline:after {
-    border-bottom: 2px solid orange  !important;
-  }
-  .btn-create-case {
-    float: right;
-    top: -3.5rem;
-    left: .5rem;
-  }
-  .btn-create-case .MuiFab-label {
-    font-size: 1.3rem;
-  }
-  /* editor */
-  .fr-element p {
-    height: 27.4rem;
-    overflow: auto;
-  }
-  
-  /* ---------------------header css ----------------------------- */
-     header .MuiToolbar-gutters {
-      /* border-bottom: 1px solid rgba(0, 0, 0, 0.12); */
-      box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-    }
-    header .MuiIconButton-label .MuiSvgIcon-root {
-      font-size: 1.8rem;
-      color: rgba(0, 0, 0, 0.54);
-    }
-    header.MuiPaper-elevation4 {
-      box-shadow: none !important;
-      /* box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12); */
-    }
-  
-  /* --------------------end -header css ----------------------------- */
-  
-  /* ---------------------view csse  css ----------------------------- */
-    #page-view-case .MuiIconButton-label .MuiSvgIcon-root {
-      font-size: 1.8rem;
-  }
-  #page-view-case .input-search {
-    width: 23rem;
-    height: 2.4rem;
-  }
-  .case-user-list {
-    background-color: transparent!important;
-  }
-  .card-user-case {
-    background: rgba(196, 196, 196, 0.25) !important;
-    box-shadow: none !important;
-    margin: .5rem;
-    margin-bottom: .8rem;
-  }
-  .card-user-comment {
-    background: #F1F1F1;
-    border-radius: 10px;
-  }
-  .card-user-comment p {
-    background-color: #F1F1F1 !important;
-  }
-  .side-bar-case-create {
-    background: rgba(196, 196, 196, 0.25) ! important;
-  }
-  .input-accordation:before {
-    background-color: transparent ! important;
-  }
-  
-  .input-accordation {
-    border-top-left-radius: 4px !important;
-    border-top-right-radius: 4px !important;
-  }
-  #page-view-case .inner-navigation .MuiIconButton-label .MuiSvgIcon-root {
-    color: #fff;
-  }
-  #page-view-case.MuiToolbar-gutters {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    box-shadow: none;
-  }
-  .input-auto-complete .MuiTextField-root {
-    background-color: #fff;
-  }
-  #inner-navigation .MuiButton-containedPrimary {
-    color: #fff  !important;
-    background-color: transparent  !important;
-    border: #fff 1px solid  !important;
-  }
-  .fr-toolbar {
-    background: #f0f0f0  !important;
-  }
-  
-  #page-view-case .file-input {
-      border: 0 !important;
-      position: relative;
-      cursor: pointer;
-      width: 50px;
-      height: 50px;
-      border: 2px solid #ddd;
-      transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-      box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
-      padding: 0px;
-      text-decoration: none;
-      text-align: center;
-      font-size: 25px;
-      font-weight: normal;
-      line-height: 8px;
-      border-radius: 27px;
-      -moz-border-radius: 27px;
-      -webkit-border-radius: 27px;
-  }
-  #page-view-case .file-input:hover {
-    text-decoration: none;
-    background-color: #d5d5d5;
-  }
-  .cm-file-input .MuiButton-root:hover {
-    background-color: transparent !important;
-  }
-  
-  .card-user-comment img {
-    max-width: 100%;
-    height: auto;
-  }
-  /* -----------------end----view csse  css ----------------------------- */
-  /* -------------------------overview page css ----------------------- */
-  #page-overview .MuiAvatar-circle {
-    margin-top: .1em;
-    display: inline-flex;
-  }
-  .card-task-overview {
-    border: 1px solid #eee;
-    padding: 1rem ! important;
-    background: rgba(196, 196, 196, 0.25);
-  }
-  #page-overview .card {
-    background-color: rgba(196, 196, 196, 0.25);
-    box-shadow: none;
-    height: 22rem;
-  }
-  #page-overview .nav-tab {
-    background-color: #777575;
-    color: #fff;
-  }
-  #page-overview .input-dropdown {
-    background-color: #fff;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-    border: 0;
-  }
-  #page-overview .MuiTabs-indicator {
-    background-color: #f0f0f0 ! important;
-  }
-  .component-loader-overlay {
-    position: absolute;
-    left: 13% ! important;
-    top: 50%;
-  }
-  .file-input .MuiButton-root:hover {
-    text-decoration: none;
-    background-color: transparent;
-  }
-  .people-image-list {
-    text-align: center;
+body {
+  background-color: #fff !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  overflow-x: hidden;
 }
-  /* ----------------------end---overview----------------------- */
+a {
+  text-decoration: none !important;
+}
+/* use for common page on deshboard */
+.ul li:hover {
+  color: #444 !important;
+  background-color: #e0f3ff !important;
+}
+.MuiDivider-root {
+  background-color: transparent !important;
+}
+.MuiListItem-root {
+  padding-left: 23px !important;
+}
+.side-click {
+  max-height: 2rem;
+}
+/* ------------------common redios------------------- */
+.rounded-pill {
+  border-radius: 50rem !important;
+}
+.rounded {
+  border-radius: 6px;
+}
+/* ------------end ------common redios------------------- */
+
+/* ------------------common center------------------- */
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.vertical-center {
+  min-height: 100%;
+  display: flex;
+}
+.justify-content-between {
+  justify-content: space-between !important;
+}
+/* -------------end-----common center------------------- */
+/* common color */
+
+/* bg color */
+.bg-secondary {
+  background: rgba(196, 196, 196, 0.25);
+}
+/* -------------start commonn padding------------------- */
+.st-p-1 {
+  padding: 1rem !important;
+}
+.st-pt-0 {
+  padding: 0 !important;
+}
+.st-pb-0 {
+  padding-bottom: 0;
+}
+.st-p-2 {
+  padding: 1.5rem !important;
+}
+.st-m-2 {
+  margin: 0.5rem !important;
+}
+/* -------------end commonn padding------------------- */
+/*  start display  */
+.st-inline {
+  display: inline-grid;
+}
+.st-contents {
+  display: contents;
+}
+.st-d-inline {
+  display: flex;
+  align-items: center !important;
+}
+/* display end  */
+
+/*  start float  */
+
+.st-float-start {
+  float: left;
+}
+.st-float-end {
+  float: right;
+}
+/* float end  */
+
+/* border csss */
+.sm-border-right {
+  border-right: 2px solid #bdbdbd;
+}
+.sm-border-left {
+  border-left: 2px solid #bdbdbd;
+}
+/* border css end  */
+
+/* input form  */
+.MuiInput-underline:before {
+  border-bottom: 1px solid #cccccc !important;
+}
+.MuiInput-underline:after {
+  border-bottom: 2px solid orange !important;
+}
+.btn-create-case {
+  float: right;
+  top: -3.5rem;
+  left: 0.5rem;
+}
+.btn-create-case .MuiFab-label {
+  font-size: 1.3rem;
+}
+/* editor */
+.fr-element p {
+  height: 27.4rem;
+  overflow: auto;
+}
+
+/* ---------------------header css ----------------------------- */
+header .MuiToolbar-gutters {
+  /* border-bottom: 1px solid rgba(0, 0, 0, 0.12); */
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+}
+header .MuiIconButton-label .MuiSvgIcon-root {
+  font-size: 1.8rem;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+/* --------------------end -header css ----------------------------- */
+
+/* ---------------------view csse  css ----------------------------- */
+#page-view-case .MuiIconButton-label .MuiSvgIcon-root {
+  font-size: 1.8rem;
+}
+#page-view-case .input-search {
+  width: 23rem;
+  height: 2.4rem;
+}
+.case-user-list {
+  background-color: transparent !important;
+}
+.card-user-case {
+  background: rgba(196, 196, 196, 0.25);
+}
+.card-background-color {
+  background: lightskyblue;
+}
+.card-user-comment {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.card-user-comment p {
+  background-color: #f1f1f1 !important;
+}
+.side-bar-case-create {
+  background: rgba(196, 196, 196, 0.25) !important;
+}
+.input-accordation:before {
+  background-color: transparent !important;
+}
+
+.input-accordation {
+  border-top-left-radius: 4px !important;
+  border-top-right-radius: 4px !important;
+}
+#page-view-case .inner-navigation .MuiIconButton-label .MuiSvgIcon-root {
+  color: #fff;
+}
+#page-view-case.MuiToolbar-gutters {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: none;
+}
+.input-auto-complete .MuiTextField-root {
+  background-color: #fff;
+}
+#inner-navigation .MuiButton-containedPrimary {
+  color: #fff !important;
+  background-color: transparent !important;
+  border: #fff 1px solid !important;
+}
+.fr-toolbar {
+  background: #f0f0f0 !important;
+}
+
+#page-view-case .file-input {
+  border: 0 !important;
+  position: relative;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  border: 2px solid #ddd;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  padding: 0px;
+  text-decoration: none;
+  text-align: center;
+  font-size: 25px;
+  font-weight: normal;
+  line-height: 8px;
+  border-radius: 27px;
+  -moz-border-radius: 27px;
+  -webkit-border-radius: 27px;
+}
+#page-view-case .file-input:hover {
+  text-decoration: none;
+  background-color: #d5d5d5;
+}
+.cm-file-input .MuiButton-root:hover {
+  background-color: transparent !important;
+}
+
+.card-user-comment img {
+  max-width: 100%;
+  height: auto;
+}
+/* -----------------end----view csse  css ----------------------------- */
+/* -------------------------overview page css ----------------------- */
+#page-overview .MuiAvatar-circle {
+  margin-top: 0.1em;
+  display: inline-flex;
+}
+.card {
+  border: 1px solid #eee;
+  padding: 1rem !important;
+}
+
+#page-overview .input-dropdown {
+  background-color: #fff;
+  box-shadow: none;
+  border: 0;
+}
+#page-overview .MuiTabs-indicator {
+  background-color: #f0f0f0 !important;
+}
+.component-loader-overlay {
+  position: absolute;
+  left: 13% !important;
+  top: 50%;
+}
+.file-input .MuiButton-root:hover {
+  text-decoration: none;
+  background-color: transparent;
+}
+.people-image-list {
+  text-align: center;
+  overflow-wrap: break-word;
+}
+/* ----------------------end---overview----------------------- */
+.panel-center {
+  padding: 1rem;
+}
+#page-overview .MuiOutlinedInput-input {
+  padding: 12px 10px !important;
+}
+#page-overview .MuiFormLabel-root {
+  line-height: 0.4 !important;
+}
+.MuiFormLabel-root.Mui-disabled {
+  color: #333333 !important;
+}
+/* case card  */
+.card-user-case:hover {
+  background: rgb(199 199 199);
+}
+.top-app-drp-list img {
+  object-fit: scale-down !important;
+}
+/* filter card */
+.card-filter select {
+  cursor: pointer;
+  width: 21.6rem !important;
+}
+#page-department .MuiPopover-paper {
+  left: 6.5rem !important;
+}
+
+/* Next Slick Button */
+.slick-next {
+  float: right;
+  left: 1rem;
+  bottom: -15px !important;
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  width: 2rem;
+  height: 3rem;
+  color: darkgray;
+  padding: 3px;
+  border-radius: 5px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.slick-next::before,
+.slick-next::after {
+  height: 2em;
+  width: 0.2em;
+  background: black;
+  content: "";
+  position: absolute;
+}
+.slick-next::before {
+  top: 1.3em;
+  right: 0.9em;
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.slick-next::after {
+  top: 0em;
+  right: 0.9em;
+  -ms-transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+/* Prev Slick Button */
+
+.slick-prev {
+  float: left;
+  right: 1rem;
+  bottom: -15px;
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  width: 2rem;
+  height: 3rem;
+  color: black;
+  padding: 3px;
+  border-radius: 5px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.slick-prev::before,
+.slick-prev::after {
+  height: 2em;
+  width: 0.2em;
+  background: black;
+  content: "";
+  position: absolute;
+}
+.slick-prev::before {
+  top: 1.3em;
+  left: 0.9em;
+  -ms-transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.slick-prev::after {
+  top: 0em;
+  left: 0.9em;
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.MuiDataGrid-footer,
+.MuiDataGrid-columnsContainer {
+  background-color: #e5e5e5 !important;
+}
+.MuiDrawer-paperAnchorDockedLeft {
+  border-right: 0;
+}
+.avt-shadow {
+  box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
+    0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
+}
+.v-scroll {
+  overflow-x: scroll;
+}
+.comment-panel {
+  height: 48rem;
+  overflow: auto;
+}
+
+/* item page css */
+.MuiSelect-selectMenu {
+  background-color: #fff;
+}
+.MuiSelect-select:focus {
+  border-radius: 5px ! important;
+  background-color: #fff;
+}
+form.filter-form {
+  width: 18rem;
+  margin-top: 3px;
+}
+form.filter-form .MuiOutlinedInput-input {
+  padding: 13.5px 10px !important;
+}
+.filter-form label {
+  color: #444 !important;
+}
+#entity-filter  .MuiToolbar-gutters {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+#entity-filter .st-float-end {
+  margin-left: 21px;
+}
+.page-entity-info .MuiGrid-spacing-xs-1 > .MuiGrid-item{
+  padding-right: 14px  !important;
+  padding-left: 14px  !important;
+  border-right: 1px solid #dddbdb  !important;
+}
+
+/*  Tab scroll-bar style */
+
+.MuiTabs-scroller.MuiTabs-fixed {
+  overflow: auto !important;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar {
+  height: 10px;
+  background-color: white;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar-button {
+  display: none;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 3px;
+}

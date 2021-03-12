@@ -125,18 +125,46 @@ class Mobile:
                                     "userClosedby": "string"
                                     } '''
         return self.post(self.url +'/api/Case/GetFullCaseByCaseId', json=data)
-'''
-mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
 
-print(mobile.external_data_values(data={
-                                    "Application": 0,
-                                    "TypeID": 19,
-                                    "FieldID": 1829,
-                                    "Username": "BhavikS",
-                                    "ParentValues": {
-                                        "3415": [
-                                        "1"
-                                        ]
-}}).text)
+    def get_related_cases_count_data(self, data):
+        ''' should take in response directly from react in form {
+                                                "caseId": 0,
+                                                "caseTypeId": 0,
+                                                "assignedToMe": true,
+                                                "isActive": "string",
+                                                "systemCode": "string",
+                                                "username": "bhaviks",
+                                                "pageNumber": 0,
+                                                "pageSize": 0,
+                                                "userOwner": "string",
+                                                "userAssignTo": "string",
+                                                "userCreatedBy": "string",
+                                                "userTeam": "string",
+                                                "userClosedby": "string"
+                                            } '''
+        return self.post(self.url +'/api/Case/GetRelatedCasesCount', json=data)
 
-'''
+    def get_application_list(self):
+        return self.get(self.url +'/api/Home/GetApplicationList')
+    '''
+    mobile = Mobile('http://home.boxerproperty.com/MobileAPI','michaelaf', 'Boxer@@2020')
+
+    print(mobile.external_data_values(data={
+                                        "Application": 0,
+                                        "TypeID": 19,
+                                        "FieldID": 1829,
+                                        "Username": "BhavikS",
+                                        "ParentValues": {
+                                            "3415": [
+                                            "1"
+                                            ]
+    }}).text)
+
+    '''
+
+    def authenticate(self, data):
+        ''' should take in response directly from react in form {
+                                        "username": "Test",
+                                        "password": "Test123"
+                                        } '''
+        return self.post(self.url +'/api/Auth/authenticate', json=data)

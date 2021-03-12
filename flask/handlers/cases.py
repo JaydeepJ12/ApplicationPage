@@ -11,6 +11,7 @@ isInline = True
 from sqlalchemy import insert
 import base64
 import datetime
+import json
 
 # Everythings i could need to know about case types should be found here
 
@@ -56,7 +57,7 @@ class CaseHandler(Response):
             "values": values})
 
     def case_type_data(self):
-        import json
+        
         values = [{
             "label": "Case Type List",
             "id": instance.CASE_TYPE_ID,
@@ -76,9 +77,66 @@ class CaseHandler(Response):
             "customData": [],
             "values": values})
 
+    def case_activity_log(self, case_ids):
+        try:
+            case_ids = case_ids.split(',')
+            values = [{
+                "label": "Case Activity Logss",
+                "activity_id": instance.CASE_ACTIVITY_ID,
+                "activity_type": self.session.query(CaseActivityType).get(instance.ACTIVITY_TYPE_ID).NAME,
+                "case_id": instance.CASE_ID,
+                "activity_note": instance.NOTE,
+                "created_by": instance.CREATED_BY,
+                "is_active": instance.IS_ACTIVE,
+                "modified_by": instance.MODIFIED_BY,
+                "created_datetime": str(instance.CREATED_DATETIME),
+                "modified_datetime": str(instance.MODIFIED_DATETIME),
+                "href": f"#/",
+            } for instance in
+                self.session.query(CaseActivityLog).filter(CaseActivityLog.CASE_ID.in_(case_ids)).all()]
+            return json.dumps({
+                "label": "Case Activity Logs",
+                "href": "/Case Activity Logs",
+                "description": "List of all case activity logs",
+                "count": len(values),
+                "requestMethod": "GET",
+                "customData": [],
+                "values": values})
+
+        except Exception as exe:
+            print(exe)
+            return json.dumps({"error":str(exe)})
+
+    def departments_data(self, maxCount):
+        values = [{
+            "label": "Department User List",
+            "id": instance.EMPLOYEEID,
+            "guid": instance.EMPLOYEE_GUID,
+            "name": instance.EmpFirstName,
+        } for instance in
+            self.session.query(EmployeeDepartment)[:int(maxCount)]]
+        return json.dumps({
+            "label": "Departmets List Type",
+            "href": "/cases/departments",
+            "description": "List of all departments people",
+            "count": len(values),
+            "requestMethod": "GET",
+            "customData": [],
+            "values": values})
+
+    def departments_data_byId(self, id):
+        data = self.session.query(EmployeeDepartment).get(id)
+        return json.dumps({
+            "label": "Departmets List Type",
+            "href": "/cases/departments",
+            "description": "List of all departments people",
+            "count": 1,
+            "requestMethod": "GET",
+            "customData": [],
+            "values": {"id": data.EMPLOYEEID, "guid": data.EMPLOYEE_GUID, "name": data.EmpFirstName}})
+
     def system_code_list(self):
         import json
-        print("in handler")
         values = [{
             "label": "System code List",
             "id": instance.ASSOC_SYSTEM_CODE_ID,
@@ -121,7 +179,8 @@ class CaseHandler(Response):
             "count": [],
             "requestMethod": "POST",
             "customData": [],
-            "values": []})
+            "values": [],
+            "method":200})
 
     def assoc_type_insert(self,data):
         """
