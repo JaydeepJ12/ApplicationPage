@@ -78,6 +78,11 @@ a {
   display: flex;
   align-items: center !important;
 }
+.d-grid {
+  display: grid;
+  align-items: center !important;
+  padding: 5px;
+}
 /* display end  */
 
 /*  start float  */
@@ -396,7 +401,7 @@ header .MuiIconButton-label .MuiSvgIcon-root {
   background-color: #fff;
 }
 .MuiSelect-select:focus {
-  border-radius: 5px ! important;
+  border-radius: 5px !important;
   background-color: #fff;
 }
 form.filter-form {
@@ -409,17 +414,17 @@ form.filter-form .MuiOutlinedInput-input {
 .filter-form label {
   color: #444 !important;
 }
-#entity-filter  .MuiToolbar-gutters {
+#entity-filter .MuiToolbar-gutters {
   padding-left: 12px !important;
   padding-right: 12px !important;
 }
 #entity-filter .st-float-end {
   margin-left: 21px;
 }
-.page-entity-info .MuiGrid-spacing-xs-1 > .MuiGrid-item{
-  padding-right: 14px  !important;
-  padding-left: 14px  !important;
-  border-right: 1px solid #dddbdb  !important;
+.page-entity-info .MuiGrid-spacing-xs-1 > .MuiGrid-item {
+  padding-right: 14px !important;
+  padding-left: 14px !important;
+  border-right: 1px solid #dddbdb !important;
 }
 
 /*  Tab scroll-bar style */
@@ -440,4 +445,7 @@ form.filter-form .MuiOutlinedInput-input {
 .MuiTabs-scroller::-webkit-scrollbar-thumb {
   background-color: #999;
   border-radius: 3px;
+}
+.card-filter .filter-form {
+  width: 23.5rem !important;
 }
