@@ -424,7 +424,7 @@ class CasesSQL:
         '''
         return self.db.execQuery(query)
 
-    def get_department_people(self, maxCount, searchText=''):
+    def get_department_people(self,searchText=''):
         query = f'''
           SELECT
                  c.EMPLOYEE_ID,
@@ -473,7 +473,7 @@ class CasesSQL:
         '''
         return self.db.execQuery(query, params=(userShortName,))
 
-    def get_people_info(self, EMPLOYEE_ID):
+    def get_people_info(self, EMPLOYEE_ID, EMPLOYEE_SHORT_NAME):
         query = f'''
                 SELECT 
                 c.EMPLOYEE_ID,
@@ -514,10 +514,11 @@ class CasesSQL:
                                                            
                                                         --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
                                                         ORDER BY M1.IS_Primary DESC  
-                                                       )Manager  
-                                                       WHERE c.EMPLOYEE_ID=?
+                                                       )Manager
+                                                       WHERE (c.EMPLOYEE_ID=?  or
+													    c.SHORT_USER_NAME Like '%?%')
         '''
-        return self.db.execQuery(query, params=(EMPLOYEE_ID,))
+        return self.db.execQuery(query, params=(EMPLOYEE_ID, EMPLOYEE_SHORT_NAME, ))
 
     def get_filter_values_by_caseTypeIds(self, caseTypeIds):
         query = f'''
@@ -752,26 +753,16 @@ where a.IS_ACTIVE = 'Y'
     def entity_list_bySystemCode(self, entityIds, systemCode):
         try:
             query = f'''
-<<<<<<< Updated upstream
             select eat.ENTITY_TYPE_ID as EntityType,
             count(eam.FIELD_VALUE) as count,
             eam.FIELD_VALUE as FieldValue
             from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam WITH (NOLOCK)
             left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
-            where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
+            where eat.ENTITY_TYPE_ID in(?) and eat.SYSTEM_CODE='?'
             group by  eam.FIELD_VALUE, eat.ENTITY_TYPE_ID, eam.FIELD_VALUE
             order by eam.FIELD_VALUE
-=======
-            select entity_type_id as EntityType,
-                count(list_id) as count,
-				year(CREATED_DATETIME) as CreatedDate
-                 from [BOXER_ENTITIES].[dbo].[entity_list] 
-                 where entity_type_id in (?) 
-				 group by  year(CREATED_DATETIME), ENTITY_TYPE_ID
-				order by year(CREATED_DATETIME)
->>>>>>> Stashed changes
             '''
-            return self.db.execQuery(query, params=(entityIds, ))
+            return self.db.execQuery(query, params=(entityIds, systemCode))
         except Exception as exe:
             return str(exe)
 

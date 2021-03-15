@@ -10,7 +10,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { navigate } from "@reach/router";
@@ -176,26 +176,6 @@ export default function Peoples() {
       ></PeoplePreview>
       <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
         <Grid item xs={12} container spacing={2}>
-          <Grid item lg={3} md={3} xs={6} sm={6}>
-            <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel id="demo-simple-select-outlined-label">
-                People
-              </InputLabel>
-              <Select
-                className="input-dropdown"
-                labelId="demo-simple-select-outlined-label"
-                id="demo-simple-select-outlined"
-                label="People"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
           <Grid item lg={6} md={6} xs={6} sm={6}>
             <FormControl variant="outlined" className={classes.formControl}>
               <div
@@ -222,17 +202,7 @@ export default function Peoples() {
             xs={6}
             sm={6}
             style={{ "text-align": "right" }}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              className="btn btn-create-button btn-primary rounded-pill"
-              variant="contained"
-              color="primary"
-            >
-              + Add
-            </Button>
-          </Grid>
+          ></Grid>
         </Grid>
         {/* <Slider {...SilderSetting}> */}
         {componentLoader ? (

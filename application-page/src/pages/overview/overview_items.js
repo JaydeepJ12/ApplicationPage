@@ -194,24 +194,6 @@ export default function ItemOverview() {
             </Select>
           </FormControl>
         </Grid>
-        <Grid
-          item
-          lg={7}
-          md={7}
-          xs={12}
-          sm={12}
-          style={{ "text-align": "right" }}
-        >
-          <Button
-            variant="contained"
-            size="large"
-            className="btn btn-create-button btn-primary rounded-pill"
-            variant="contained"
-            color="primary"
-          >
-            + Add
-          </Button>
-        </Grid>
 
         {componentLoader ? (
           <div className={classes.w_100}>
@@ -228,7 +210,7 @@ export default function ItemOverview() {
                         {entityCount.Title}
                       </Typography>
                       <Typography
-                        variant="h3"
+                        variant="h5"
                         gutterBottom
                         // className={classes.h3_text}
                       >
@@ -263,7 +245,7 @@ export default function ItemOverview() {
                       <Typography
                         variant="h5"
                         gutterBottom
-                        className={classes.h3_text}
+                        // className={classes.h3_text}
                       >
                         {statusCount.Count}
                       </Typography>
@@ -300,7 +282,7 @@ export default function ItemOverview() {
                       <Typography
                         variant="h5"
                         gutterBottom
-                        className={classes.h3_text}
+                        // className={classes.h3_text}
                       >
                         {categoryCount.Count}
                       </Typography>

@@ -9,7 +9,7 @@ import {
   MenuItem,
   Popover,
   TextField,
-  Toolbar
+  Toolbar,
 } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import { FilterList, RotateLeft } from "@material-ui/icons";
@@ -18,7 +18,7 @@ import axios from "axios";
 import React, { useRef, useState } from "react";
 import {
   default as useStyles,
-  default as useStylesBase
+  default as useStylesBase,
 } from "../../assets/css/common_styles";
 import * as API from "../../components/api_base/path-config";
 import * as notification from "../../components/common/toast";
@@ -70,6 +70,7 @@ function PeopleDepartmentFilter(props) {
       parentID: parentID ? parentID : 0,
       entityId: props.appId,
     };
+
     var config = {
       method: "post",
       url: API.API_GET_PEOPLE_DEPARTMENT_FILTERS,
@@ -77,7 +78,6 @@ function PeopleDepartmentFilter(props) {
     };
     await axios(config)
       .then(function (response) {
-
         // for top level dropdown
         let drpTopLevelData = response.data.filter(
           (x) => x.Level === "TOP LEVEL"
@@ -358,7 +358,7 @@ function PeopleDepartmentFilter(props) {
           horizontal: "center",
         }}
       >
-        <Grid className={"card-filter " + classesBase.m_one}>
+        <Grid className={classesBase.m_one}>
           <form onSubmit={handleFilterSubmit} className="">
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <FormControl

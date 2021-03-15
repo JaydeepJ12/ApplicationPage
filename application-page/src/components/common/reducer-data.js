@@ -1,7 +1,7 @@
 import { navigate } from "@reach/router";
 import axios from "axios";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actionData, applicationElements } from "../../redux/action.js";
 
 const id_from_url = () => {
@@ -15,6 +15,7 @@ const id_from_url = () => {
 
 export default function ReducerData() {
   const dispatch = useDispatch();
+  const reducerState = useSelector((state) => state);
 
   const navigateToErrorPage = (message) => {
     navigate(process.env.REACT_APP_ERROR_PAGE, {
@@ -88,7 +89,7 @@ export default function ReducerData() {
 
   useEffect(() => {
     entitiesByEntityId();
-  }, []);
+  }, [reducerState.applicationData.appId]);
 
   return "";
 }

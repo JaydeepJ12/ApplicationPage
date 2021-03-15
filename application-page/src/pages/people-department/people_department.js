@@ -1,4 +1,6 @@
 import { Box, Grid } from "@material-ui/core";
+import { SignalCellularNull } from "@material-ui/icons";
+import { Alert } from "@material-ui/lab";
 import axios from "axios";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -11,14 +13,14 @@ import PeopleBasicInfo from "./people_dept_basic_information";
 import PeopleCard from "./people_dept_card";
 import PeopleDepartmentFilter from "./people_dept_filter";
 import PeopleMainTab from "./people_dept_main_tab";
-
+import { navigate } from '@reach/router';
 
 var dateFormat = require("dateformat");
 
-export default function PeopleDepartment() {
-
+export default function PeopleDepartment(props) {
   const reducerState = useSelector((state) => state);
   const appId = reducerState.applicationData.appId;
+  const isNavigateUerName = reducerState.applicationData.isNavigateUerName;
   var classes = useStyles();
   var [value, setValue] = React.useState(0);
   const [page, setPage] = React.useState(0);
@@ -53,16 +55,24 @@ export default function PeopleDepartment() {
   const [pageSize, setPageSize] = useState(10);
   const [gridSkipCount, setGridSkipCount] = useState(0);
 
+  const [userNameValue, setUserNameValue] = useState(
+    props.location?.state?.userName ? props.location?.state?.userName : ""
+  );
+  const [IsTaskClick, setIsTaskClick] = useState(
+    props.location?.state?.IsTaskClick ? props.location?.state?.IsTaskClick : false
+  );
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
 
   // Start  all API call
   const getDepartmentPeopleList = async (skipCount = 0, filters, isScroll) => {
-    if(filters === undefined){
-      setFilterData({})
+    if (filters === undefined) {
+      setFilterData({});
     }
     if (!isScroll) {
       setInfoDataLoaded(false);
     }
+    // setIsTaskClick(false)
+    // setUserNameValue("");
     setNavTab(0);
     setDataLoaded(false);
     setComponentLoader(true);
@@ -78,38 +88,53 @@ export default function PeopleDepartment() {
 
     if (filters !== undefined && filters !== "") {
       if (filters.topLevel !== "" && filters.topLevel !== undefined) {
-        Object.assign(jsonData, { 'DSJT.EMP_DEPARTMENT_TOP_LEVEL': filters.topLevel });
+        Object.assign(jsonData, {
+          "DSJT.EMP_DEPARTMENT_TOP_LEVEL": filters.topLevel,
+        });
       }
       if (filters.basicName !== "" && filters.basicName !== undefined) {
-        Object.assign(jsonData, { 'DSJT.EMP_DEPARTMENT_BASIC_NAME': filters.basicName});
+        Object.assign(jsonData, {
+          "DSJT.EMP_DEPARTMENT_BASIC_NAME": filters.basicName,
+        });
       }
       if (filters.subDepartment !== "" && filters.subDepartment !== undefined) {
-        Object.assign(jsonData, { 'DSJT.DEPARTMENT': filters.subDepartment });
+        Object.assign(jsonData, { "DSJT.DEPARTMENT": filters.subDepartment });
       }
       if (filters.jobFunction !== "" && filters.jobFunction !== undefined) {
-        Object.assign(jsonData, { 'DSJT.Emp_JOB_FUNCTION_NAME': filters.jobFunction });
+        Object.assign(jsonData, {
+          "DSJT.Emp_JOB_FUNCTION_NAME": filters.jobFunction,
+        });
       }
       if (filters.jobTitle !== "" && filters.jobTitle !== undefined) {
-        Object.assign(jsonData, { 'DSJT.Emp_JOB_TITLE_NAME': filters.jobTitle });
+        Object.assign(jsonData, {
+          "DSJT.Emp_JOB_TITLE_NAME": filters.jobTitle,
+        });
       }
       if (filters.company !== "" && filters.company !== undefined) {
         Object.assign(jsonData, { "DSJT.COMPANY_NAME": filters.company });
       }
       if (filters.employeeType !== "" && filters.employeeType !== undefined) {
-        Object.assign(jsonData, {"EMPT.EMPLOYEE_TYPE_NAME": filters.employeeType,});
+        Object.assign(jsonData, {
+          "EMPT.EMPLOYEE_TYPE_NAME": filters.employeeType,
+        });
       }
       if (filters.searchText && filters.searchText !== undefined) {
-        Object.assign(jsonData, { 'DSJT.EmpDisplayName': filters.searchText });
+        Object.assign(jsonData, { "DSJT.EmpDisplayName": filters.searchText });
       }
       if (filters.employee_id && filters.employee_id !== undefined) {
-        Object.assign(jsonData, { 'DSJT.EMPLOYEEID': filters.employee_id });
+        Object.assign(jsonData, { "DSJT.EMPLOYEEID": filters.employee_id });
       }
-      Object.assign(jsonData, {'empStatus': filters.employeeStatus ? filters.employeeStatus : "active"});
-      Object.assign(jsonData, {'provisioned': filters.provisioned ? filters.provisioned : "yes",});
+      Object.assign(jsonData, {
+        empStatus: filters.employeeStatus ? filters.employeeStatus : "active",
+      });
+      Object.assign(jsonData, {
+        provisioned: filters.provisioned ? filters.provisioned : "yes",
+      });
     } else {
-      Object.assign(jsonData, { 'employee': "all" });
-      Object.assign(jsonData, { 'provisioned': "yes" });
+      Object.assign(jsonData, { employee: "all" });
+      Object.assign(jsonData, { provisioned: "yes" });
     }
+
     var config = {
       method: "post",
       url: API.API_GET_PEOPLE_DEPARTMENTS,
@@ -118,12 +143,13 @@ export default function PeopleDepartment() {
 
     await axios(config)
       .then(function (response) {
-     
         setDataLoaded(true);
         setComponentLoader(false);
         if (response.data.length) {
-          if (!isScroll) {
+          if (!isScroll && !IsTaskClick) {
+            
             setPeopleInfoData(response.data[0]);
+
             setInfoDataLoaded(true);
           }
           setPeopleCount(response.data.length);
@@ -137,12 +163,14 @@ export default function PeopleDepartment() {
         console.log(error);
       });
   };
-   // this action use for get department info when card is particular card is click
-  const getDepartmentPeopleInfo = async (employee_id) => {
+  // this action use for get department info when card is particular card is click
+  const getDepartmentPeopleInfo = async (employee_id,emp_user_name) => {
     setInfoDataLoaded(false);
     setNoDataFound(false);
+
     var jsonData = {
       EMPLOYEE_ID: employee_id,
+      EMPLOYEE_SHORT_NAME: emp_user_name,
     };
 
     var config = {
@@ -158,13 +186,21 @@ export default function PeopleDepartment() {
           setPeopleInfoData(peopleInfoData);
           setInfoDataLoaded(true);
           setNoDataFound(true);
+          if (props.location?.state?.userName) {
+            navigate("people", {
+              state: {
+                userName: "",
+                IsTaskClick : false
+              },
+            });
+          }
         }
       })
       .catch(function (error) {
         console.log(error);
       });
   };
-    // this action use for people case list tab  base on drp Entity and case
+  // this action use for people case list tab  base on drp Entity and case
   const caseList = async (people, skipCount = 0, loadMore) => {
     setTaskLoader(false);
     setRecordCount(0);
@@ -206,12 +242,17 @@ export default function PeopleDepartment() {
   const handlePageChange = (params) => {
     let isPrev = params.page === page - 1;
     setPage(params.page);
-    CaseActivityLogList(activityFilterValue,gridSkipCount, peopleInfo, isPrev);
+    CaseActivityLogList(activityFilterValue, gridSkipCount, peopleInfo, isPrev);
   };
 
-  // this action use for people all case activity display in   activity tab 
-  const CaseActivityLogList = async (activityFilterValue,skipCount = 0, people, isPrev = false) => {
-    setTotalCaseHistoryData(0);
+  // this action use for people all case activity display in   activity tab
+  const CaseActivityLogList = async (
+    activityFilterValue,
+    skipCount = 0,
+    people,
+    isPrev = false
+  ) => {
+    // setTotalCaseHistoryData(0);
     setLoading(true);
     if (isPrev) {
       skipCount = gridSkipCount - activityLogMaxCount * 2;
@@ -269,14 +310,15 @@ export default function PeopleDepartment() {
   const handlePeopleInfo = (employee_id) => {
     setNavTab(0);
     setValue(0);
+    setPeopleInfoData("");
     setInfoDataLoaded(false);
     if (!dataInfoLoaded) {
       notification.toast.warning("Please wait. Your Data is loading...!!");
       return false;
     }
-    getDepartmentPeopleInfo(employee_id);
+    getDepartmentPeopleInfo(employee_id,'null');
   };
-   // this scroll action use for scroll a left bar of people to get more data  
+  // this scroll action use for scroll a left bar of people to get more data
   const handleOnScroll = (peopleData, event) => {
     const bottom =
       event.target.scrollHeight - event.target.scrollTop ===
@@ -288,11 +330,15 @@ export default function PeopleDepartment() {
       getDepartmentPeopleList(peopleData?.length, filterValue, true);
     }
   };
-
   useEffect(() => {
+    console.log(reducerState.applicationData.isNavigateUerName)
     getDepartmentPeopleList();
-  }, [reducerState.applicationData.appId]);
- 
+    if (IsTaskClick && isNavigateUerName || isNavigateUerName) {
+      getDepartmentPeopleInfo('null', isNavigateUerName);
+    }
+    
+  }, [reducerState.applicationData.appId,userNameValue, isNavigateUerName]);
+
   return (
     <div className="page" id="page-department">
       <Grid container spacing={3}>
@@ -330,7 +376,6 @@ export default function PeopleDepartment() {
             dataInfoLoaded={dataInfoLoaded}
             getDepartmentPeopleList={getDepartmentPeopleList}
             getDepartmentPeopleInfo={getDepartmentPeopleInfo}
-          
           ></PeopleBasicInfo>
 
           <div className={classes.mt_one}>

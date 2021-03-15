@@ -14,5 +14,6 @@ export const BASE_ROUTE_PATH = "/react/SearchID=3570310";
 
 
 // People Department ALL API
-export const API_GET_ENTITY_LIST = '/cases/getDepartmentPeoples';
+export const API_GET_ENTITY_LIST_BY_ENTITY_TYPE = '/entity/list_by_id';
+export const API_GET_ENTITY_INFO_BY_ENTITY_ID = '/entity/data_by_entity_id';
 // Enn People Department ALL API
