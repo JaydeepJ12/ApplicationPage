@@ -39,7 +39,12 @@ def after_request(r):
     return r
 
 @bp1.route('/config/<id>', methods=['GET'])
-def config(id):
+def config(id): 
+    ''' 
+    http://localhost:5000/entity/config/1139
+    
+    pass in entity type id to convert at the end of the url
+    '''
     r = entities.config(etid = id).fetchone()
     print(r[0])
     #https://stackoverflow.com/questions/28259301/how-to-convert-an-xml-file-to-nice-pandas-dataframe
