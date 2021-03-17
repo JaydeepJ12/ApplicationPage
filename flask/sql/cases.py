@@ -21,7 +21,7 @@ class CasesSQL:
 
     def cases_type_form(self, id):
         
-        query = '''
+        query = f'''
         SELECT [ASSOC_TYPE_ID] as AssocTypeId
                 ,[ASSOC_FIELD_TYPE] as AssocFieldType
                 ,[CASE_TYPE_ID] as CaseTypeId
@@ -37,10 +37,10 @@ class CasesSQL:
   
             FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
             where is_active = 'Y'
-            and CASE_TYPE_ID = ?
+            and CASE_TYPE_ID = {id}
             order by SYSTEM_PRIORITY asc
         '''
-        return self.db.execQuery(query, params=(id,))
+        return self.db.execQuery(query)
 
     def cases_types(self):
         query = f'''
@@ -53,6 +53,7 @@ class CasesSQL:
         return self.db.execQuery(query)
 
     def get_entities_by_entity_id(self, entityId):
+        print("entityId=>", entityId)
         query = f'''
         SELECT a.[ENTITY_ID] ,
         [FIELD_VALUE] AS [NAME] ,
@@ -75,7 +76,7 @@ class CasesSQL:
         WHERE a.IS_ACTIVE = 'Y'
                 AND e.IS_ACTIVE = 'Y'
                 AND EXTERNAL_DATASOURCE_OBJECT_ID is NOT null
-                AND a.[ENTITY_ID] = ?
+                AND a.[ENTITY_ID] = {entityId}
         UNION
         SELECT [ENTITY_ID] ,
                 [TEXT] AS [NAME] ,
@@ -93,10 +94,10 @@ class CasesSQL:
                         AND is_active = 'Y'
                         AND SYSTEM_CODE IN ('APICN')) b
                 ON a.ENTITY_ASSOC_TYPE_ID = b.ENTITY_ASSOC_TYPE_ID
-                AND a.[ENTITY_ID] = ?
+                AND a.[ENTITY_ID] = {entityId}
         ORDER BY  b.[SYSTEM_CODE] 
         '''
-        return self.db.execQuery(query, params=(entityId, entityId,))
+        return self.db.execQuery(query)
 
     def case_types_by_entity_id(self, entityIds):
         query = f'''
@@ -107,7 +108,7 @@ class CasesSQL:
             FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT] a
             LEFT JOIN [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type] b
                 ON a.[ENTITY_ASSOC_TYPE_ID] = b.[ENTITY_ASSOC_TYPE_ID]
-            WHERE entity_id IN (?)
+            WHERE entity_id IN ({entityIds})
                     AND a.is_active = 'Y'
                     AND a.[ENTITY_ASSOC_TYPE_ID] IN 
                 (SELECT ENTITY_ASSOC_TYPE_ID
@@ -115,19 +116,19 @@ class CasesSQL:
                 WHERE entity_type_id IN 
                     (SELECT top 1 ENTITY_TYPE_ID
                     FROM [BOXER_ENTITIES].[dbo].entity_list
-                    WHERE entity_id IN (?) )
+                    WHERE entity_id IN ({entityIds}) )
                             AND ( SYSTEM_CODE IN ( 'EXTPK' , 'QSAID', 'URL', 'SBTTL' ) ) ) )
         '''
-        return self.db.execQuery(query, params=(entityIds, entityIds,))
+        return self.db.execQuery(query)
 
     def assoc_decode(self, id):
         query = f'''
         SELECT ASSOC_DECODE_ID as DecodeId, NAME as DecodeValue FROM [BOXER_CME].[dbo].[ASSOC_DECODE]
             where is_active = 'Y'
-            and ASSOC_TYPE_ID = ?
+            and ASSOC_TYPE_ID = {id}
             order by SYSTEM_PRIORITY asc
         '''
-        return self.db.execQuery(query, params=(id,))
+        return self.db.execQuery(query)
 
     def caseassoctypecascade(self, caseTypeId):
         query = f'''
@@ -135,10 +136,10 @@ class CasesSQL:
             FROM [BOXER_CME].[dbo].[CASE_ASSOC_TYPE_CASCADE] CATS WITH (NOLOCK)      
             INNER JOIN [BOXER_CME].[dbo].[ASSOC_TYPE] AT WITH (NOLOCK) ON AT.ASSOC_TYPE_ID = CATS.CASE_ASSOC_TYPE_ID_PARENT AND AT.IS_ACTIVE ='Y' AND CATS.IS_ACTIVE = 'Y'    
             INNER JOIN [BOXER_CME].[dbo].[CASE_TYPE] CT WITH (NOLOCK) ON AT.CASE_TYPE_ID = CT.CASE_TYPE_ID AND CT.IS_ACTIVE= 'Y'    
-            WHERE CT.CASE_TYPE_ID = ?    
+            WHERE CT.CASE_TYPE_ID = {caseTypeId}    
             AND (AT.ASSOC_FIELD_TYPE = 'E' OR AT.ASSOC_FIELD_TYPE = 'O')  
         '''
-        return self.db.execQuery(query, params=(caseTypeId,))
+        return self.db.execQuery(query)
 
     def assignee_case_types(self, case_type_ids):
         if case_type_ids is None:
@@ -261,7 +262,7 @@ class CasesSQL:
             FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
             Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
              And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
-            And IS_active='Y'and Case_Type_ID in (?)
+            And IS_active='Y'and Case_Type_ID in ({case_type_ids})
             Group By [By_Assignee_Supervisor]
 
 
@@ -274,7 +275,7 @@ class CasesSQL:
             FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
             Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
              And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
-            And IS_active='Y'  And Case_Type_ID In (?)
+            And IS_active='Y'  And Case_Type_ID In ({case_type_ids})
             Group By [By_Assignee_Supervisor]
 
             Union
@@ -284,14 +285,14 @@ class CasesSQL:
             ,Count(CL.Case_id) as No_due_date
             FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
             Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')=''
-            And IS_active='Y'   and Case_Type_ID In (?)
+            And IS_active='Y'   and Case_Type_ID In ({case_type_ids})
             Group By [By_Assignee_Supervisor]
 
             )A
 
             Group BY By_Assignee_Supervisor
             """
-        return self.db.execQuery(query, params=(case_type_ids, case_type_ids, case_type_ids))
+        return self.db.execQuery(query)
 
     def case_type_count_all(self, case_type_ids):
         if case_type_ids is None:
@@ -344,9 +345,9 @@ class CasesSQL:
 
     def get_user_fullname(self, userShortName):
         query = f'''
-        SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in (?) ORDER BY 1 DESC
+        SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ({userShortName}) ORDER BY 1 DESC
         '''
-        return self.db.execQuery(query, params=(userShortName,))
+        return self.db.execQuery(query)
 
     def get_system_priority(self, assocTypeId):
         try:
@@ -367,13 +368,13 @@ class CasesSQL:
             FROM [BOXER_CME].[dbo].[CME_USER_CACHE] AS c
             INNER JOIN [BOXER_CME].[dbo].[CASE_LIST] AS b ON b.LIST_CASE_ASSGN_TO_SAM = c.SHORT_USER_NAME
             WHERE IS_ACTIVE = 'Y' AND COALESCE(IS_EXTERNAL_USER,'N')='N'
-            AND DISPLAY_NAME Like CASE WHEN '?' = '' THEN DISPLAY_NAME ELSE '%' + '?' + '%' END
+            AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
             GROUP BY c.DISPLAY_NAME, c.SHORT_USER_NAME ,c.CREATED_DATETIME
             ORDER BY 1 ASC
-            offset ? rows
-            FETCH NEXT ? rows only
+            offset {skipCount} rows
+            FETCH NEXT {maxCount} rows only
         '''
-        return self.db.execQuery(query, params=(searchText, searchText, skipCount, maxCount))
+        return self.db.execQuery(query)
 
     def get_department_emp_filters(self, parentName, parentID, entityId):
 
@@ -469,11 +470,13 @@ class CasesSQL:
 
     def get_user_info(self, userShortName):
         query = f'''
-           	SELECT * FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME = ?
+           	SELECT * FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME = '{userShortName}'
         '''
-        return self.db.execQuery(query, params=(userShortName,))
+        return self.db.execQuery(query)
 
     def get_people_info(self, EMPLOYEE_ID, EMPLOYEE_SHORT_NAME):
+        print("query EMPLOYEE_ID==>", EMPLOYEE_ID)
+        print("query EMPLOYEE_SHORT_NAME==>", EMPLOYEE_SHORT_NAME)
         query = f'''
                 SELECT 
                 c.EMPLOYEE_ID,
@@ -516,10 +519,10 @@ class CasesSQL:
                                                         --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
                                                         ORDER BY M1.IS_Primary DESC  
                                                        )Manager
-                                                       WHERE (c.EMPLOYEE_ID=?  or
-													    c.SHORT_USER_NAME Like '%?%')
+                                                       WHERE (c.EMPLOYEE_ID={EMPLOYEE_ID}  or c.SHORT_USER_NAME Like '%{EMPLOYEE_SHORT_NAME}%')
         '''
-        return self.db.execQuery(query, params=(EMPLOYEE_ID, EMPLOYEE_SHORT_NAME, ))
+        print(query)
+        return self.db.execQuery(query)
 
     def get_filter_values_by_caseTypeIds(self, caseTypeIds):
         query = f'''
@@ -527,11 +530,11 @@ class CasesSQL:
             distinct [NAME], att.SYSTEM_CODE
             FROM [BOXER_CME].[dbo].[ASSOC_DECODE] ad
             join (
-            SELECT assoc_type_id, system_code FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE CASE_TYPE_ID in (?) and SYSTEM_CODE in ('STTUS', 'PRI  ')
+            SELECT assoc_type_id, system_code FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE CASE_TYPE_ID in ({caseTypeIds}) and SYSTEM_CODE in ('STTUS', 'PRI  ')
             ) att on ad.assoc_type_id = att.ASSOC_TYPE_ID
             where ad.IS_ACTIVE = 'Y'
         '''
-        return self.db.execQuery(query, params=(caseTypeIds,))
+        return self.db.execQuery(query)
 
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
@@ -700,7 +703,7 @@ where a.IS_ACTIVE = 'Y'
                           left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type] b
                         on a.[ENTITY_ASSOC_TYPE_ID] = b.[ENTITY_ASSOC_TYPE_ID]
                     
-                      where entity_id in (?)
+                      where entity_id in ({Ids})
                       and 
                       a.is_active = 'Y'
                       and
@@ -710,12 +713,12 @@ where a.IS_ACTIVE = 'Y'
                       where entity_type_id in (select top 1 
                                                 ENTITY_TYPE_ID 
                                                 from [BOXER_ENTITIES].[dbo].entity_list 
-                                                where entity_id in (?) )
+                                                where entity_id in ({Ids}) )
                                                 and 
                     (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL', 'TITLE')))
                     order by SYSTEM_CODE,ENTITY_ID
                     '''
-        return self.db.execQuery(query, params=(Ids, Ids, ))
+        return self.db.execQuery(query)
 
     def entity_list_byId(self, entityIds):
         try:
@@ -759,11 +762,11 @@ where a.IS_ACTIVE = 'Y'
             eam.FIELD_VALUE as FieldValue
             from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam WITH (NOLOCK)
             left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
-            where eat.ENTITY_TYPE_ID in(?) and eat.SYSTEM_CODE='?'
+            where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
             group by  eam.FIELD_VALUE, eat.ENTITY_TYPE_ID, eam.FIELD_VALUE
             order by eam.FIELD_VALUE
             '''
-            return self.db.execQuery(query, params=(entityIds, systemCode))
+            return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
 
@@ -774,11 +777,11 @@ where a.IS_ACTIVE = 'Y'
                 count(list_id) as count,
 				year(CREATED_DATETIME) as CreatedDate
                  from [BOXER_ENTITIES].[dbo].[entity_list] 
-                 where entity_type_id in (?) 
+                 where entity_type_id in ({entityTypeIds}) 
 				 group by  year(CREATED_DATETIME), ENTITY_TYPE_ID
 				order by year(CREATED_DATETIME)
             '''
-            return self.db.execQuery(query, params=(entityTypeIds,))
+            return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
 
@@ -827,6 +830,7 @@ where a.IS_ACTIVE = 'Y'
         return self.db.execQuery(query)
 
     def department_fetch(self, all_data):
+        print("all data==>", all_data)
         try:
             status = 1
             if all_data.get('empStatus') == "inactive":
@@ -882,14 +886,14 @@ where a.IS_ACTIVE = 'Y'
                        INNER JOIN [Departments].[DBO].[MANAGER_CONFIG] MG WITH (NOLOCK) ON DSEM.Employee_GUID=MG.Employee_GUID
                        INNER JOIN [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM2 WITH (NOLOCK) ON MG.MANAGER_GUID=convert(nvarchar(200),DSEM2.Employee_GUID)
                        LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID 
-                       Wmi amHERE  E.ENTITY_ID =   {entity_id} and (ACTIVE = {status}) AND {min_query}
+                       WHERE  E.ENTITY_ID =   {entity_id} and (ACTIVE = {status}) AND {min_query}
                     '''
-            #TODO: Secure
+            data_count = all_data.pop('maxCount', None)
+            print("data_count==>",data_count)
             if all_data.get("employee") == "all":
                 query = query + \
-                    f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {all_data.get('maxCount')} ROWS ONLY"
+                    f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {data_count} ROWS ONLY"
                 return self.db.execQuery(query)
-            data_count = all_data.pop('maxCount', None)
             for key, value in all_data.items():
                 if value is not None:
                     query = query + f"AND {key} like '%{value}%'"
