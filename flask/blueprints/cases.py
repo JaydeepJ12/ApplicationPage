@@ -69,6 +69,7 @@ def caseTypes():
 @bp.route('/getEntitiesByEntityId', methods=['POST'])
 def getEntitiesByEntityId():
     data = request.json
+    print("data===>", data)
     if not data['entityId']:
         return make_response("please pass entity Id", 400)
     df = db.get_entities_by_entity_id(data['entityId'])
@@ -119,6 +120,7 @@ def getDepartmentPeoples():
 @cross_origin(supports_credentials=True)
 def getPeopleInfo():
     data = request.json
+    print(data)
     df = db.get_people_info(data['EMPLOYEE_ID'], data['EMPLOYEE_SHORT_NAME'])
     return df.to_json(orient='records')
 
@@ -171,16 +173,19 @@ def get_employees_by_search():
 
 
 def getUserFullName(userShortName):
-    df = db.get_user_fullname(userShortName)  # always returns dataframe
+    df = db.get_user_fullname(userShortName)
+    print(df)  # always returns dataframe
     return df.to_json(orient='records')
 
 
 @bp.route('/GetCaseNotes', methods=['POST'])
 def get_case_notes():
     data = mobile.get_case_notes(request.json).json()
+    print("data==>", data)
     for x in data['responseContent']:  # can throw error with resp is empty
         userShortName = x.get('createdBy')
-        userFullName = json.loads(getUserFullName(str(userShortName)))
+        userFullName = db.get_user_fullname(userShortName)
+        print("187======>", userFullName)
         if userFullName:
             x['fullName'] = userFullName[0]['FULL_NAME']
         # x.update({'createdBy':userFullName[0]['FULL_NAME']}) 
