@@ -11,13 +11,12 @@ export default function CaseGraphs(props) {
     axios
       .get("http://127.0.0.1:5000/case_data/".concat(props.appID))
       .then((resp) => setData(resp.data), setLoaded(true))
-      .then(console.log(data));
+      .then();
   };
 
   useEffect(() => {
     apps();
   }, []);
-  console.log(loaded);
   if (loaded) {
     return <Plot data={data.data} layout={data.layout}></Plot>;
   }

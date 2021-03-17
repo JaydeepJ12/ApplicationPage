@@ -449,3 +449,7 @@ form.filter-form .MuiOutlinedInput-input {
 .card-filter .filter-form {
   width: 23.5rem !important;
 }
+/* navigation click override fix left side sidebar */
+.sidebar-nav {
+  margin-left: -8px;
+}

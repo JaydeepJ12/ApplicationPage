@@ -49,6 +49,12 @@ const menuItems = [
       menuPath: "/task-select",
       pageTitle: "Task Creator",
     },
+    {
+      menuName: "Entity Creator",
+      menuIcon: <DataUsage />,
+      menuPath: "/entity-create",
+      pageTitle: "Entity Creator",
+    },
   ];
 
   export default menuItems

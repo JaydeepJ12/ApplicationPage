@@ -238,7 +238,7 @@ export default function Insights() {
             </Grid>
             
             { created ? tabContent.map((data,idx)=>{
-                     console.log(data,idx, classes.iframe.width)
+        
                         return  (
                         <TabPanel value={value} index={idx}>
                             {<iframe src={data.url}
