@@ -21,7 +21,7 @@ class CasesSQL:
 
     def cases_type_form(self, id):
         
-        query = '''
+        query = f'''
         SELECT [ASSOC_TYPE_ID] as AssocTypeId
                 ,[ASSOC_FIELD_TYPE] as AssocFieldType
                 ,[CASE_TYPE_ID] as CaseTypeId
@@ -37,10 +37,10 @@ class CasesSQL:
   
             FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
             where is_active = 'Y'
-            and CASE_TYPE_ID = ?
+            and CASE_TYPE_ID = {id}
             order by SYSTEM_PRIORITY asc
         '''
-        return self.db.execQuery(query, params=(id,))
+        return self.db.execQuery(query)
 
     def cases_types(self):
         query = f'''
@@ -125,10 +125,10 @@ class CasesSQL:
         query = f'''
         SELECT ASSOC_DECODE_ID as DecodeId, NAME as DecodeValue FROM [BOXER_CME].[dbo].[ASSOC_DECODE]
             where is_active = 'Y'
-            and ASSOC_TYPE_ID = ?
+            and ASSOC_TYPE_ID = {id}
             order by SYSTEM_PRIORITY asc
         '''
-        return self.db.execQuery(query, params=(id,))
+        return self.db.execQuery(query)
 
     def caseassoctypecascade(self, caseTypeId):
         query = f'''
@@ -136,10 +136,10 @@ class CasesSQL:
             FROM [BOXER_CME].[dbo].[CASE_ASSOC_TYPE_CASCADE] CATS WITH (NOLOCK)      
             INNER JOIN [BOXER_CME].[dbo].[ASSOC_TYPE] AT WITH (NOLOCK) ON AT.ASSOC_TYPE_ID = CATS.CASE_ASSOC_TYPE_ID_PARENT AND AT.IS_ACTIVE ='Y' AND CATS.IS_ACTIVE = 'Y'    
             INNER JOIN [BOXER_CME].[dbo].[CASE_TYPE] CT WITH (NOLOCK) ON AT.CASE_TYPE_ID = CT.CASE_TYPE_ID AND CT.IS_ACTIVE= 'Y'    
-            WHERE CT.CASE_TYPE_ID = ?    
+            WHERE CT.CASE_TYPE_ID = {caseTypeId}    
             AND (AT.ASSOC_FIELD_TYPE = 'E' OR AT.ASSOC_FIELD_TYPE = 'O')  
         '''
-        return self.db.execQuery(query, params=(caseTypeId,))
+        return self.db.execQuery(query)
 
     def assignee_case_types(self, case_type_ids):
         if case_type_ids is None:
@@ -262,7 +262,7 @@ class CasesSQL:
             FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
             Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
              And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
-            And IS_active='Y'and Case_Type_ID in (?)
+            And IS_active='Y'and Case_Type_ID in ({case_type_ids})
             Group By [By_Assignee_Supervisor]
 
 
@@ -275,7 +275,7 @@ class CasesSQL:
             FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
             Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
              And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
-            And IS_active='Y'  And Case_Type_ID In (?)
+            And IS_active='Y'  And Case_Type_ID In ({case_type_ids})
             Group By [By_Assignee_Supervisor]
 
             Union
@@ -285,14 +285,14 @@ class CasesSQL:
             ,Count(CL.Case_id) as No_due_date
             FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
             Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')=''
-            And IS_active='Y'   and Case_Type_ID In (?)
+            And IS_active='Y'   and Case_Type_ID In ({case_type_ids})
             Group By [By_Assignee_Supervisor]
 
             )A
 
             Group BY By_Assignee_Supervisor
             """
-        return self.db.execQuery(query, params=(case_type_ids, case_type_ids, case_type_ids))
+        return self.db.execQuery(query)
 
     def case_type_count_all(self, case_type_ids):
         if case_type_ids is None:
@@ -345,9 +345,9 @@ class CasesSQL:
 
     def get_user_fullname(self, userShortName):
         query = f'''
-        SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in (?) ORDER BY 1 DESC
+        SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ({userShortName}) ORDER BY 1 DESC
         '''
-        return self.db.execQuery(query, params=(userShortName,))
+        return self.db.execQuery(query)
 
     def get_system_priority(self, assocTypeId):
         try:
@@ -368,13 +368,13 @@ class CasesSQL:
             FROM [BOXER_CME].[dbo].[CME_USER_CACHE] AS c
             INNER JOIN [BOXER_CME].[dbo].[CASE_LIST] AS b ON b.LIST_CASE_ASSGN_TO_SAM = c.SHORT_USER_NAME
             WHERE IS_ACTIVE = 'Y' AND COALESCE(IS_EXTERNAL_USER,'N')='N'
-            AND DISPLAY_NAME Like CASE WHEN '?' = '' THEN DISPLAY_NAME ELSE '%' + '?' + '%' END
+            AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
             GROUP BY c.DISPLAY_NAME, c.SHORT_USER_NAME ,c.CREATED_DATETIME
             ORDER BY 1 ASC
-            offset ? rows
-            FETCH NEXT ? rows only
+            offset {skipCount} rows
+            FETCH NEXT {maxCount} rows only
         '''
-        return self.db.execQuery(query, params=(searchText, searchText, skipCount, maxCount))
+        return self.db.execQuery(query)
 
     def get_department_emp_filters(self, parentName, parentID, entityId):
 
@@ -470,11 +470,13 @@ class CasesSQL:
 
     def get_user_info(self, userShortName):
         query = f'''
-           	SELECT * FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME = ?
+           	SELECT * FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME = '{userShortName}'
         '''
-        return self.db.execQuery(query, params=(userShortName,))
+        return self.db.execQuery(query)
 
     def get_people_info(self, EMPLOYEE_ID, EMPLOYEE_SHORT_NAME):
+        print("query EMPLOYEE_ID==>", EMPLOYEE_ID)
+        print("query EMPLOYEE_SHORT_NAME==>", EMPLOYEE_SHORT_NAME)
         query = f'''
                 SELECT 
                 c.EMPLOYEE_ID,
@@ -517,10 +519,10 @@ class CasesSQL:
                                                         --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
                                                         ORDER BY M1.IS_Primary DESC  
                                                        )Manager
-                                                       WHERE (c.EMPLOYEE_ID=?  or
-													    c.SHORT_USER_NAME Like '%?%')
+                                                       WHERE (c.EMPLOYEE_ID={EMPLOYEE_ID}  or c.SHORT_USER_NAME Like '%{EMPLOYEE_SHORT_NAME}%')
         '''
-        return self.db.execQuery(query, params=(EMPLOYEE_ID, EMPLOYEE_SHORT_NAME, ))
+        print(query)
+        return self.db.execQuery(query)
 
     def get_filter_values_by_caseTypeIds(self, caseTypeIds):
         query = f'''
@@ -528,11 +530,11 @@ class CasesSQL:
             distinct [NAME], att.SYSTEM_CODE
             FROM [BOXER_CME].[dbo].[ASSOC_DECODE] ad
             join (
-            SELECT assoc_type_id, system_code FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE CASE_TYPE_ID in (?) and SYSTEM_CODE in ('STTUS', 'PRI  ')
+            SELECT assoc_type_id, system_code FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE CASE_TYPE_ID in ({caseTypeIds}) and SYSTEM_CODE in ('STTUS', 'PRI  ')
             ) att on ad.assoc_type_id = att.ASSOC_TYPE_ID
             where ad.IS_ACTIVE = 'Y'
         '''
-        return self.db.execQuery(query, params=(caseTypeIds,))
+        return self.db.execQuery(query)
 
     def exid(self, id):
         ''' Takes in a application id(the entity that had the applicaiton data)
@@ -760,11 +762,11 @@ where a.IS_ACTIVE = 'Y'
             eam.FIELD_VALUE as FieldValue
             from [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA] eam WITH (NOLOCK)
             left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_TYPE] eat on eat.[ENTITY_ASSOC_TYPE_ID] = eam.[ENTITY_ASSOC_TYPE_ID]
-            where eat.ENTITY_TYPE_ID in(?) and eat.SYSTEM_CODE='?'
+            where eat.ENTITY_TYPE_ID in({entityIds}) and eat.SYSTEM_CODE='{systemCode}'
             group by  eam.FIELD_VALUE, eat.ENTITY_TYPE_ID, eam.FIELD_VALUE
             order by eam.FIELD_VALUE
             '''
-            return self.db.execQuery(query, params=(entityIds, systemCode))
+            return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
 
