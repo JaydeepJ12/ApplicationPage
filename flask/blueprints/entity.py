@@ -150,7 +150,3 @@ def data_by_entity_id():
         return 'No Data Available'
     return df.to_json(orient='records')
 
-@bp1.route('/GetEntityAllTypeList', methods=['GET'])
-def GetCategories():
-    data = mobile.GetCategories().json()
-    return data

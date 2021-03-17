@@ -53,6 +53,7 @@ class CasesSQL:
         return self.db.execQuery(query)
 
     def get_entities_by_entity_id(self, entityId):
+        print("entityId=>", entityId)
         query = f'''
         SELECT a.[ENTITY_ID] ,
         [FIELD_VALUE] AS [NAME] ,
@@ -75,7 +76,7 @@ class CasesSQL:
         WHERE a.IS_ACTIVE = 'Y'
                 AND e.IS_ACTIVE = 'Y'
                 AND EXTERNAL_DATASOURCE_OBJECT_ID is NOT null
-                AND a.[ENTITY_ID] = ?
+                AND a.[ENTITY_ID] = {entityId}
         UNION
         SELECT [ENTITY_ID] ,
                 [TEXT] AS [NAME] ,
@@ -93,10 +94,10 @@ class CasesSQL:
                         AND is_active = 'Y'
                         AND SYSTEM_CODE IN ('APICN')) b
                 ON a.ENTITY_ASSOC_TYPE_ID = b.ENTITY_ASSOC_TYPE_ID
-                AND a.[ENTITY_ID] = ?
+                AND a.[ENTITY_ID] = {entityId}
         ORDER BY  b.[SYSTEM_CODE] 
         '''
-        return self.db.execQuery(query, params=(entityId, entityId,))
+        return self.db.execQuery(query)
 
     def case_types_by_entity_id(self, entityIds):
         query = f'''
@@ -107,7 +108,7 @@ class CasesSQL:
             FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_METADATA_TEXT] a
             LEFT JOIN [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type] b
                 ON a.[ENTITY_ASSOC_TYPE_ID] = b.[ENTITY_ASSOC_TYPE_ID]
-            WHERE entity_id IN (?)
+            WHERE entity_id IN ({entityIds})
                     AND a.is_active = 'Y'
                     AND a.[ENTITY_ASSOC_TYPE_ID] IN 
                 (SELECT ENTITY_ASSOC_TYPE_ID
@@ -115,10 +116,10 @@ class CasesSQL:
                 WHERE entity_type_id IN 
                     (SELECT top 1 ENTITY_TYPE_ID
                     FROM [BOXER_ENTITIES].[dbo].entity_list
-                    WHERE entity_id IN (?) )
+                    WHERE entity_id IN ({entityIds}) )
                             AND ( SYSTEM_CODE IN ( 'EXTPK' , 'QSAID', 'URL', 'SBTTL' ) ) ) )
         '''
-        return self.db.execQuery(query, params=(entityIds, entityIds,))
+        return self.db.execQuery(query)
 
     def assoc_decode(self, id):
         query = f'''
@@ -700,7 +701,7 @@ where a.IS_ACTIVE = 'Y'
                           left join [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_type] b
                         on a.[ENTITY_ASSOC_TYPE_ID] = b.[ENTITY_ASSOC_TYPE_ID]
                     
-                      where entity_id in (?)
+                      where entity_id in ({Ids})
                       and 
                       a.is_active = 'Y'
                       and
@@ -710,12 +711,12 @@ where a.IS_ACTIVE = 'Y'
                       where entity_type_id in (select top 1 
                                                 ENTITY_TYPE_ID 
                                                 from [BOXER_ENTITIES].[dbo].entity_list 
-                                                where entity_id in (?) )
+                                                where entity_id in ({Ids}) )
                                                 and 
                     (SYSTEM_CODE in ('EXTPK' , 'QSAID', 'URL','SBTTL', 'TITLE')))
                     order by SYSTEM_CODE,ENTITY_ID
                     '''
-        return self.db.execQuery(query, params=(Ids, Ids, ))
+        return self.db.execQuery(query)
 
     def entity_list_byId(self, entityIds):
         try:
@@ -774,11 +775,11 @@ where a.IS_ACTIVE = 'Y'
                 count(list_id) as count,
 				year(CREATED_DATETIME) as CreatedDate
                  from [BOXER_ENTITIES].[dbo].[entity_list] 
-                 where entity_type_id in (?) 
+                 where entity_type_id in ({entityTypeIds}) 
 				 group by  year(CREATED_DATETIME), ENTITY_TYPE_ID
 				order by year(CREATED_DATETIME)
             '''
-            return self.db.execQuery(query, params=(entityTypeIds,))
+            return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
 
@@ -827,6 +828,7 @@ where a.IS_ACTIVE = 'Y'
         return self.db.execQuery(query)
 
     def department_fetch(self, all_data):
+        print("all data==>", all_data)
         try:
             status = 1
             if all_data.get('empStatus') == "inactive":
@@ -882,14 +884,14 @@ where a.IS_ACTIVE = 'Y'
                        INNER JOIN [Departments].[DBO].[MANAGER_CONFIG] MG WITH (NOLOCK) ON DSEM.Employee_GUID=MG.Employee_GUID
                        INNER JOIN [Departments].[DBO].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] DSEM2 WITH (NOLOCK) ON MG.MANAGER_GUID=convert(nvarchar(200),DSEM2.Employee_GUID)
                        LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID 
-                       Wmi amHERE  E.ENTITY_ID =   {entity_id} and (ACTIVE = {status}) AND {min_query}
+                       WHERE  E.ENTITY_ID =   {entity_id} and (ACTIVE = {status}) AND {min_query}
                     '''
-            #TODO: Secure
+            data_count = all_data.pop('maxCount', None)
+            print("data_count==>",data_count)
             if all_data.get("employee") == "all":
                 query = query + \
-                    f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {all_data.get('maxCount')} ROWS ONLY"
+                    f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {data_count} ROWS ONLY"
                 return self.db.execQuery(query)
-            data_count = all_data.pop('maxCount', None)
             for key, value in all_data.items():
                 if value is not None:
                     query = query + f"AND {key} like '%{value}%'"

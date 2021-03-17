@@ -69,6 +69,7 @@ def caseTypes():
 @bp.route('/getEntitiesByEntityId', methods=['POST'])
 def getEntitiesByEntityId():
     data = request.json
+    print("data===>", data)
     if not data['entityId']:
         return make_response("please pass entity Id", 400)
     df = db.get_entities_by_entity_id(data['entityId'])
