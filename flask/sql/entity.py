@@ -17,6 +17,14 @@ class EntitySQL:
             id = f'({id[0]})'
 
         return id
+    def config(self, etid = 1162):
+        query = '''
+        SET NOCOUNT ON;
+        DECLARE @out nvarchar(max);
+        exec @out = [BOXER_ENTITIES].[dbo].[spi_Entities_GetEntityTypeSchemaByEntityTypeID] @ENTITY_TYPE_ID = ?;
+        SELECT @out AS the_output;'''
+        params = (etid,)
+        return self.db.db.conn.execute(query, params)
 
     def type_list_by_id(self, id):
         ''' Id is an applicaiton id'''

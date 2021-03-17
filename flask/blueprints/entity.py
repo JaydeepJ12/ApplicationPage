@@ -8,7 +8,9 @@ import pandas as pd
 import json
 import time
 from flask_cors import CORS, cross_origin
-
+import io
+from blueprints.utils import xml_to_json
+from xml.etree.ElementTree import fromstring, ElementTree
 bp1 = Blueprint('entity', __name__, url_prefix='/entity')
 db = CasesSQL()
 entities = EntitySQL()
@@ -22,6 +24,13 @@ r = cases.token('API_Admin', 'Boxer@123')  # store the token in the browser
 def t():
     return time.time()
 
+def iter_docs(author):
+    author_attr = author.attrib
+    for doc in author.iter('ENTITY_TYPE'):
+        doc_dict = author_attr.copy()
+        doc_dict.update(doc.attrib)
+        doc_dict['data'] = doc.text
+        yield doc_dict
 
 @bp1.after_request
 def after_request(r):
@@ -29,6 +38,21 @@ def after_request(r):
     r.headers['Access-Control-Allow-Headers'] = '*'
     return r
 
+@bp1.route('/config/<id>', methods=['GET'])
+def config(id): 
+    ''' 
+    http://localhost:5000/entity/config/1139
+    
+    pass in entity type id to convert at the end of the url
+    '''
+    r = entities.config(etid = id).fetchone()
+    print(r[0])
+    #https://stackoverflow.com/questions/28259301/how-to-convert-an-xml-file-to-nice-pandas-dataframe
+    #r =io.StringIO(r[0])
+    etree = ElementTree(fromstring(r[0])).getroot() #create an ElementTree object 
+    
+    #if speed become an issue here we can skip converting to df and create our own method to convert xml to json
+    return json.dumps(xml_to_json(etree))
 
 @bp1.route('/entity_link', methods=['POST'])
 @cross_origin(supports_credentials=True)
