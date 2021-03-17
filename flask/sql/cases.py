@@ -455,7 +455,7 @@ class CasesSQL:
                 offset 0 rows
                 FETCH NEXT ? rows only
         '''
-        return self.db.execQuery(query, params=(searchText,searchText,maxCount))
+        return self.db.execQuery(query)
 
     def get_past_due_count(self, userShortName):
         query = f'''
@@ -494,6 +494,7 @@ class CasesSQL:
                            c.MIDDLE_NAME,
                            c.EMAIL_ADDRESS,
                            c.ZIP_CODE,
+                           manager.SHORT_USER_NAME as MANAGER_SHORT_USER_NAME,
                          Manager.SupervisorId as Manager_Id
                                        ,et.EMPLOYEE_TYPE_NAME as empType
                                   FROM [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] AS c 
@@ -870,6 +871,7 @@ where a.IS_ACTIVE = 'Y'
                        ,DSJT.SAM_ACCOUNT_NAME AS SHORT_USER_NAME 
                        ,EmpEmail AS EMAIL_ADDRESS
                        ,DSEM2.Employee_ID As Manager_Id
+                       ,DSEM2.SHORT_USER_NAME as MANAGER_SHORT_USER_NAME
                        ,DSEM2.BIRTH_DATE
                        ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
                        FROM  [BOXER_ENTITIES].[DBO].[ENTITY] E 

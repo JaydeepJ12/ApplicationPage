@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import EntityInfoSection from "./entity_info_section";
 import ApplicationItemFilter from "./application_item_filter";
 import EntityCard from "./entity_card";
-var dateFormat = require("dateformat");
 
 export default function PeopleDepartment() {
   var classes = useStyles();
@@ -21,7 +20,7 @@ export default function PeopleDepartment() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [dataInfoLoaded, setInfoDataLoaded] = useState(false);
   const [InfoCardHeaderText, setInfoCardHeaderText] = useState("");
-  const [noDataFound, setNoDataFound] = useState(false);
+  const [noDataFound, setNoDataFound] = useState();
 
   // all data set
   const [entityList, setEntityList] = useState([]);
@@ -177,6 +176,7 @@ export default function PeopleDepartment() {
                 <CardContent>
                   <EntityInfoSection
                     entityInfoData={entityInfo}
+                    noDataFound={noDataFound}
                     dataInfoLoaded={dataInfoLoaded}
                   ></EntityInfoSection>
                 </CardContent>

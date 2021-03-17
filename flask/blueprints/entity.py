@@ -135,8 +135,6 @@ def type_list_by_id():
         return 'id field required'
         
     df = entities.type_list_by_id(app_id)
-    if df.empty == True: 
-        return 'No Data Available'
 
     return df.to_json(orient='records')
 
@@ -151,3 +149,8 @@ def data_by_entity_id():
     if df.empty == True: 
         return 'No Data Available'
     return df.to_json(orient='records')
+
+@bp1.route('/GetEntityAllTypeList', methods=['GET'])
+def GetCategories():
+    data = mobile.GetCategories().json()
+    return data

@@ -74,7 +74,7 @@ export default function DashComponent(props){
         var obj = JSON.parse(dashConfig)
         obj.requests_pathname_prefix = prefix
         
-        console.log(JSON.stringify(obj))
+
         script.innerText = JSON.stringify(obj)
 
         document.body.appendChild(script);
