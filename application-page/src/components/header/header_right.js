@@ -105,7 +105,7 @@ export default function HeaderRight() {
   };
 
   const handleNavigationClick = (username) => {
-    dispatch(isUserNameSet(username));
+    // dispatch(isUserNameSet(username));
     navigate("people", {
       state: {
         userName: userName,
@@ -233,7 +233,7 @@ export default function HeaderRight() {
                 loading={"true"}
                 loadingText={"Loading"}
                 blurOnSelect={true}
-                onInput={(event) => searchPeople(event.target.value)}
+                // onInput={(event) => searchPeople(event.target.value)}
                 InputProps={{
                   ...params.InputProps,
                   type: "search",

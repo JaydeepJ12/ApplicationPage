@@ -16,7 +16,7 @@ import axios from "axios";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useStyles from "../../assets/css/common_styles";
-import { actionData, applicationList } from "../../redux/action";
+import { actionData, applicationList,isUserNameSet } from "../../redux/action";
 
 const StyledMenu = withStyles({
   paper: {
@@ -109,7 +109,8 @@ function ApplicationListDropdown(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickList = (appId, appName, overrideUrl) => {
-    setOpen(!open);
+    dispatch(isUserNameSet(""));
+    handleCloseAnchor();
     if (overrideUrl) {
       // window.open(overrideUrl, "_blank");
       // return;

@@ -13,7 +13,7 @@ import PeopleBasicInfo from "./people_dept_basic_information";
 import PeopleCard from "./people_dept_card";
 import PeopleDepartmentFilter from "./people_dept_filter";
 import PeopleMainTab from "./people_dept_main_tab";
-import { navigate } from '@reach/router';
+import { navigate } from "@reach/router";
 
 var dateFormat = require("dateformat");
 
@@ -59,7 +59,9 @@ export default function PeopleDepartment(props) {
     props.location?.state?.userName ? props.location?.state?.userName : ""
   );
   const [IsTaskClick, setIsTaskClick] = useState(
-    props.location?.state?.IsTaskClick ? props.location?.state?.IsTaskClick : false
+    props.location?.state?.IsTaskClick
+      ? props.location?.state?.IsTaskClick
+      : false
   );
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeightCard);
 
@@ -147,7 +149,6 @@ export default function PeopleDepartment(props) {
         setComponentLoader(false);
         if (response.data.length) {
           if (!isScroll && !IsTaskClick) {
-            
             setPeopleInfoData(response.data[0]);
 
             setInfoDataLoaded(true);
@@ -164,7 +165,7 @@ export default function PeopleDepartment(props) {
       });
   };
   // this action use for get department info when card is particular card is click
-  const getDepartmentPeopleInfo = async (employee_id,emp_user_name) => {
+  const getDepartmentPeopleInfo = async (employee_id, emp_user_name) => {
     setInfoDataLoaded(false);
     setNoDataFound(false);
 
@@ -190,7 +191,7 @@ export default function PeopleDepartment(props) {
             navigate("people", {
               state: {
                 userName: "",
-                IsTaskClick : false
+                IsTaskClick: false,
               },
             });
           }
@@ -316,7 +317,7 @@ export default function PeopleDepartment(props) {
       notification.toast.warning("Please wait. Your Data is loading...!!");
       return false;
     }
-    getDepartmentPeopleInfo(employee_id,'null');
+    getDepartmentPeopleInfo(employee_id, "null");
   };
   // this scroll action use for scroll a left bar of people to get more data
   const handleOnScroll = (peopleData, event) => {
@@ -330,14 +331,14 @@ export default function PeopleDepartment(props) {
       getDepartmentPeopleList(peopleData?.length, filterValue, true);
     }
   };
+
   useEffect(() => {
-    console.log(reducerState.applicationData.isNavigateUerName)
+    // console.log(reducerState.applicationData.isNavigateUerName)
     getDepartmentPeopleList();
-    if (IsTaskClick && isNavigateUerName || isNavigateUerName) {
-      getDepartmentPeopleInfo('null', isNavigateUerName);
+    if ((IsTaskClick && userNameValue) || userNameValue) {
+      getDepartmentPeopleInfo("null", userNameValue);
     }
-    
-  }, [reducerState.applicationData.appId,userNameValue, isNavigateUerName]);
+  }, [reducerState.applicationData.appId]);
 
   return (
     <div className="page" id="page-department">

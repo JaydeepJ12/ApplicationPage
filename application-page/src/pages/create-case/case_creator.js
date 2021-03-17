@@ -22,6 +22,8 @@ export default function CaseCreator(props) {
   const [assignTo, setAssignTo] = useState(0);
 
   const handleCaseTypeChange = (caseType, caseTypeData) => {
+ 
+ 
     const caseTypeId = caseType;
     setData([]);
     setCaseType(caseTypeId);
@@ -45,6 +47,7 @@ export default function CaseCreator(props) {
   }, [props.caseTypeId, props.caseTypeData]);
 
   const fields = (caseTypeId) => {
+  
     setLoaded(false);
     var ls = new SecureLS({
       encodingType: "des",
@@ -54,11 +57,9 @@ export default function CaseCreator(props) {
     var fieldData = [];
     caseTypeId = caseTypeId ? caseTypeId : caseType;
     var localFieldData = ls.get("CaseType-" + caseTypeId);
-
     var fieldDataReceived = false;
     if (localFieldData || localFieldData != "") {
       fieldData = JSON.parse(localFieldData);
-      console.log(fieldData);
       fieldDataReceived = true;
     }
 
@@ -358,7 +359,6 @@ export default function CaseCreator(props) {
         "success"
       );
     }
-    console.log(fields);
   };
 
   const convertRequired = (data) => {
@@ -467,7 +467,6 @@ export default function CaseCreator(props) {
     if (fileData) {
       //Set details of the uploaded file
       setFormDataValue(fileData);
-      console.log(fileData);
     }
   };
 

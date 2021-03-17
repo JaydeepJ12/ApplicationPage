@@ -194,18 +194,18 @@ export default function Navigation(props) {
           </AppBar>
 
           <Drawer
-            variant="permanent"
-            className={clsx(classes.drawer, classes.drawerColor, {
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open,
-            })}
-            classes={{
-              paper: clsx({
-                [classes.drawerOpen]: open,
-                [classes.drawerClose]: !open,
-              }),
-            }}
-          >
+        variant="permanent"
+        className={'sidebar-nav '+clsx(classes.drawer, {
+          [classes.drawerOpen]: open,
+          [classes.drawerClose]: !open,
+        })}
+        classes={{
+          paper: clsx({
+            [classes.drawerOpen]: open,
+            [classes.drawerClose]: !open,
+          }),
+        }}
+      >
             <div className={classes.toolbar + " side-click"}>
               <h2>Navigation</h2>
               <div></div>
