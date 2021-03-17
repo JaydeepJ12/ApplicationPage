@@ -162,7 +162,7 @@ export default function PageNotFound(props) {
           </div>
         </div>
       </div>
-      <div class="text-message">
+      <div className="text-message">
         <h1>PAGE NOT FOUND...!!!</h1>
       </div>
     </>

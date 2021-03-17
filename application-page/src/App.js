@@ -13,7 +13,8 @@ import ErrorPage from "./components/common/error-page/error-page";
 import PageNotFound from "./components/common/page-not-found/page-not-found";
 import ReducerData from "./components/common/reducer-data.js";
 import Navigation from "./components/header/navigation";
-import { actionData } from "./redux/action";
+import { actionData, applicationList } from "./redux/action";
+import { appIdBy } from "./commonMethods";
 
 const generateClassName = createGenerateClassName({
   productionPrefix: "c",
@@ -47,6 +48,32 @@ function App() {
   const [pageNotFound, setPageNotFound] = React.useState(false);
   const [isErrorPage, setIsErrorPage] = React.useState(false);
   const dispatch = useDispatch();
+  function appNameBy(Id) {
+    let applicationList = [...reducerState.applicationData.applicationList];
+    if (applicationList.length) {
+      let application = applicationList.find((app) => app.id == Id);
+      if (application) {
+        return application.name;
+      } else {
+        return "page not found";
+      }
+    }
+  }
+
+  // function appIdBy(name) {
+  //   name = name.replace(/%20/g, " ");
+  //   console.log("IdIdIdIdIdIdIdIdIdIdIdIdIdIdId-------", name);
+  //   let applicationList = [...reducerState.applicationData.applicationList];
+  //   console.log("applicationListapplicationList-------", applicationList);
+  //   if (applicationList.length) {
+  //     let application = applicationList.find((app) => app.name == name);
+  //     if (application) {
+  //       return application.id;
+  //     } else {
+  //       return "page not found";
+  //     }
+  //   }
+  // }
 
   const id_from_url = () => {
     let path = window.location.pathname;
@@ -55,12 +82,35 @@ function App() {
     if (split && split[1]) {
       appId = split[1].split("/")[0];
     }
-
+    appId = appIdBy(appId, [...reducerState.applicationData.applicationList]);
     //id should always be second from last rgardless of prefix
     return Number(appId);
   };
 
   const app_id = id_from_url();
+  React.useEffect(() => {
+    var config = {
+      method: "post",
+      url: "/cases/GetApplicationList",
+    };
+    function getApplicationList(config) {
+      axios(config)
+        .then(function (response) {
+          if (response?.data?.responseContent) {
+            let sortedResponseContent = response?.data?.responseContent;
+
+            sortedResponseContent = response.data.responseContent.sort((a, b) =>
+              a.name.localeCompare(b.name)
+            );
+            dispatch(applicationList(sortedResponseContent));
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+    getApplicationList(config);
+  }, []);
 
   React.useEffect(() => {
     let isPageNotFound = reducerState.applicationData.isPageNotFound;
@@ -72,6 +122,7 @@ function App() {
   }, [
     reducerState.applicationData.isPageNotFound,
     reducerState.applicationData.isErrorPage,
+    app_id,
   ]);
 
   // for theme
