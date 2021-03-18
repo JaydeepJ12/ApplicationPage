@@ -3,6 +3,7 @@ import pyodbc
 from stemmons import Stemmons_Dash_App
 from cache import _cache
 
+
 class ExternalData:
 
     def __init__(self,):
@@ -24,15 +25,7 @@ class ExternalData:
         return self.fetch_external_data(conn, query)
 
     def get_ext_info(self,  id):
-        query = '''
-        SELECT [CONNECTION_STRING]
-        ,[QUERY]
-        FROM [BOXER_CME].[dbo].[EXTERNAL_DATASOURCE]
-        where EXTERNAL_DATASOURCE_ID = ?
-        and is_active = 'Y'
-        '''
-        conn_str, query = self.conn.execute(query,(id,)).fetchone()
-        return conn_str, query 
+        raise NotImplementedError('Must be subclassed and implemented in child class')
 
     def dissemble_string(self, conn_str):
         ''' takes in the conn stringfrom db, note if this is enplty should use local db connection
@@ -72,7 +65,7 @@ class ExternalData:
         split = query.split('\n')
         #remove all
         [split.pop(i[0]) for i in enumerate(split) if len(i[1])==0 ]
-        print(split)
+
         if 'use ' in split[0].lower():
             # return top, bottom
             return split[0], '\n'.join(split[1:])
@@ -92,6 +85,34 @@ class ExternalData:
 
         return conn.execute(query).fetchall()
 
+
+class ExtTest(ExternalData):
+    pass
+
+class ExtCase(ExternalData):
+
+    def get_ext_info(self,  id):
+        query = '''
+        SELECT [CONNECTION_STRING]
+        ,[QUERY]
+        FROM [BOXER_CME].[dbo].[EXTERNAL_DATASOURCE]
+        where EXTERNAL_DATASOURCE_ID = ?
+        and is_active = 'Y'
+        '''
+        conn_str, query = self.conn.execute(query,(id,)).fetchone()
+        return conn_str, query 
+
+class ExtEntity(ExternalData):
+
+    def get_ext_info(self,  id):
+        query = '''
+        SELECT [CONNECTION_STRING]
+      ,[QUERY]
+        FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_EXTERNAL_DATASOURCE]
+        where [ENTITY_ASSOC_EXTERNAL_DATASOURCE_ID] = ?
+        '''
+        conn_str, query = self.conn.execute(query,(id,)).fetchone()
+        return conn_str, query 
 
 
 class MemeryTable:
