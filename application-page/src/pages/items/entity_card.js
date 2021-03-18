@@ -64,7 +64,7 @@ function EntityCard(props) {
               ))}
             </>
           ) : (
-            <ComponentLoader type="rect" />
+            <div>No Records Found </div>
           )}
         </>
       )}

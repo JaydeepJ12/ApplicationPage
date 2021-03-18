@@ -9,7 +9,6 @@ const id_from_url = () => {
   let split = path.split("/");
   //id should always be second from last rgardless of prefix
 
-  console.log(split[split.length - 2]);
   return Number(split[split.length - 2]);
 };
 
@@ -79,7 +78,6 @@ export default function ReducerData() {
     await axios(config)
       .then(function (response) {
         dispatch(actionData(response.data, "CASE_TYPE"));
-        console.log(response.data);
       })
       .catch(function (error) {
         console.log(error);

@@ -3,6 +3,9 @@ import React from "react";
 import ErrorPage from "../components/common/error-page/error-page";
 import Login from "../components/Login/index";
 import CaseSelect from "../pages/create-case/case_select";
+
+import EntitySelect from "../pages/create-entity/entity_select";
+
 import Insights from "../pages/insights/insightboard";
 import ApplicationItem from "../pages/items/application_item";
 import OverView from "../pages/overview/overview";
@@ -16,6 +19,7 @@ const rootRoute = (
   <div>
     <Router basepath={basePath}>
       <PrivateRoute as={CaseSelect} path="/:app_id/task-select" />
+      <PrivateRoute as={EntitySelect} path="/:app_id/entity-create" />
       <PrivateRoute as={OverView} path="/:app_id/overview" />
       <PrivateRoute as={PeopleDepartment} path="/:app_id/people" />
       <PrivateRoute as={ApplicationItem} path="/:app_id/items" />

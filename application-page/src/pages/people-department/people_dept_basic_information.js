@@ -8,7 +8,6 @@ function PeopleBasicInfoTab(props) {
 
   useEffect(() => {}, [props.peopleInfo]);
 
-
   return (
     <div className="page" id="people-basic-information">
       {!props.dataInfoLoaded ? (
@@ -100,7 +99,8 @@ function PeopleBasicInfoTab(props) {
                       variant="body2"
                       onClick={() => {
                         props.getDepartmentPeopleInfo(
-                          props.peopleInfo.Manager_Id,null
+                          props.peopleInfo.Manager_Id,
+                          null
                         );
                       }}
                     >

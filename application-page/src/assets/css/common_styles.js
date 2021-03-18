@@ -5,13 +5,13 @@ export default makeStyles(
     return {
       // margin class
       m_auto: {
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        marginLeft: "auto",
+        marginRight: "auto",
       },
       m_one: {
         margin: theme.spacing(2),
       },
-      
+
       mt_one: {
         marginTop: theme.spacing(2),
       },
@@ -29,7 +29,9 @@ export default makeStyles(
       },
       // padding class
       pt_zero: {
-        paddingTop: theme.spacing(0),
+        padding: theme.spacing(0),
+        paddingBottom: theme.spacing(1),
+        paddingTop: theme.spacing(1),
       },
       pb_zero: {
         paddingBottom: theme.spacing(0),
@@ -140,6 +142,18 @@ export default makeStyles(
       },
       h3_text: {
         fontSize: "2.2vw",
+      },
+      cs_icon: {
+        margin: theme.spacing(1),
+        width: 59,
+        textAlign: "center",
+      },
+      icon_mx_width: {
+        width: "max-content",
+      },
+      cs_icon_group: {
+        margin: theme.spacing(1),
+        textAlign: "center",
       },
     };
   },

@@ -2,9 +2,11 @@ import { Box,Link } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import UserAutocomplete from "../../components/autocomplete.js";
 import { navigate } from '@reach/router';
+import { useDispatch } from 'react-redux';
+import { isUserNameSet } from '../../../src/redux/action'
 export default function CaseBasicInformation(props) {
   const [caseData, setCaseData] = useState(props.caseData);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     setCaseData(props.caseData);
   }, [props.caseData]);
@@ -51,7 +53,7 @@ export default function CaseBasicInformation(props) {
   };
 
   const handlePeopleDepartment = (userName) => {
-  
+    // dispatch(isUserNameSet(userName));
     navigate("people", {
       state: {
         userName: userName,

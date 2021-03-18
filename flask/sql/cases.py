@@ -21,7 +21,7 @@ class CasesSQL:
 
     def cases_type_form(self, id):
         
-        query = '''
+        query = f'''
         SELECT [ASSOC_TYPE_ID] as AssocTypeId
                 ,[ASSOC_FIELD_TYPE] as AssocFieldType
                 ,[CASE_TYPE_ID] as CaseTypeId
@@ -37,10 +37,10 @@ class CasesSQL:
   
             FROM [BOXER_CME].[dbo].[ASSOC_TYPE]
             where is_active = 'Y'
-            and CASE_TYPE_ID = ?
+            and CASE_TYPE_ID = {id}
             order by SYSTEM_PRIORITY asc
         '''
-        return self.db.execQuery(query, params = (id,))
+        return self.db.execQuery(query)
 
     def cases_types(self):
         query = f'''
@@ -53,6 +53,7 @@ class CasesSQL:
         return self.db.execQuery(query)
 
     def get_entities_by_entity_id(self, entityId):
+        print("entityId=>", entityId)
         query = f'''
         SELECT a.[ENTITY_ID] ,
         [FIELD_VALUE] AS [NAME] ,
@@ -135,7 +136,7 @@ class CasesSQL:
             FROM [BOXER_CME].[dbo].[CASE_ASSOC_TYPE_CASCADE] CATS WITH (NOLOCK)      
             INNER JOIN [BOXER_CME].[dbo].[ASSOC_TYPE] AT WITH (NOLOCK) ON AT.ASSOC_TYPE_ID = CATS.CASE_ASSOC_TYPE_ID_PARENT AND AT.IS_ACTIVE ='Y' AND CATS.IS_ACTIVE = 'Y'    
             INNER JOIN [BOXER_CME].[dbo].[CASE_TYPE] CT WITH (NOLOCK) ON AT.CASE_TYPE_ID = CT.CASE_TYPE_ID AND CT.IS_ACTIVE= 'Y'    
-            WHERE CT.CASE_TYPE_ID = {caseTypeId}     
+            WHERE CT.CASE_TYPE_ID = {caseTypeId}    
             AND (AT.ASSOC_FIELD_TYPE = 'E' OR AT.ASSOC_FIELD_TYPE = 'O')  
         '''
         return self.db.execQuery(query)
@@ -291,11 +292,9 @@ class CasesSQL:
 
             Group BY By_Assignee_Supervisor
             """
-        print(self.db.execQuery(query))
         return self.db.execQuery(query)
 
     def case_type_count_all(self, case_type_ids):
-        print(case_type_ids)
         if case_type_ids is None:
             case_type_ids = 19
         query = f'''
@@ -315,7 +314,7 @@ class CasesSQL:
         FROM [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
         Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
          And Try_Convert(date,[Due Date]) < Try_Convert(Date,Getdate()) 
-        And IS_active='Y'and Case_Type_ID in ({case_type_ids})
+        And IS_active='Y'and Case_Type_ID in (?)
 
 
         UNION
@@ -327,7 +326,7 @@ class CasesSQL:
         FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
         Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
          And Try_Convert(date,[Due Date]) > Try_Convert(Date,Getdate()) 
-        And IS_active='Y'  And Case_Type_ID in ({case_type_ids})
+        And IS_active='Y'  And Case_Type_ID in (?)
         Group By [Case_Type_Name]
 
         Union
@@ -337,25 +336,25 @@ class CasesSQL:
         ,Count(CL.Case_id) as No_due_date
         FROM  [FACTS].[DBO].[CASE_LIST] CL With(Nolock) 
         Where  coalesce([CaseClosed date],'')='' and coalesce([Due Date],'')<>''
-        And IS_active='Y'   and Case_Type_ID in ({case_type_ids}) 
+        And IS_active='Y'   and Case_Type_ID in (?) 
         Group By [Case_Type_Name]
 
         )A '''
 
-        return self.db.execQuery(query)
+        return self.db.execQuery(query, params=(case_type_ids,case_type_ids,case_type_ids,))
 
     def get_user_fullname(self, userShortName):
         query = f'''
-        SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ('{userShortName}') ORDER BY 1 DESC
+        SELECT TOP 1 FULL_NAME FROM [BOXER_CME].[dbo].[CME_USER_CACHE] WHERE SHORT_USER_NAME in ({userShortName}) ORDER BY 1 DESC
         '''
         return self.db.execQuery(query)
 
     def get_system_priority(self, assocTypeId):
         try:
             query = f'''
-            SELECT SYSTEM_PRIORITY FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE ASSOC_TYPE_ID = {assocTypeId} ORDER BY 1 DESC
+            SELECT SYSTEM_PRIORITY FROM [BOXER_CME].[dbo].[ASSOC_TYPE] WHERE ASSOC_TYPE_ID = ? ORDER BY 1 DESC
             '''
-            return self.db.execQuery(query)
+            return self.db.execQuery(query, params=(assocTypeId,))
         except:
             return '[]'
 
@@ -381,19 +380,19 @@ class CasesSQL:
 
         if parentName == 'topLevel':
             query = f'''
-                    Select DEPARTMENT_STRUCTURE_BASIC_NAME_ID as ID, NAME , 'BASIC NAME' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_BASIC_NAME] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_TOP_LEVEL_ID={parentID}
+                    Select DEPARTMENT_STRUCTURE_BASIC_NAME_ID as ID, NAME , 'BASIC NAME' as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_BASIC_NAME] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_TOP_LEVEL_ID=?
                 '''
         elif parentName == 'basicName':
             query = f'''
-                    Select DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID as ID, NAME ,'SUB DEPARTMENT'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_SUB_DEPARTMENT]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_BASIC_NAME_ID={parentID}
+                    Select DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID as ID, NAME ,'SUB DEPARTMENT'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_SUB_DEPARTMENT]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_BASIC_NAME_ID=?
                 '''
         elif parentName == 'subDepartment':
             query = f'''
-                    Select DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID as ID, NAME ,'JOB FUNCTION'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_FUNCTION] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID={parentID}
+                    Select DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID as ID, NAME ,'JOB FUNCTION'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_FUNCTION] WITH(NOLOCK) where DEPARTMENT_STRUCTURE_SUB_DEPARTMENT_ID=?
                 '''
         elif parentName == 'jobFunction':
             query = f'''
-                    Select DEPARTMENT_STRUCTURE_JOB_TITLE_ID as ID, NAME ,'JOB TITLE'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID={parentID}
+                    Select DEPARTMENT_STRUCTURE_JOB_TITLE_ID as ID, NAME ,'JOB TITLE'as Level from [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_JOB_TITLE]  WITH(NOLOCK) where DEPARTMENT_STRUCTURE_JOB_FUNCTION_ID=?
                 '''
         else:
             query = f'''
@@ -412,7 +411,7 @@ class CasesSQL:
                     WHERE  E.ENTITY_ID = {entityId}       ----**** Pass ApplicationID or EntityID here to filter out the data.
                     GROUP BY DSTL.DEPARTMENT_STRUCTURE_TOP_LEVEL_ID,DSTL.[NAME]
                 '''
-        return self.db.execQuery(query)
+        return self.db.execQuery(query, params=(parentID,))
 
     def get_department_company_list(self):
         query = f'''
@@ -452,10 +451,11 @@ class CasesSQL:
                 
                 FROM [DEPARTMENTS].[dbo].DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER AS c LEFT JOIN [DEPARTMENTS].[dbo].EMPLOYEE_TYPE AS et ON (c.EMPLOYEE_TYPE_ID = et.EMPLOYEE_TYPE_ID)
                  WHERE c.IS_ACTIVE = 'Y'
-                AND DISPLAY_NAME Like CASE WHEN '{searchText}' = '' THEN DISPLAY_NAME ELSE '%' + '{searchText}' + '%' END
+                AND DISPLAY_NAME Like CASE WHEN '?' = '' THEN DISPLAY_NAME ELSE '%' + '?' + '%' END
                 ORDER BY 1 ASC
+                offset 0 rows
+                FETCH NEXT ? rows only
         '''
-        print("---------",query)
         return self.db.execQuery(query)
 
     def get_past_due_count(self, userShortName):
@@ -475,6 +475,8 @@ class CasesSQL:
         return self.db.execQuery(query)
 
     def get_people_info(self, EMPLOYEE_ID, EMPLOYEE_SHORT_NAME):
+        print("query EMPLOYEE_ID==>", EMPLOYEE_ID)
+        print("query EMPLOYEE_SHORT_NAME==>", EMPLOYEE_SHORT_NAME)
         query = f'''
                 SELECT 
                 c.EMPLOYEE_ID,
@@ -495,6 +497,7 @@ class CasesSQL:
                            c.MIDDLE_NAME,
                            c.EMAIL_ADDRESS,
                            c.ZIP_CODE,
+                           manager.SHORT_USER_NAME as MANAGER_SHORT_USER_NAME,
                          Manager.SupervisorId as Manager_Id
                                        ,et.EMPLOYEE_TYPE_NAME as empType
                                   FROM [DEPARTMENTS].[dbo].[DEPARTMENT_STRUCTURE_EMPLOYEE_MASTER] AS c 
@@ -515,9 +518,8 @@ class CasesSQL:
                                                            
                                                         --WHERE D1.Short_User_Name=DSEM.Short_User_Name and D1.USER_AD_STATUS in (Select STATUS_VALUE from [dbo].[USER_ACCOUNT_STATUS_REF] where STATUS_DISABLED = 'N')  
                                                         ORDER BY M1.IS_Primary DESC  
-                                                       )Manager  
-                                                       WHERE (c.EMPLOYEE_ID={EMPLOYEE_ID}  or
-													    c.SHORT_USER_NAME Like '%{EMPLOYEE_SHORT_NAME}%')
+                                                       )Manager
+                                                       WHERE (c.EMPLOYEE_ID={EMPLOYEE_ID}  or c.SHORT_USER_NAME Like '%{EMPLOYEE_SHORT_NAME}%')
         '''
         print(query)
         return self.db.execQuery(query)
@@ -564,9 +566,9 @@ where a.IS_ACTIVE = 'Y'
 	and
 	e.IS_ACTIVE = 'Y'
     and EXTERNAL_DATASOURCE_OBJECT_ID is not null
-	and a.ENTITY_ID = {id}
+	and a.ENTITY_ID = ?
         '''
-        return self.db.execQuery(query)
+        return self.db.execQuery(query, params=(id,))
 
     def ctids_from_exid(self, exid):
         ''' Takes in an exid and returns all the case type id for that '''
@@ -638,9 +640,9 @@ where a.IS_ACTIVE = 'Y'
   
   where [CaseClosed date] is null
   and is_active = 'Y'
-  and CASE_TYPE_ID in {case_types} 
+  and CASE_TYPE_ID in ? 
         '''
-        return self.db.execQuery(query)
+        return self.db.execQuery(query, params=(case_types, ))
 
     def case_activity_log_track(self, application_type, username, skipCount, maxCount):
         try:
@@ -686,6 +688,7 @@ where a.IS_ACTIVE = 'Y'
                     order by [CREATED_DATETIME] desc
                     OFFSET {skipCount} ROWS FETCH NEXT {maxCount} ROWS ONLY
                     '''
+                # TODO: Secure
                 query1 = f'''select count(*) as total_count FROM [BOXER_CME].[dbo].[CASE_ACTIVITY]  WHERE 
                             [CREATED_BY]='{username}' '''
                 return {"total": self.db.execQuery(query1).to_dict(orient="records")[0]['total_count'],
@@ -763,7 +766,21 @@ where a.IS_ACTIVE = 'Y'
             group by  eam.FIELD_VALUE, eat.ENTITY_TYPE_ID, eam.FIELD_VALUE
             order by eam.FIELD_VALUE
             '''
-            print(self.db.execQuery(query))
+            return self.db.execQuery(query)
+        except Exception as exe:
+            return str(exe)
+
+    def entity_list_byId(self, entityTypeIds):
+        try:
+            query = f'''
+            select entity_type_id as EntityType,
+                count(list_id) as count,
+				year(CREATED_DATETIME) as CreatedDate
+                 from [BOXER_ENTITIES].[dbo].[entity_list] 
+                 where entity_type_id in ({entityTypeIds}) 
+				 group by  year(CREATED_DATETIME), ENTITY_TYPE_ID
+				order by year(CREATED_DATETIME)
+            '''
             return self.db.execQuery(query)
         except Exception as exe:
             return str(exe)
@@ -813,6 +830,7 @@ where a.IS_ACTIVE = 'Y'
         return self.db.execQuery(query)
 
     def department_fetch(self, all_data):
+        print("all data==>", all_data)
         try:
             status = 1
             if all_data.get('empStatus') == "inactive":
@@ -857,6 +875,7 @@ where a.IS_ACTIVE = 'Y'
                        ,DSJT.SAM_ACCOUNT_NAME AS SHORT_USER_NAME 
                        ,EmpEmail AS EMAIL_ADDRESS
                        ,DSEM2.Employee_ID As Manager_Id
+                       ,DSEM2.SHORT_USER_NAME as MANAGER_SHORT_USER_NAME
                        ,DSEM2.BIRTH_DATE
                        ,CASE WHEN ACTIVE = 1 THEN 'ACTIVE' ELSE 'INACTIVE' END AS EMPLOYEE_STATUS
                        FROM  [BOXER_ENTITIES].[DBO].[ENTITY] E 
@@ -869,16 +888,16 @@ where a.IS_ACTIVE = 'Y'
                        LEFT JOIN [DEPARTMENTS].[dbo].[EMPLOYEE_TYPE] EMPT WITH(NOLOCK) ON DSEM.EMPLOYEE_TYPE_ID=EMPT.EMPLOYEE_TYPE_ID 
                        WHERE  E.ENTITY_ID =   {entity_id} and (ACTIVE = {status}) AND {min_query}
                     '''
+            data_count = all_data.pop('maxCount', None)
+            print("data_count==>",data_count)
             if all_data.get("employee") == "all":
                 query = query + \
-                    f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {all_data.get('maxCount')} ROWS ONLY"
+                    f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {data_count} ROWS ONLY"
                 return self.db.execQuery(query)
-            data_count = all_data.pop('maxCount', None)
             for key, value in all_data.items():
                 if value is not None:
                     query = query + f"AND {key} like '%{value}%'"
             query += f"ORDER BY 1 ASC OFFSET 0 ROWS FETCH NEXT {data_count} ROWS ONLY"
-            print(query)
             return self.db.execQuery(query)
 
         except Exception as exe:
