@@ -3,18 +3,33 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actionData, applicationElements } from "../../redux/action.js";
-
-const id_from_url = () => {
-  let path = window.location.pathname;
-  let split = path.split("/");
-  //id should always be second from last rgardless of prefix
-
-  return Number(split[split.length - 2]);
-};
+import { appIdBy } from "../../commonMethods";
 
 export default function ReducerData() {
   const dispatch = useDispatch();
   const reducerState = useSelector((state) => state);
+
+  const id_from_url = () => {
+    let path = window.location.pathname;
+    let split = path.split("/");
+    //id should always be second from last rgardless of prefix
+
+    const appid = appIdBy(split[split.length - 2]);
+    return Number(appid);
+  };
+
+  function appIdBy(name) {
+    name = name.replace(/%20/g, " ");
+    let applicationList = [...reducerState.applicationData.applicationList];
+    if (applicationList.length) {
+      let application = applicationList.find((app) => app.name == name);
+      if (application) {
+        return application.id;
+      } else {
+        return "page not found";
+      }
+    }
+  }
 
   const navigateToErrorPage = (message) => {
     navigate(process.env.REACT_APP_ERROR_PAGE, {
@@ -56,7 +71,11 @@ export default function ReducerData() {
             .join(",");
           if (entityIds) {
             caseTypesByEntityIds(entityIds);
+          } else {
+            caseTypesByEntityIds("");
           }
+        } else {
+          caseTypesByEntityIds("");
         }
       })
       .catch(function (error) {
@@ -66,23 +85,27 @@ export default function ReducerData() {
   };
 
   const caseTypesByEntityIds = async (entityIds) => {
-    var jsonData = {
-      entityIds: entityIds,
-    };
+    if (entityIds) {
+      var jsonData = {
+        entityIds: entityIds,
+      };
 
-    var config = {
-      method: "post",
-      url: "/cases/caseTypesByEntityId",
-      data: jsonData,
-    };
-    await axios(config)
-      .then(function (response) {
-        dispatch(actionData(response.data, "CASE_TYPE"));
-      })
-      .catch(function (error) {
-        console.log(error);
-        navigateToErrorPage(error?.message);
-      });
+      var config = {
+        method: "post",
+        url: "/cases/caseTypesByEntityId",
+        data: jsonData,
+      };
+      await axios(config)
+        .then(function (response) {
+          dispatch(actionData(response.data, "CASE_TYPE"));
+        })
+        .catch(function (error) {
+          console.log(error);
+          navigateToErrorPage(error?.message);
+        });
+    } else {
+      dispatch(actionData([], "CASE_TYPE"));
+    }
   };
 
   useEffect(() => {

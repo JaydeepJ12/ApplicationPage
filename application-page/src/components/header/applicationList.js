@@ -5,7 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
-  MenuItem
+  MenuItem,
 } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import { withStyles } from "@material-ui/core/styles";
@@ -58,28 +58,33 @@ function ApplicationListDropdown(props) {
   const reducerState = useSelector((state) => state);
 
   React.useEffect(() => {
-    var config = {
-      method: "post",
-      url: "/cases/GetApplicationList",
-    };
-    function getApplicationList(config) {
-      axios(config)
-        .then(function (response) {
-          if (response?.data?.responseContent) {
-            let sortedResponseContent = response?.data?.responseContent;
+    // var config = {
+    //   method: "post",
+    //   url: "/cases/GetApplicationList",
+    // };
+    // function getApplicationList(config) {
+    //   axios(config)
+    //     .then(function (response) {
+    //       if (response?.data?.responseContent) {
+    //         let sortedResponseContent = response?.data?.responseContent;
 
-            sortedResponseContent = response.data.responseContent.sort((a, b) =>
-              a.name.localeCompare(b.name)
-            );
-            dispatch(applicationList(sortedResponseContent));
-            setapplicationListData(sortedResponseContent);
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
-    getApplicationList(config);
+    //         sortedResponseContent = response.data.responseContent.sort((a, b) =>
+    //           a.name.localeCompare(b.name)
+    //         );
+    //         dispatch(applicationList(sortedResponseContent));
+    //         setapplicationListData(sortedResponseContent);
+    //       }
+    //     })
+    //     .catch(function (error) {
+    //       console.log(error);
+    //     });
+    // }
+    // getApplicationList(config);
+    setapplicationListData(reducerState.applicationData.applicationList);
+    console.log(
+      "reducerState.applicationData.applicationList",
+      reducerState.applicationData.applicationList
+    );
   }, []);
 
   React.useEffect(() => {
@@ -114,9 +119,10 @@ function ApplicationListDropdown(props) {
       var parts = path.split("/");
       path = parts[parts.length - 1];
       const basePath = process.env.REACT_APP_BASE_PATH;
-      window.history.pushState("/", "", basePath + `${appId}/${path}`);
+      window.history.pushState("/", "", basePath + `${appName}/${path}`);
       dispatch(actionData(appId, "APP_ID"));
       setAppName(appName);
+      setAnchorEl(null);
     }
   };
   const [anchorEl, setAnchorEl] = React.useState(null);

@@ -6,7 +6,7 @@ import {
   Paper,
   Tab,
   Tabs,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { navigate } from "@reach/router";
@@ -84,80 +84,92 @@ export default function VisualOverview(props) {
   };
 
   return (
-    <div id="page-overview" className="page">
-      <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
-        <Grid container>
-          <Grid item lg={12} md={12} xs={12} sm={12}>
-            {caseTypeData.length ? (
-              <div>
-                <form>
-                  <Button
-                    onClick={() => {
-                      handleClick();
-                    }}
-                    variant="contained"
-                    size="large"
-                    className={
-                      classes.mb_one +
-                      " btn btn-create-button btn-primary rounded-pill"
-                    }
-                    variant="contained"
-                    color="primary"
-                  >
-                    + Create
-                  </Button>
-                </form>
-                <Paper elevation={3}>
-                  <AppBar position="static" elevation={3}>
-                    <Tabs
-                      className="nav-tab-list"
-                      value={value}
-                      onChange={handleChange}
-                      indicatorColor="primary"
-                      textColor="secondary"
-                      variant="fullWidth"
-                      aria-label="full width tabs example"
+    <>
+      {reducerState.applicationData.caseTypes?.length ? (
+        <div id="page-overview" className="page">
+          <Box boxShadow={0} className="card bg-secondary" borderRadius={35}>
+            <Grid container>
+              <Grid item lg={12} md={12} xs={12} sm={12}>
+                {caseTypeData.length ? (
+                  <div>
+                    <form>
+                      <Button
+                        onClick={() => {
+                          handleClick();
+                        }}
+                        variant="contained"
+                        size="large"
+                        className={
+                          classes.mb_one +
+                          " btn btn-create-button btn-primary rounded-pill"
+                        }
+                        variant="contained"
+                        color="primary"
+                      >
+                        + Create
+                      </Button>
+                    </form>
+                    <Paper elevation={3}>
+                      <AppBar position="static" elevation={3}>
+                        <Tabs
+                          className="nav-tab-list"
+                          value={value}
+                          onChange={handleChange}
+                          indicatorColor="primary"
+                          textColor="secondary"
+                          variant="fullWidth"
+                          aria-label="full width tabs example"
+                        >
+                          <Tab
+                            className="nav-tab"
+                            label="All"
+                            {...a11yProps(0)}
+                          />
+                          {caseTypeData.map((caseType) => (
+                            <Tab className="nav-tab" label={caseType?.NAME} />
+                          ))}
+                        </Tabs>
+                      </AppBar>
+                    </Paper>
+                    <SwipeableViews
+                      axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+                      index={value}
+                      onChangeIndex={handleChangeIndex}
                     >
-                      <Tab className="nav-tab" label="All" {...a11yProps(0)} />
+                      <TabPanel value={value} index={0} dir={theme.direction}>
+                        {caseTypeData.length ? (
+                          <GraphVisuals caseTypes={[caseTypeIds]} />
+                        ) : (
+                          []
+                        )}
+                      </TabPanel>
                       {caseTypeData.map((caseType) => (
-                        <Tab className="nav-tab" label={caseType?.NAME} />
+                        <TabPanel
+                          value={caseType?.CASE_TYPE_ID}
+                          index={caseType?.CASE_TYPE_ID}
+                          dir={theme.direction}
+                        >
+                          {caseTypeData.length ? (
+                            <GraphVisuals
+                              caseTypes={[caseType?.CASE_TYPE_ID]}
+                            />
+                          ) : (
+                            []
+                          )}
+                        </TabPanel>
                       ))}
-                    </Tabs>
-                  </AppBar>
-                </Paper>
-                <SwipeableViews
-                  axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                  index={value}
-                  onChangeIndex={handleChangeIndex}
-                >
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    {caseTypeData.length ? (
-                      <GraphVisuals caseTypes={[caseTypeIds]} />
-                    ) : (
-                      []
-                    )}
-                  </TabPanel>
-                  {caseTypeData.map((caseType) => (
-                    <TabPanel
-                      value={caseType?.CASE_TYPE_ID}
-                      index={caseType?.CASE_TYPE_ID}
-                      dir={theme.direction}
-                    >
-                      {caseTypeData.length ? (
-                        <GraphVisuals caseTypes={[caseType?.CASE_TYPE_ID]} />
-                      ) : (
-                        []
-                      )}
-                    </TabPanel>
-                  ))}
-                </SwipeableViews>
-              </div>
-            ) : (
-              <ComponentLoader type="rect" />
-            )}
-          </Grid>
-        </Grid>
-      </Box>
-    </div>
+                    </SwipeableViews>
+                  </div>
+                ) : (
+                  <ComponentLoader type="rect" />
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+        </div>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }

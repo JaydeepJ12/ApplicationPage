@@ -9,6 +9,7 @@ import {
   Select,
   withStyles,
   Box,
+  Typography,
 } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
@@ -282,7 +283,6 @@ export default function ViewCase(props) {
       Filters: null,
       TypeIdsForGrouping: null,
     };
-    
     axios
       .post("/cases/GetCaseHeaders", jsonData)
       .then(function (response) {
@@ -360,10 +360,10 @@ export default function ViewCase(props) {
   };
 
   useEffect(() => {
-    setComponentLoader(true);
     let caseTypes = reducerState.applicationData.caseTypes;
 
     if (caseTypes && caseTypes.length) {
+      setComponentLoader(true);
       let caseTypeIds = caseTypes.map((x) => {
         return x.CASE_TYPE_ID;
       });
@@ -383,6 +383,8 @@ export default function ViewCase(props) {
         caseList("", 0, false, 0, false, true, caseTypeId);
       }
       getFilterValuesByCaseTypeIds(result);
+    } else {
+      setFilteredCaseListData([]);
     }
     setLabelWidth(inputLabel.current.offsetWidth);
   }, [reducerState.applicationData.caseTypes]);
@@ -630,6 +632,22 @@ export default function ViewCase(props) {
                         : []}
                     </Select>
                   </FormControl>
+                  {/* {reducerState.applicationData.caseTypes.length ? (
+                    <CaseList
+                      handleCasePreviewClick={handleCasePreviewClick}
+                      handleFilterCaseList={handleFilterCaseList}
+                      caseListData={
+                        filteredCaseListData.length ? filteredCaseListData : []
+                      }
+                      caseLoaded={caseLoaded}
+                      componentLoader={componentLoader}
+                      firstCaseId={caseId}
+                    ></CaseList>
+                  ) : (
+                    <Typography variant="h6" center>
+                      No Data Found
+                    </Typography>
+                  )} */}
                   <CaseList
                     handleCasePreviewClick={handleCasePreviewClick}
                     handleFilterCaseList={handleFilterCaseList}
@@ -646,7 +664,7 @@ export default function ViewCase(props) {
 
               {caseId > 0 ? (
                 <CaseViewer
-                 loaded={loaded}
+                  loaded={loaded}
                   caseId={caseId}
                   caseData={caseData}
                   caseLoaded={caseLoaded}
@@ -675,12 +693,12 @@ export default function ViewCase(props) {
             </>
           ) : (
             <Box
-            boxShadow={0}
-            className={classes.mt_two + " card bg-secondary"}
-            borderRadius={5}
-          >
-            <ComponentLoader type="rect" />
-          </Box>
+              boxShadow={0}
+              className={classes.mt_two + " card bg-secondary"}
+              borderRadius={5}
+            >
+              <ComponentLoader type="rect" />
+            </Box>
           )}
           {!loaded ? createLoader() : []}
         </Grid>

@@ -62,6 +62,8 @@ export default function ItemOverview() {
 
     if (entityListId) {
       getEntityCount(entityListId);
+    } else {
+      setComponentLoader(false);
     }
 
     // if (entityListId) {
@@ -101,7 +103,7 @@ export default function ItemOverview() {
     var entityData = reducerState.applicationData.applicationElements.filter(
       (x) => x.SYSTEM_CODE === "ASSET"
     );
-    if (entityData) {
+    if (entityData?.length) {
       let entityIds = entityData
         .map(function (x) {
           return x.EXID;
@@ -111,7 +113,12 @@ export default function ItemOverview() {
         getEntityTypes(entityIds);
       } else {
         setNoDataFound(true);
+        setEntityTypes([]);
       }
+    } else {
+      setComponentLoader(false);
+      setNoDataFound(true);
+      setEntityTypes([]);
     }
   }, [
     reducerState.applicationData.caseTypes,
@@ -147,150 +154,155 @@ export default function ItemOverview() {
   };
 
   return (
-    <Box
-      boxShadow={0}
-      className="card bg-secondary"
-      color="secondary"
-      borderRadius={35}
-    >
-      <Grid item xs={12} container spacing={3}>
-        <Grid item lg={5} md={5} xs={6} sm={6}>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel id="demo-simple-select-outlined-label">
-              {" "}
-              Items
-            </InputLabel>
-            <Select
-              className="input-dropdown"
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
-              label="Items"
-              defaultValue={0}
-              onChange={(event) => handleClickItem(event.target.value)}
-            >
-              {entityTypes?.length ? (
-                <MenuItem
-                  value={0}
-                  key="0"
-                  onChange={() => getSetEntityList(entityTypes)}
+    <>
+      {entityTypes?.length ? (
+        <Box
+          boxShadow={0}
+          className="card bg-secondary"
+          color="secondary"
+          borderRadius={35}
+        >
+          <Grid item xs={12} container spacing={3}>
+            <Grid item lg={5} md={5} xs={6} sm={6}>
+              <FormControl variant="outlined" className={classes.formControl}>
+                <InputLabel id="demo-simple-select-outlined-label">
+                  {" "}
+                  Items
+                </InputLabel>
+                <Select
+                  className="input-dropdown"
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
+                  label="Items"
+                  defaultValue={0}
+                  onChange={(event) => handleClickItem(event.target.value)}
                 >
-                  <em>All</em>
-                </MenuItem>
-              ) : (
-                []
-              )}
+                  {entityTypes?.length ? (
+                    <MenuItem
+                      value={0}
+                      key="0"
+                      onChange={() => getSetEntityList(entityTypes)}
+                    >
+                      <em>All</em>
+                    </MenuItem>
+                  ) : (
+                    []
+                  )}
 
-              {entityTypes?.length ? (
-                entityTypes?.map((entityType) => (
-                  <MenuItem key={entityType.NAME} value={entityType.NAME}>
-                    {entityType.ID}
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem value={-1}>
-                  <em>No Data Available</em>
-                </MenuItem>
-              )}
-            </Select>
-          </FormControl>
-        </Grid>
+                  {entityTypes?.length ? (
+                    entityTypes?.map((entityType) => (
+                      <MenuItem key={entityType.NAME} value={entityType.NAME}>
+                        {entityType.ID}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value={-1}>
+                      <em>No Data Available</em>
+                    </MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
 
-        {componentLoader ? (
-          <div className={classes.w_100}>
-            <ComponentLoader type="rect" />
-          </div>
-        ) : (
-          <>
-            {entityCount && statusCount && categoryCount ? (
+            {componentLoader ? (
+              <div className={classes.w_100}>
+                <ComponentLoader type="rect" />
+              </div>
+            ) : (
               <>
-                {entityCount.Count > 0 ? (
-                  <Grid item lg={12} md={12} xs={12} sm={12}>
-                    <div className="st-d-inline">
-                      <Typography variant="subtitle2" gutterBottom>
-                        {entityCount.Title}
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        gutterBottom
-                        // className={classes.h3_text}
-                      >
-                        {entityCount.Count}
-                      </Typography>
-                    </div>
+                {entityCount && statusCount && categoryCount ? (
+                  <>
+                    {entityCount.Count > 0 ? (
+                      <Grid item lg={12} md={12} xs={12} sm={12}>
+                        <div className="st-d-inline">
+                          <Typography variant="subtitle2" gutterBottom>
+                            {entityCount.Title}
+                          </Typography>
+                          <Typography
+                            variant="h5"
+                            gutterBottom
+                            // className={classes.h3_text}
+                          >
+                            {entityCount.Count}
+                          </Typography>
+                        </div>
 
-                    <Container className={classes.mt_one}>
-                      <Grid container spacing={3}>
-                        <Grid
-                          item
-                          lg={12}
-                          md={12}
-                          xs={12}
-                          sm={12}
-                          className={classes.activityGraph}
-                        >
-                          <ActiveEntity entityListId={entityListId} type="" />
-                        </Grid>
+                        <Container className={classes.mt_one}>
+                          <Grid container spacing={3}>
+                            <Grid
+                              item
+                              lg={12}
+                              md={12}
+                              xs={12}
+                              sm={12}
+                              className={classes.activityGraph}
+                            >
+                              <ActiveEntity
+                                entityListId={entityListId}
+                                type=""
+                              />
+                            </Grid>
+                          </Grid>
+                        </Container>
                       </Grid>
-                    </Container>
-                  </Grid>
-                ) : (
-                  <></>
-                )}
-                {statusCount.Count > 0 ? (
-                  <Grid item lg={12} md={12} xs={12} sm={12}>
-                    <div className="st-d-inline">
-                      <Typography variant="subtitle2" gutterBottom>
-                        {statusCount.Title}
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        gutterBottom
-                        // className={classes.h3_text}
-                      >
-                        {statusCount.Count}
-                      </Typography>
-                    </div>
+                    ) : (
+                      <></>
+                    )}
+                    {statusCount.Count > 0 ? (
+                      <Grid item lg={12} md={12} xs={12} sm={12}>
+                        <div className="st-d-inline">
+                          <Typography variant="subtitle2" gutterBottom>
+                            {statusCount.Title}
+                          </Typography>
+                          <Typography
+                            variant="h5"
+                            gutterBottom
+                            // className={classes.h3_text}
+                          >
+                            {statusCount.Count}
+                          </Typography>
+                        </div>
 
-                    <Container className={classes.mt_one}>
-                      <Grid container spacing={3}>
-                        <Grid
-                          item
-                          lg={12}
-                          md={12}
-                          xs={12}
-                          sm={12}
-                          className={classes.activityGraph}
-                        >
-                          <ActiveEntity
-                            entityListId={entityListId}
-                            type="STTUS"
-                          />
-                        </Grid>
+                        <Container className={classes.mt_one}>
+                          <Grid container spacing={3}>
+                            <Grid
+                              item
+                              lg={12}
+                              md={12}
+                              xs={12}
+                              sm={12}
+                              className={classes.activityGraph}
+                            >
+                              <ActiveEntity
+                                entityListId={entityListId}
+                                type="STTUS"
+                              />
+                            </Grid>
+                          </Grid>
+                        </Container>
                       </Grid>
-                    </Container>
-                  </Grid>
-                ) : (
-                  <></>
-                )}
+                    ) : (
+                      <></>
+                    )}
 
-                {categoryCount.Count > 0 ? (
-                  <Grid item lg={12} md={12} xs={12} sm={12}>
-                    <div className="st-d-inline">
-                      <Typography variant="subtitle2" gutterBottom>
-                        {categoryCount.Title}
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        gutterBottom
-                        // className={classes.h3_text}
-                      >
-                        {categoryCount.Count}
-                      </Typography>
-                    </div>
+                    {categoryCount.Count > 0 ? (
+                      <Grid item lg={12} md={12} xs={12} sm={12}>
+                        <div className="st-d-inline">
+                          <Typography variant="subtitle2" gutterBottom>
+                            {categoryCount.Title}
+                          </Typography>
+                          <Typography
+                            variant="h5"
+                            gutterBottom
+                            // className={classes.h3_text}
+                          >
+                            {categoryCount.Count}
+                          </Typography>
+                        </div>
 
-                    <Container className={classes.mt_one}>
-                      <Grid container spacing={3}>
-                        {/* <Grid item lg={3} md={3} xs={12} sm={12}>
+                        <Container className={classes.mt_one}>
+                          <Grid container spacing={3}>
+                            {/* <Grid item lg={3} md={3} xs={12} sm={12}>
                         <Typography
                           variant="h3"
                           gutterBottom
@@ -300,25 +312,25 @@ export default function ItemOverview() {
                         </Typography>
                       </Grid> */}
 
-                        <Grid
-                          item
-                          lg={12}
-                          md={12}
-                          xs={12}
-                          sm={12}
-                          className={classes.activityGraph}
-                        >
-                          <ActiveEntity
-                            entityListId={entityListId}
-                            type="CATEG"
-                          />
-                        </Grid>
+                            <Grid
+                              item
+                              lg={12}
+                              md={12}
+                              xs={12}
+                              sm={12}
+                              className={classes.activityGraph}
+                            >
+                              <ActiveEntity
+                                entityListId={entityListId}
+                                type="CATEG"
+                              />
+                            </Grid>
+                          </Grid>
+                        </Container>
                       </Grid>
-                    </Container>
-                  </Grid>
-                ) : (
-                  <>
-                    {/* {
+                    ) : (
+                      <>
+                        {/* {
                             noDataFound && <>No Data found</>
                             //  ? (
                             //   <>No Data found</>
@@ -328,15 +340,19 @@ export default function ItemOverview() {
                             //   </div>
                             // )
                           } */}
+                      </>
+                    )}
                   </>
+                ) : (
+                  <div style={{ height: "2rem" }}>No Data Found</div>
                 )}
               </>
-            ) : (
-              <div style={{ height: "2rem" }}>No Data Found</div>
             )}
-          </>
-        )}
-      </Grid>
-    </Box>
+          </Grid>
+        </Box>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }

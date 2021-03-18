@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import { useTheme } from "@material-ui/core/styles";
@@ -27,6 +27,7 @@ import Login from "../Login/index.js";
 import ApplicationLinks from "./applicationLinks";
 import ApplicationPageDropDown from "./applicationList";
 import useStyles from "./header_styles";
+import { appIdBy, appNameBy } from "../../commonMethods";
 
 export default function Navigation(props) {
   const classes = useStyles();
@@ -39,6 +40,7 @@ export default function Navigation(props) {
   const [basePath, setBasePath] = useState(process.env.REACT_APP_BASE_PATH);
   const reducerState = useSelector((state) => state);
   const [appId, setAppId] = React.useState(0);
+  const [appName, setAppName] = React.useState("");
 
   React.useEffect(() => {
     if (!isLoggedIn()) {
@@ -50,9 +52,22 @@ export default function Navigation(props) {
     let appId = reducerState.applicationData.appId;
     let isLogin = reducerState.applicationData.isLoginPage;
 
+    function appNameBy(Id) {
+      let applicationList = reducerState.applicationData.applicationList;
+      if (applicationList.length) {
+        let application = applicationList.find((app) => app.id == Id);
+        if (application) {
+          setAppName(application.name);
+        } else {
+          setAppName("page not found");
+        }
+      }
+    }
+
     if (appId && !isLogin) {
       setCurrentPageValue(appId, isLogin);
       setAppId(appId);
+      appNameBy(appId);
     }
   }, [
     reducerState.applicationData.appId,
@@ -68,15 +83,31 @@ export default function Navigation(props) {
     return false;
   };
 
+  // function appNameBy(Id) {
+  //   let applicationList = reducerState.applicationData.applicationList;
+  //   if (applicationList.length) {
+  //     let application = applicationList.find((app) => app.id == Id);
+  //     if (application) {
+  //       return application.name;
+  //     } else {
+  //       return "page not found";
+  //     }
+  //   }
+  // }
+
   const setCurrentPageValue = (appId, isLoginPage = false) => {
     let path = window.location.pathname;
+    let appNameTemp = appNameBy(
+      appId,
+      reducerState.applicationData.applicationList
+    );
 
+    appNameTemp = appNameTemp.replace(/ /g, "%20");
     if (path) {
-      var parts = path.split(appId);
+      var parts = path.split(appNameTemp);
       path = parts[parts.length - 1];
 
       let isError = path === "/error";
-
       let page = menuItems.find((x) => x.menuPath === path);
       if (page) {
         dispatch(actionData(false, "PAGE_NOT_FOUND"));
@@ -140,8 +171,8 @@ export default function Navigation(props) {
               >
                 <Menu />
               </IconButton>
-              <Typography className={classes.avtar}>
-                <Avatar className={classes.avtar}>
+              <Typography>
+                <Avatar>
                   <img
                     src="http://home.boxerproperty.com/Assets/CommonFiles/New_Images/Main_logo.png"
                     style={{ maxWidth: "100%" }}
@@ -185,8 +216,9 @@ export default function Navigation(props) {
             <List className="sidebar-navigation-block">
               {menuItems.map((item, index) => (
                 <Link
-                  to={basePath + appId + item.menuPath}
+                  to={basePath + appName + item.menuPath}
                   style={{ color: "black" }}
+                  key={index}
                 >
                   <ListItem
                     onClick={() => {
