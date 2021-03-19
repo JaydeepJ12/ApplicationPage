@@ -161,6 +161,7 @@ header .MuiIconButton-label .MuiSvgIcon-root {
 }
 .card-user-comment p {
   background-color: #f1f1f1 !important;
+  word-wrap: break-word;
 }
 .side-bar-case-create {
   background: rgba(196, 196, 196, 0.25) !important;
