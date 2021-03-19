@@ -380,7 +380,7 @@ export default function ViewCase(props) {
       setCaseTypeIdValue(caseTypeId);
       if (filterValue && filterValue < 0) {
         setCaseTypeId(caseTypeId);
-        caseList("", 0, false, 0, false, true, caseTypeId);
+        caseList("", 0, false, 0, false, false, caseTypeId);
       }
       getFilterValuesByCaseTypeIds(result);
     } else {

@@ -16,7 +16,7 @@ import axios from "axios";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useStyles from "../../assets/css/common_styles";
-import { actionData, applicationList,isUserNameSet } from "../../redux/action";
+import { actionData, applicationList, isUserNameSet } from "../../redux/action";
 
 const StyledMenu = withStyles({
   paper: {
@@ -81,10 +81,6 @@ function ApplicationListDropdown(props) {
     // }
     // getApplicationList(config);
     setapplicationListData(reducerState.applicationData.applicationList);
-    console.log(
-      "reducerState.applicationData.applicationList",
-      reducerState.applicationData.applicationList
-    );
   }, []);
 
   React.useEffect(() => {
