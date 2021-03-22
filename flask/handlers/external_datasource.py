@@ -93,11 +93,11 @@ class ExtCase(ExternalData):
 
     def get_ext_info(self,  id):
         query = '''
-        SELECT [CONNECTION_STRING]
-        ,[QUERY]
-        FROM [BOXER_CME].[dbo].[EXTERNAL_DATASOURCE]
-        where EXTERNAL_DATASOURCE_ID = ?
-        and is_active = 'Y'
+       SELECT
+     [CONNECTION_STRING]
+      ,[QUERY]
+  FROM [BOXER_ENTITIES].[dbo].[ENTITY_ASSOC_EXTERNAL_DATASOURCE]
+  where ENTITY_ASSOC_EXTERNAL_DATASOURCE_ID = ? and is_active = 'Y'
         '''
         conn_str, query = self.conn.execute(query,(id,)).fetchone()
         return conn_str, query 
