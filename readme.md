@@ -32,7 +32,22 @@ At the moment this contains ALL people and is click-able. This will bring open a
 ![Overview People](docs\imgs\overview_people.PNG)
 
 ## Cases/Tasks
-There are two 
+There are two distinct high level components here, view tasks and create tasks.
+
+### View Tasks
+This component is composed of two* other components
+![Tasks Main](docs\imgs\tasks_page.PNG)
+
+Tasks lists, shows all cases for a specific context.
+![Task List](docs\imgs\tasks_list.PNG)
+
+Allows user to interact with and alter cases.
+![Task Viewer](docs\imgs\tasks_case_viewer.PNG)
+
+### Create Tasks
+![Task Create](docs\imgs\create_tasks.PNG)
+
+
 
 ## Entities/Items
 
