@@ -69,8 +69,6 @@ coverage.xml
 *.log
 *.pot
 
-# Sphinx documentation
-docs/_build/
 
 config.py
 .venv/
