@@ -13,7 +13,7 @@ The overview page currently contains 3 distinct sections.
 * People
 
 ## Main:
- ![Overview Page](docs\imgs\overview.PNG)
+ ![Overview Page](ApplicationPage\docs\imgs\overview.PNG)
 
 ### Visuals
 At some point this will need to be extremely interactive in the future. What that means needs to be determined. Do clicks lead to the cases? Open other Visuals? Other Applications?
